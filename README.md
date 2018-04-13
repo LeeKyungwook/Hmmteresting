@@ -14,9 +14,9 @@ This is system that automatically recognize face and give lots of information th
 
 
 ## Team Name
-Hmmtereting
+Hmmteresting
 
-### return SUCCESS;
+### Hmmteresting
 #### Members:
     Kyungwook Lee
     Junho Lee
