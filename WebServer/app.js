@@ -6,6 +6,45 @@ var formidable = require('formidable');
 var rootDir = __dirname.replace('','');
 var fs = require('fs-extra');
 
+
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://127.0.0.1:27017/oikwho');
+var db = mongoose.connection;
+db.on('error', function(){
+  console.log('Connection failed!');
+});
+
+var users = mongoose.Schema({
+  name:'string',
+  Uid:'number',
+  pw:'string'
+});
+var schedules = mongoose.Schema({
+  userID:'number',
+  title:'string',
+  startDate:'number',
+  startTime:'number',
+  endDate:'number',
+  endTime:'number',
+  isBroadcast:'number'
+});
+var reqItems = mongoose.Schema({
+  userID:'number',
+  name:'string',
+  memo:'string'
+});
+
+var USERS = mongoose.model('users', users);
+var SCHEDULES = mongoose.model('schedules', schedules);
+var REQITEMS = mongoose.model('reqitems', reqItems);
+
+var uid; //uid will be initiated after receiving image from rasperryPi
+var today = new Date();
+var mm = today.getMonth()+1;
+var yyyy = today.getFullYear();
+var thisDate = (yyyy-2000)*10000 + mm*100;
+
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
 
@@ -41,6 +80,25 @@ var form = new formidable.IncomingForm();
         } else {
           console.log(newLoc + newFileName + ' has been saved!');
           res.send('Save Completed');
+            
+          uid=2;//dummy
+          SCHEDULES.find({ $or:[ { $and:[ { startDate:{$gte:thisDate+1}},{startDate:{$lte:thisDate+30}},{userID:uid} ] }, { $and:[ {endDate:{$gte:thisDate+1}}, {endDate:{$lte:thisDate+30}},{userID:uid} ] } ] }, {_id:0, __v:0}, function(error, schedules) {
+          console.log('--- Read This Month Schedules of User'+ uid +' ---');
+                        if(error){ console.log(error); }
+            else{ console.log(schedules); }
+          });
+          
+          REQITEMS.find({userID:uid}, {_id:0, __v:0},function(error, reqitems){
+            console.log('--- Read Required Item List of User ' + uid + ' ---');
+            if(error){ console.log(error); }
+            else{ console.log(reqitems); }
+          });
+          
+          USERS.find({}, {_id:0, __v:0},function(error,users) {
+            console.log('--- User Info Test ---');
+            if(error){ console.log(error); }
+            else{ console.log(users); }
+          });
         }
       });
     }
