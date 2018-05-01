@@ -1,6 +1,7 @@
 #import the necessary packages
 from picamera.array import PiRGBArray
 from picamera import PiCamera
+from PIL import Image
 import sys
 sys.path.append('/usr/local/lib/python2.7/site-packages')
 import time
@@ -16,7 +17,12 @@ def detect(img, cascade):
 
 def draw_rects(img, rects, color):
     for x1, y1, x2, y2 in rects:
-        cv2.rectangle(img, (x1, y1), (x2, y2), color, 2)
+        rect_image = cv2.rectangle(img, (x1-100, y1-100), (x2+100, y2+100), color, 2)
+        print(x1, y1, x2, y2)   #rectangle coordinate
+        cv2.imwrite("rect_image.jpg", rect_image)   #save a rectangle-drawn picture
+        crop_image = Image.open('rect_image.jpg')
+        crop_image = crop_image.crop((x1-100, y1-100, x2+100, y2+100))  #crop the image inside the rectangle
+        crop_image.save('crop_image.jpg')   #save crop image
 
 #initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
@@ -41,7 +47,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     rects = detect(gray, cascade)
     vis = img.copy()
     draw_rects(vis, rects, (0, 255, 0))
-
+    
     #show the frame
     cv2.imshow("Frame", vis)
     key = cv2.waitKey(1) & 0xFF
