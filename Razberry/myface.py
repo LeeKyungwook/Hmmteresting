@@ -17,11 +17,11 @@ def detect(img, cascade):
 
 def draw_rects(img, rects, color):
     for x1, y1, x2, y2 in rects:
-        rect_image = cv2.rectangle(img, (x1-100, y1-100), (x2+100, y2+100), color, 2)
+        rect_image = cv2.rectangle(img, (x1-40, y1-40), (x2+40, y2+40), color, 2)
         print(x1, y1, x2, y2)   #rectangle coordinate
         cv2.imwrite("rect_image.jpg", rect_image)   #save a rectangle-drawn picture
         crop_image = Image.open('rect_image.jpg')
-        crop_image = crop_image.crop((x1-100, y1-100, x2+100, y2+100))  #crop the image inside the rectangle
+        crop_image = crop_image.crop((x1-40, y1-40, x2+40, y2+40))  #crop the image inside the rectangle
         crop_image.save('crop_image.jpg')   #save crop image
 
 #initialize the camera and grab a reference to the raw camera capture
