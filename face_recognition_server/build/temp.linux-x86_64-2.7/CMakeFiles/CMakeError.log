@@ -1,0 +1,76 @@
+Determining if the pthread_create exist failed with the following output:
+Change Dir: /home/kyungwook/kyungwook/dlib/build/temp.linux-x86_64-2.7/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_9179e/fast"
+/usr/bin/make -f CMakeFiles/cmTC_9179e.dir/build.make CMakeFiles/cmTC_9179e.dir/build
+make[1]: 디렉터리 '/home/kyungwook/kyungwook/dlib/build/temp.linux-x86_64-2.7/CMakeFiles/CMakeTmp' 들어감
+Building C object CMakeFiles/cmTC_9179e.dir/CheckSymbolExists.c.o
+/usr/bin/cc    -fPIE   -o CMakeFiles/cmTC_9179e.dir/CheckSymbolExists.c.o   -c /home/kyungwook/kyungwook/dlib/build/temp.linux-x86_64-2.7/CMakeFiles/CMakeTmp/CheckSymbolExists.c
+Linking C executable cmTC_9179e
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_9179e.dir/link.txt --verbose=1
+/usr/bin/cc       CMakeFiles/cmTC_9179e.dir/CheckSymbolExists.c.o  -o cmTC_9179e -rdynamic 
+CMakeFiles/cmTC_9179e.dir/CheckSymbolExists.c.o: In function `main':
+CheckSymbolExists.c:(.text+0x1b): undefined reference to `pthread_create'
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_9179e.dir/build.make:97: 'cmTC_9179e' 타겟에 대한 명령이 실패했습니다
+make[1]: *** [cmTC_9179e] 오류 1
+make[1]: 디렉터리 '/home/kyungwook/kyungwook/dlib/build/temp.linux-x86_64-2.7/CMakeFiles/CMakeTmp' 나감
+Makefile:126: 'cmTC_9179e/fast' 타겟에 대한 명령이 실패했습니다
+make: *** [cmTC_9179e/fast] 오류 2
+
+File /home/kyungwook/kyungwook/dlib/build/temp.linux-x86_64-2.7/CMakeFiles/CMakeTmp/CheckSymbolExists.c:
+/* */
+#include <pthread.h>
+
+int main(int argc, char** argv)
+{
+  (void)argv;
+#ifndef pthread_create
+  return ((int*)(&pthread_create))[argc];
+#else
+  (void)argc;
+  return 0;
+#endif
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: /home/kyungwook/kyungwook/dlib/build/temp.linux-x86_64-2.7/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_efd00/fast"
+/usr/bin/make -f CMakeFiles/cmTC_efd00.dir/build.make CMakeFiles/cmTC_efd00.dir/build
+make[1]: 디렉터리 '/home/kyungwook/kyungwook/dlib/build/temp.linux-x86_64-2.7/CMakeFiles/CMakeTmp' 들어감
+Building C object CMakeFiles/cmTC_efd00.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -DCHECK_FUNCTION_EXISTS=pthread_create -fPIE   -o CMakeFiles/cmTC_efd00.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_efd00
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_efd00.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=pthread_create    CMakeFiles/cmTC_efd00.dir/CheckFunctionExists.c.o  -o cmTC_efd00 -rdynamic -lpthreads 
+/usr/bin/ld: cannot find -lpthreads
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_efd00.dir/build.make:97: 'cmTC_efd00' 타겟에 대한 명령이 실패했습니다
+make[1]: *** [cmTC_efd00] 오류 1
+make[1]: 디렉터리 '/home/kyungwook/kyungwook/dlib/build/temp.linux-x86_64-2.7/CMakeFiles/CMakeTmp' 나감
+Makefile:126: 'cmTC_efd00/fast' 타겟에 대한 명령이 실패했습니다
+make: *** [cmTC_efd00/fast] 오류 2
+
+
+Determining if the function sgesv exists failed with the following output:
+Change Dir: /home/kyungwook/kyungwook/dlib/build/temp.linux-x86_64-2.7/CMakeFiles/CMakeTmp
+
+Run Build Command:"/usr/bin/make" "cmTC_4df20/fast"
+/usr/bin/make -f CMakeFiles/cmTC_4df20.dir/build.make CMakeFiles/cmTC_4df20.dir/build
+make[1]: 디렉터리 '/home/kyungwook/kyungwook/dlib/build/temp.linux-x86_64-2.7/CMakeFiles/CMakeTmp' 들어감
+Building C object CMakeFiles/cmTC_4df20.dir/CheckFunctionExists.c.o
+/usr/bin/cc    -DCHECK_FUNCTION_EXISTS=sgesv -fPIE   -o CMakeFiles/cmTC_4df20.dir/CheckFunctionExists.c.o   -c /usr/share/cmake-3.5/Modules/CheckFunctionExists.c
+Linking C executable cmTC_4df20
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4df20.dir/link.txt --verbose=1
+/usr/bin/cc   -DCHECK_FUNCTION_EXISTS=sgesv    CMakeFiles/cmTC_4df20.dir/CheckFunctionExists.c.o  -o cmTC_4df20 -rdynamic /usr/lib/liblapack.so 
+CMakeFiles/cmTC_4df20.dir/CheckFunctionExists.c.o: In function `main':
+CheckFunctionExists.c:(.text+0x15): undefined reference to `sgesv'
+collect2: error: ld returned 1 exit status
+CMakeFiles/cmTC_4df20.dir/build.make:98: 'cmTC_4df20' 타겟에 대한 명령이 실패했습니다
+make[1]: *** [cmTC_4df20] 오류 1
+make[1]: 디렉터리 '/home/kyungwook/kyungwook/dlib/build/temp.linux-x86_64-2.7/CMakeFiles/CMakeTmp' 나감
+Makefile:126: 'cmTC_4df20/fast' 타겟에 대한 명령이 실패했습니다
+make: *** [cmTC_4df20/fast] 오류 2
+
+
