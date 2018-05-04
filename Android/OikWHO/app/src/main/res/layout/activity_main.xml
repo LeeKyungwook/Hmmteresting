@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:theme="@style/AppTheme"
+    tools:context=".MainActivity">
+
+    <CalendarView
+        android:id="@+id/calendar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btn_scheduleInsert"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5px"
+        android:layout_marginTop="5px"
+        android:background="#AAAAAA"
+        android:text="Insert"
+        android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/btn_scheduleUpdate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5px"
+        android:layout_marginTop="5px"
+        android:background="#AAAAAA"
+        android:text="Update"
+        android:visibility="invisible" />
+
+    <Button
+        android:id="@+id/btn_scheduleDelete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5px"
+        android:layout_marginTop="5px"
+        android:background="#AAAAAA"
+        android:bufferType="normal"
+        android:text="Delete"
+        android:visibility="invisible" />
+</LinearLayout>

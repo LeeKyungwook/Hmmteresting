@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ScheduleDetail">
+
+    <TextView
+        android:id="@+id/sch_Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="일정 제목"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <EditText
+        android:id="@+id/edit_title"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:hint="n자 이내로 입력하세요."
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="35dp" />
+
+    <TextView
+        android:id="@+id/sch_startDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="시작 날짜"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="89dp" />
+
+    <EditText
+        android:id="@+id/edit_startDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="date"
+        android:hint="YYYY-MM-DD"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="108dp" />
+
+    <TextView
+        android:id="@+id/sch_startTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="시작 시각"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="154dp"
+        tools:ignore="MissingConstraints"/>
+
+    <EditText
+        android:id="@+id/edit_startTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="time"
+        android:hint="hh:mm"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="173dp" />
+
+    <TextView
+        android:id="@+id/sch_endDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="종료 날짜"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="219dp"
+        tools:ignore="MissingConstraints"/>
+
+    <EditText
+        android:id="@+id/edit_endDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="date"
+        android:hint="어떤 형태?"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="238dp" />
+
+    <TextView
+        android:id="@+id/sch_endTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="종료 시각"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="284dp" />
+
+    <EditText
+        android:id="@+id/edit_endTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="time"
+        android:hint="hh:mm이런거"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="303dp" />
+
+    <TextView
+        android:id="@+id/sch_prepare"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="준비물"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="379dp"
+        tools:ignore="MissingConstraints"/>
+
+    <EditText
+        android:id="@+id/edit_prepare"
+        android:layout_width="354dp"
+        android:layout_height="92dp"
+        android:ems="10"
+        android:inputType="textMultiLine"
+        android:hint="5줄 이하로 입력하세요."
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="398dp" />
+
+</android.support.constraint.ConstraintLayout>
