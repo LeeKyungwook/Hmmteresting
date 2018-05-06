@@ -26,8 +26,9 @@
 #       pip install numpy
 
 import sys
-
+import cv2
 import dlib
+import os
 
 if len(sys.argv) != 3:
     print(
@@ -39,6 +40,7 @@ if len(sys.argv) != 3:
 
 predictor_path = sys.argv[1]
 face_file_path = sys.argv[2]
+path = '/home/kyungwook/kyungwook/test_image'
 
 # Load all the models we need: a detector to find the faces, a shape predictor
 # to find face landmarks so we can precisely localize the face
@@ -67,13 +69,15 @@ window = dlib.image_window()
 
 # Get the aligned face images
 # Optionally: 
-# images = dlib.get_face_chips(img, faces, size=160, padding=0.25)
-images = dlib.get_face_chips(img, faces, size=320)
+images = dlib.get_face_chips(img, faces, size=112, padding=0.12)
 for image in images:
-    window.set_image(image)
-    dlib.hit_enter_to_continue()
+    #window.set_image(image)
+    #dlib.hit_enter_to_continue()
+    #cv2.imwrite("saved.jpg", image)
+    cv2.imwrite(os.path.join(path , 'aligned.jpg'), image)
+    print("Alignment Completed")
 
 # It is also possible to get a single chip
-image = dlib.get_face_chip(img, faces[0])
-window.set_image(image)
-dlib.hit_enter_to_continue()
+# image = dlib.get_face_chip(img, faces[0])
+# window.set_image(image)
+# dlib.hit_enter_to_continue()
