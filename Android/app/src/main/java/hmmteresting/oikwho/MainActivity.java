@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             //connect main activity-schedule list(of that day with checkbox)
+            Toast.makeText(getApplicationContext(), "delete일정", Toast.LENGTH_SHORT);
         }
     };
 

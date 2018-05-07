@@ -112,19 +112,28 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="준비물"
+        tools:ignore="MissingConstraints"
         tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="379dp"
-        tools:ignore="MissingConstraints"/>
+        tools:layout_editor_absoluteY="349dp" />
 
     <EditText
         android:id="@+id/edit_prepare"
         android:layout_width="354dp"
         android:layout_height="92dp"
         android:ems="10"
-        android:inputType="textMultiLine"
         android:hint="5줄 이하로 입력하세요."
+        android:inputType="textMultiLine"
         tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="16dp"
-        tools:layout_editor_absoluteY="398dp" />
+        tools:layout_editor_absoluteX="15dp"
+        tools:layout_editor_absoluteY="368dp" />
+
+    <Button
+        android:id="@+id/btn_submit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SUBMIT"
+        tools:layout_editor_absoluteX="147dp"
+        tools:layout_editor_absoluteY="460dp"
+        tools:ignore="MissingConstraints" />
 
 </android.support.constraint.ConstraintLayout>

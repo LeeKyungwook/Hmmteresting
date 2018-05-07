@@ -19,8 +19,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".ScheduleList" />
-        <activity android:name=".ScheduleDetail"></activity>
+
+        <activity android:name=".ScheduleDetail">
+
+        </activity>
     </application>
 
 </manifest>
