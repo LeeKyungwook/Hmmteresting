@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".ScheduleList">
 
     <TextView
-        android:id="@+id/sampleTextView"
-        android:layout_width="wrap_content"
+        android:id="@+id/sampletext"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="스케줄 리스트"
-        tools:layout_editor_absoluteX="83dp"
-        tools:layout_editor_absoluteY="139dp"
-        tools:ignore="MissingConstraints" />
-</android.support.constraint.ConstraintLayout>
+        android:text="스케줄 리스트" />
+</LinearLayout>

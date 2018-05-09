@@ -43,10 +43,6 @@ public class ScheduleDetail extends AppCompatActivity {
         EditText this_edit_endTime = (EditText)findViewById(R.id.edit_endTime);
         EditText this_edit_prepare = (EditText)findViewById(R.id.edit_prepare);
 
-        Button btn_submit = (Button)findViewById(R.id.btn_submit);
-
-        btn_submit.setOnClickListener(click_btn_submit);
-
         String title = this_edit_title.getText().toString();
         String startDate = this_edit_startDate.getText().toString();
         /*try {
@@ -77,5 +73,8 @@ public class ScheduleDetail extends AppCompatActivity {
 
         str_addedScheduleDetail = "";
         str_addedScheduleDetail = str_addedScheduleDetail+"Title : "+title;
+
+        Button btn_submit = (Button)findViewById(R.id.btn_submit);
+        btn_submit.setOnClickListener(click_btn_submit);
     }
 }

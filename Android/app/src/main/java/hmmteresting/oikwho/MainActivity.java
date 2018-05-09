@@ -1,5 +1,6 @@
 package hmmteresting.oikwho;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
     Button.OnClickListener click_btn_delete = new View.OnClickListener(){
+        @SuppressLint("ShowToast")
         @Override
         public void onClick(View v) {
             //connect main activity-schedule list(of that day with checkbox)
