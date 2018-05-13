@@ -40,7 +40,7 @@ if len(sys.argv) != 3:
 
 predictor_path = sys.argv[1]
 face_file_path = sys.argv[2]
-path = '/home/kyungwook/kyungwook/test_image'
+path = '/home/kyungwook/kyungwook/gallery'
 
 # Load all the models we need: a detector to find the faces, a shape predictor
 # to find face landmarks so we can precisely localize the face
