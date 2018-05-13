@@ -69,12 +69,11 @@ class FaceFeatureExtractor():
         return np.sqrt(dist)
     
     def search(self, dirname):
-        
         filenames = os.listdir(dirname)
         for filename in filenames:
             full_filename = os.path.join(dirname, filename)
             print (filename)
-        
+      
 
         
        
@@ -121,6 +120,39 @@ if __name__ == '__main__':
     ###################################### Cal Dis ############################################
     ftr_extor = FaceFeatureExtractor()
     
+    input_img = cv2.imread('/home/kyungwook/kyungwook/aligned_img/input4.jpg')
+    input_img_feat = ftr_extor.extract_feature(input_img)
+
+    # gal_img = cv2.imread('/home/kyungwook/kyungwook/gallery/sh1.jpg')
+    # gal_img_feat = ftr_extor.extract_feature(gal_img)
+    
+    dirname = '/home/kyungwook/kyungwook/gallery'
+
+    # dist = ftr_extor.get_dist(gal_img_feat, input_img_feat)
+    a = 0
+    b = 'aa'
+    filenames = os.listdir(dirname)
+    for filename in filenames:
+        full_filename = os.path.join(dirname, filename)
+        gal_img = cv2.imread(full_filename)
+        gal_img_feat = ftr_extor.extract_feature(gal_img)
+        dist = ftr_extor.get_dist(gal_img_feat,input_img_feat) 
+
+        if (a == 0):
+            a = dist
+            b = full_filename
+
+        elif (dist < a):
+            a = dist
+            b = full_filename
+
+        print dist
+
+    print '--------------------------'
+    print a
+    print b
+
+
 
 
     
