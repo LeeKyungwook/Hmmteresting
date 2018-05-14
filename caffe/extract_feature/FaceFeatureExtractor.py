@@ -61,42 +61,29 @@ class FaceFeatureExtractor():
 
         return out
 
-    def get_dist(self, a, b):
-        sqsum = (a - b) ** 2
-        dist = 0
-        for i in sqsum:
-            dist += i
-        return np.sqrt(dist)
+    # def get_dist(self, a, b):
+    #     sqsum = (a - b) ** 2
+    #     dist = 0
+    #     for i in sqsum:
+    #         dist += i
+    #     return np.sqrt(dist)
     
     def search(self, dirname):
         filenames = os.listdir(dirname)
         for filename in filenames:
             full_filename = os.path.join(dirname, filename)
             print (filename)
-      
-
-        
+    
+    def get_cos_dist(self, p, q):
+        p = np.asarray(p).flatten()
+        q = np.asarray(q).flatten()
+        return np.dot(p.T,q) / (np.sqrt(np.dot(p,p.T)*np.dot(q,q.T)))
+ 
        
 if __name__ == '__main__':
-    #parser = argparse.ArgumentParser()
-    #parser.add_argument('--img1', '-i1', required=True, help='img path')
-    #parser.add_argument('--img2', '-i2', required=True, help='img path')
-    #args = parser.parse_args()
-
-    # ftr_extor = FaceFeatureExtractor()
-
-    #img1 = cv2.imread(args.img1)
-    #out1 = ftr_extor.extract_feature(img1)
-
-    #img2 = cv2.imread(args.img2)
-    #out2 = ftr_extor.extract_feature(img2)
-
-    #dist = ftr_extor.get_dist(out1, out2)
-
-    #np.save('my_data.npy', out1)
-    #load_out2 = np.load('my_data.npy')
-
-    #print '\n\tThe avg blob data ', avg
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--img1', '-i1', required=True, help='img path')
+    args = parser.parse_args()
 
     ###################################### Make npy ########################################
     # ftr_extor = FaceFeatureExtractor()
@@ -120,37 +107,34 @@ if __name__ == '__main__':
     ###################################### Cal Dis ############################################
     ftr_extor = FaceFeatureExtractor()
     
-    input_img = cv2.imread('/home/kyungwook/kyungwook/aligned_img/input4.jpg')
+    input_img = cv2.imread(args.img1)
     input_img_feat = ftr_extor.extract_feature(input_img)
-
-    # gal_img = cv2.imread('/home/kyungwook/kyungwook/gallery/sh1.jpg')
-    # gal_img_feat = ftr_extor.extract_feature(gal_img)
     
     dirname = '/home/kyungwook/kyungwook/gallery'
 
-    # dist = ftr_extor.get_dist(gal_img_feat, input_img_feat)
-    a = 0
-    b = 'aa'
+    current_dist = 0
+    current_filename = 'None'
     filenames = os.listdir(dirname)
     for filename in filenames:
         full_filename = os.path.join(dirname, filename)
         gal_img = cv2.imread(full_filename)
         gal_img_feat = ftr_extor.extract_feature(gal_img)
-        dist = ftr_extor.get_dist(gal_img_feat,input_img_feat) 
+        #dist = ftr_extor.get_dist(gal_img_feat,input_img_feat) 
+        dist = ftr_extor.get_cos_dist(gal_img_feat, input_img_feat) 
 
-        if (a == 0):
-            a = dist
-            b = full_filename
+        if (current_dist == 0):
+            current_dist = dist
+            current_filename = full_filename
 
-        elif (dist < a):
-            a = dist
-            b = full_filename
+        elif (dist > current_dist):
+            current_dist = dist
+            current_filename = full_filename
 
         print dist
 
     print '--------------------------'
-    print a
-    print b
+    print current_dist
+    print current_filename
 
 
 
