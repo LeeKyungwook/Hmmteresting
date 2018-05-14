@@ -1,30 +1,3 @@
-#!/usr/bin/python
-# The contents of this file are in the public domain. See LICENSE_FOR_EXAMPLE_PROGRAMS.txt
-#
-#   This example shows how to use dlib's face recognition tool for image alignment.
-#
-# COMPILING/INSTALLING THE DLIB PYTHON INTERFACE
-#   You can install dlib using the command:
-#       pip install dlib
-#
-#   Alternatively, if you want to compile dlib yourself then go into the dlib
-#   root folder and run:
-#       python setup.py install
-#   or
-#       python setup.py install --yes USE_AVX_INSTRUCTIONS
-#   if you have a CPU that supports AVX instructions, since this makes some
-#   things run faster.  This code will also use CUDA if you have CUDA and cuDNN
-#   installed.
-#
-#   Compiling dlib should work on any operating system so long as you have
-#   CMake installed.  On Ubuntu, this can be done easily by running the
-#   command:
-#       sudo apt-get install cmake
-#
-#   Also note that this example requires Numpy which can be installed
-#   via the command:
-#       pip install numpy
-
 import sys
 import cv2
 import dlib
@@ -40,7 +13,7 @@ if len(sys.argv) != 3:
 
 predictor_path = sys.argv[1]
 face_file_path = sys.argv[2]
-path = '/home/kyungwook/kyungwook/gallery'
+path = '/home/kyungwook/kyungwook/aligned_img'
 
 # Load all the models we need: a detector to find the faces, a shape predictor
 # to find face landmarks so we can precisely localize the face
@@ -74,7 +47,8 @@ for image in images:
     #window.set_image(image)
     #dlib.hit_enter_to_continue()
     #cv2.imwrite("saved.jpg", image)
-    cv2.imwrite(os.path.join(path , 'aligned.jpg'), image)
+    bgr_img = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    cv2.imwrite(os.path.join(path , 'input12.jpg'), bgr_img)
     print("Alignment Completed")
 
 # It is also possible to get a single chip
