@@ -3,6 +3,7 @@ import caffe
 import cv2
 import numpy as np
 import os
+
 from os import walk
 
 class FaceFeatureExtractor():
@@ -37,7 +38,6 @@ class FaceFeatureExtractor():
     def forward(self, blob):
         self.net.blobs['data'].data[0,:,:,:] = blob
         out = self.net.forward()
-
         out_shape  = out[self.blob_name].shape
         len_out    = 1
         for i in out_shape:
@@ -50,7 +50,6 @@ class FaceFeatureExtractor():
         for i in blob:
             dist += i**2
         dist = np.sqrt(dist)
-
         out_norm =  blob / dist
         return out_norm
 
@@ -58,21 +57,7 @@ class FaceFeatureExtractor():
         blob = self.input_norm(img)
         out  = self.forward(blob)
         out  = self.output_norm(out)
-
         return out
-
-    # def get_dist(self, a, b):
-    #     sqsum = (a - b) ** 2
-    #     dist = 0
-    #     for i in sqsum:
-    #         dist += i
-    #     return np.sqrt(dist)
-    
-    def search(self, dirname):
-        filenames = os.listdir(dirname)
-        for filename in filenames:
-            full_filename = os.path.join(dirname, filename)
-            print (filename)
     
     def get_cos_dist(self, p, q):
         p = np.asarray(p).flatten()
@@ -81,8 +66,9 @@ class FaceFeatureExtractor():
  
        
 if __name__ == '__main__':
+    
     parser = argparse.ArgumentParser()
-    parser.add_argument('--img1', '-i1', required=True, help='img path')
+    parser.add_argument('-img1', required=True, help='img path')
     args = parser.parse_args()
 
     ###################################### Make npy ########################################
@@ -119,22 +105,28 @@ if __name__ == '__main__':
         full_filename = os.path.join(dirname, filename)
         gal_img = cv2.imread(full_filename)
         gal_img_feat = ftr_extor.extract_feature(gal_img)
-        #dist = ftr_extor.get_dist(gal_img_feat,input_img_feat) 
         dist = ftr_extor.get_cos_dist(gal_img_feat, input_img_feat) 
 
         if (current_dist == 0):
             current_dist = dist
-            current_filename = full_filename
+            current_filename = filename
 
         elif (dist > current_dist):
             current_dist = dist
-            current_filename = full_filename
+            current_filename = filename
 
-        print dist
+        # print dist
 
-    print '--------------------------'
-    print current_dist
-    print current_filename
+    # print '--------------------------'
+    if (current_dist > 0.5):
+        print current_dist
+        print current_filename
+    else :
+        print current_dist
+        print "None Detected"
+    
+    #print current_dist
+    #print current_filename
 
 
 
