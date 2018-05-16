@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,94 +8,100 @@
     android:theme="@style/AppTheme"
     tools:context=".ScheduleDetail">
 
-    <TextView
-        android:id="@+id/sch_Title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="일정 제목" />
 
-    <EditText
-        android:id="@+id/edit_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="n자 이내로 입력하세요"
-        android:inputType="textPersonName" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+            <TextView
+                android:id="@+id/sch_Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="일정 제목" />
 
-    <TextView
-        android:id="@+id/sch_startDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="시작 날짜" />
+            <EditText
+                android:id="@+id/edit_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="n자 이내로 입력하세요"
+                android:inputType="textPersonName" />
 
-    <EditText
-        android:id="@+id/edit_startDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="YYYYMMDD"
-        android:inputType="date" />
+            <TextView
+                android:id="@+id/sch_startDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="시작 날짜" />
 
-    <TextView
-        android:id="@+id/sch_startTime"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="시작 시각" />
+            <EditText
+                android:id="@+id/edit_startDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="ex)YYYYMMDD"
+                android:inputType="date" />
 
-    <EditText
-        android:id="@+id/edit_startTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="hhmm"
-        android:inputType="time" />
+            <TextView
+                android:id="@+id/sch_startTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="시작 시각" />
 
-    <TextView
-        android:id="@+id/sch_endDate"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="종료 날짜" />
+            <EditText
+                android:id="@+id/edit_startTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="ex)hhmm"
+                android:inputType="time" />
 
-    <EditText
-        android:id="@+id/edit_endDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="YYYYMMDD"
-        android:inputType="date" />
+            <TextView
+                android:id="@+id/sch_endDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="종료 날짜" />
 
-    <TextView
-        android:id="@+id/sch_endTime"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="종료 시각" />
+            <EditText
+                android:id="@+id/edit_endDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="ex)YYYYMMDD"
+                android:inputType="date" />
 
-    <EditText
-        android:id="@+id/edit_endTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:hint="hhmm"
-        android:inputType="time" />
+            <TextView
+                android:id="@+id/sch_endTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="종료 시각" />
 
-    <TextView
-        android:id="@+id/sch_prepare"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="준비물" />
+            <EditText
+                android:id="@+id/edit_endTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="ex)hhmm"
+                android:inputType="time" />
 
-    <EditText
-        android:id="@+id/edit_prepare"
-        android:layout_width="match_parent"
-        android:layout_height="74dp"
-        android:ems="10"
-        android:hint="얼마 이내로 입력해주세요."
-        android:inputType="textMultiLine" />
+            <TextView
+                android:id="@+id/sch_prepare"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="준비물" />
 
-    <Button
-        android:id="@+id/btn_submit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="140dp"
-        android:text="SUBMIT" />
-</LinearLayout>
+            <EditText
+                android:id="@+id/edit_prepare"
+                android:layout_width="match_parent"
+                android:layout_height="74dp"
+                android:ems="10"
+                android:hint="얼마 이내로 입력해주세요."
+                android:inputType="textMultiLine" />
+
+            <Button
+                android:id="@+id/btn_submit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="140dp"
+                android:text="SUBMIT" />
+            </LinearLayout>
+</ScrollView>

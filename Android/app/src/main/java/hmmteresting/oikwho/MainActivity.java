@@ -13,41 +13,15 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    Button.OnClickListener click_btn_add = new View.OnClickListener(){
-        @Override
-        public void onClick(View v) {
-            //connect main activity-schedule_detail
-            Intent go_scheduleDetail = new Intent(
-                    getApplicationContext(),
-                    ScheduleDetail.class
-            );
-            startActivity(go_scheduleDetail);
-        }
-    };
-    Button.OnClickListener click_btn_update = new View.OnClickListener(){
-        @Override
-        public void onClick(View v) {
-            //connect main activity-schedule_list(of that day)
-            Intent go_scheduleList = new Intent(getApplicationContext(),
-                    ScheduleList.class);
-            startActivity(go_scheduleList);
-        }
-    };
-    Button.OnClickListener click_btn_delete = new View.OnClickListener(){
-        @SuppressLint("ShowToast")
-        @Override
-        public void onClick(View v) {
-            //connect main activity-schedule list(of that day with checkbox)
-            Toast.makeText(getApplicationContext(), "delete일정", Toast.LENGTH_SHORT);
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //connect to server. exchanged nothing
         final CalendarView calendar = (CalendarView)findViewById(R.id.calendar);
+        final Integer[] selectedDate = {0};
+        final String sh = "suhyun";
 
         calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -60,10 +34,52 @@ public class MainActivity extends AppCompatActivity {
                 btn_delete_schedule.setVisibility(View.VISIBLE);
                 btn_update_schedule.setVisibility(View.VISIBLE);
 
-                btn_add_schedule.setOnClickListener(click_btn_add);
-                btn_delete_schedule.setOnClickListener(click_btn_delete);
-                btn_update_schedule.setOnClickListener(click_btn_update);
+                selectedDate[0] = year%100;
+                selectedDate[0] = selectedDate[0] *100 + month;
+                selectedDate[0] = selectedDate[0] *100 + dayOfMonth;
+
+                btn_add_schedule.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //connect main activity-schedule_detail
+                        Intent go_scheduleDetail = new Intent(getApplicationContext(),
+                                ScheduleDetail.class
+                        );
+                        go_scheduleDetail.putExtra("userName",sh);  //"suhyun" is dummy data
+                        startActivity(go_scheduleDetail);
+                    }
+                });
+
+                btn_delete_schedule.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //connect main activity-schedule list(of that day with checkbox)
+                        Intent go_scheduleList = new Intent(getApplicationContext(),
+                                ScheduleList.class);
+                        go_scheduleList.putExtra("selectday", selectedDate[0]);
+                        startActivity(go_scheduleList);
+
+                        Toast.makeText(getApplicationContext(), "delete", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                btn_update_schedule.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //connect main activity-schedule_list(of that day)
+                        Intent go_scheduleList = new Intent(getApplicationContext(),
+                                ScheduleList.class);
+                        go_scheduleList.putExtra("selectday", selectedDate[0]);
+                        startActivity(go_scheduleList);
+                    }
+                });
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //서버랑 연결 끊음,..  여기서 끊어?
     }
 }

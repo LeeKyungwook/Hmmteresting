@@ -8,73 +8,64 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.sql.Time;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 public class ScheduleDetail extends AppCompatActivity {
 
-    String str_addedScheduleDetail = "";
-
-    Button.OnClickListener click_btn_submit = new View.OnClickListener(){
-        @Override
-        public void onClick(View v) {
-            //connect ScheduleDetail-setPrivacy(아직 안만들엇음)
-
-            Toast.makeText(ScheduleDetail.this, str_addedScheduleDetail, Toast.LENGTH_SHORT).show();
-            Intent go_scheduleDetail = new Intent(
-                    getApplicationContext(),
-                    MainActivity.class
-            );
-            startActivity(go_scheduleDetail);
-        }
-    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule_detail);
+        Intent intent = getIntent();
 
-        EditText this_edit_title = (EditText)findViewById(R.id.edit_title);
-        EditText this_edit_startDate = (EditText)findViewById(R.id.edit_startDate);
-        EditText this_edit_startTime = (EditText)findViewById(R.id.edit_startTime);
-        EditText this_edit_endDate = (EditText)findViewById(R.id.edit_endDate);
-        EditText this_edit_endTime = (EditText)findViewById(R.id.edit_endTime);
-        EditText this_edit_prepare = (EditText)findViewById(R.id.edit_prepare);
+        String title, User, startDate, startTime, endDate, endTime, prepare, isBroadcast;
+        //Integer startDate_int, startTime_int, endDate_int, endTime_int, isBroadcast_int;
 
-        String title = this_edit_title.getText().toString();
-        String startDate = this_edit_startDate.getText().toString();
-        /*try {
-            Date startDate_inDate = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }  //translate start date in String foramt to Date fomat*/
-        String startTime = this_edit_startTime.getText().toString();
-        /*try {
-            Time startTime_inTime = new SimpleDateFormat("HH:mm").parse(startTime);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }  //translate start time in String format to Time format*/
-        String endDate = this_edit_endDate.getText().toString();
-        /*try {
-            Date endDate_inDate = new SimpleDateFormat("yyyy-MM-dd").parse(startDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }  //translate end date in String foramt to Date fomat*/
-        String endTime = this_edit_endTime.getText().toString();
-        /*try {
-            Time endTime_inTime = new SimpleDateFormat("HH:mm").parse(startTime);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }  //translate start time in String format to Time format*/
-        String prepare = this_edit_prepare.getText().toString();
-        //it may not return str with newline. it may return str[0]. str[1], str[2]..i don't know.... plz help me
+        EditText this_edit_title = findViewById(R.id.edit_title);
+        EditText this_edit_startDate = findViewById(R.id.edit_startDate);
+        EditText this_edit_startTime = findViewById(R.id.edit_startTime);
+        EditText this_edit_endDate = findViewById(R.id.edit_endDate);
+        EditText this_edit_endTime = findViewById(R.id.edit_endTime);
+        EditText this_edit_prepare = findViewById(R.id.edit_prepare);
 
-        str_addedScheduleDetail = "";
-        str_addedScheduleDetail = str_addedScheduleDetail+"Title : "+title;
+        title = this_edit_title.getText().toString();
+
+        User = intent.getStringExtra("userName");
+
+        startDate = this_edit_startDate.getText().toString();
+        //startDate_int = Integer.parseInt(startDate)+1;
+
+        startTime = this_edit_startTime.getText().toString();
+        //startTime_int = Integer.parseInt(startTime)+1;
+
+        endDate = this_edit_endDate.getText().toString();
+        //endDate_int = Integer.parseInt(endDate)+1;
+
+        endTime = this_edit_endTime.getText().toString();
+        //endTime_int = Integer.parseInt(endTime)+1;
+
+        prepare = this_edit_prepare.getText().toString();
+
+        //make setPrivacy function
+
+        final String json_addedScheduleDetail =
+                "{title : \"" + title + "\", User : \"" + User + "\", startDate : \"" + startDate +
+                        "\", startTime : \"" + startTime + "\", endDate : \"" + endDate +
+                        "\", endTime : \"" + endTime + "\" ,reqItems : \"" + prepare + "\" }";
 
         Button btn_submit = (Button)findViewById(R.id.btn_submit);
+        Button.OnClickListener click_btn_submit = new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                //connect ScheduleDetail-setPrivacy(아직 안만들엇음)
+
+                Toast.makeText(ScheduleDetail.this, json_addedScheduleDetail, Toast.LENGTH_LONG).show();
+                Intent go_main = new Intent(
+                        getApplicationContext(),
+                        MainActivity.class
+                );
+                //send this to server.(server:OK I'll insert into my DB)
+                startActivity(go_main);
+            }
+        };
         btn_submit.setOnClickListener(click_btn_submit);
     }
 }
