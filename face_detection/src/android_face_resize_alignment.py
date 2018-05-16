@@ -9,7 +9,7 @@ if len(sys.argv) != 2:
     exit()
 
 predictor_path = 'face_alignment.dat'
-path = '/home/kyungwook/kyungwook/aligned_img_test'
+path = '/home/kyungwook/kyungwook/gallery'
 face_file_path = sys.argv[1]
 filename = sys.argv[1].split('/')[5]
 
@@ -20,7 +20,7 @@ sp = dlib.shape_predictor(predictor_path)
 
 # Load the image using Dlib
 img = dlib.load_rgb_image(face_file_path)
-resize_img = cv2.resize(img, (150,250), interpolation = cv2.INTER_AREA)
+resize_img = cv2.resize(img, (150,200), interpolation = cv2.INTER_AREA)
 
 # Ask the detector to find the bounding boxes of each face. The 1 in the
 # second argument indicates that we should upsample the image 1 time. This
@@ -46,4 +46,4 @@ images = dlib.get_face_chips(resize_img, faces, size=112, padding=0.12)
 for image in images:   
     bgr_img = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     cv2.imwrite(os.path.join(path , filename), bgr_img)
-    print("Alignment Completed")
+    print("Alignment & Save Completed")
