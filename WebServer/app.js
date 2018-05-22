@@ -3,108 +3,120 @@ var app = express();
 var port = 7000;
 var bodyParser = require('body-parser');
 var formidable = require('formidable');
-var rootDir = __dirname.replace('','');
-var fs = require('fs-extra');
+var async = require('async');
+var PythonShell = require('python-shell');
 
-
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://127.0.0.1:27017/oikwho');
-var db = mongoose.connection;
-db.on('error', function(){
-  console.log('Connection failed!');
-});
-
-var users = mongoose.Schema({
-  name:'string',
-  Uid:'number',
-  pw:'string'
-});
-var schedules = mongoose.Schema({
-  userID:'number',
-  title:'string',
-  startDate:'number',
-  startTime:'number',
-  endDate:'number',
-  endTime:'number',
-  isBroadcast:'number'
-});
-var reqItems = mongoose.Schema({
-  userID:'number',
-  name:'string',
-  memo:'string'
-});
-
-var USERS = mongoose.model('users', users);
-var SCHEDULES = mongoose.model('schedules', schedules);
-var REQITEMS = mongoose.model('reqitems', reqItems);
-
-var uid; //uid will be initiated after receiving image from rasperryPi
-var today = new Date();
-var mm = today.getMonth()+1;
-var yyyy = today.getFullYear();
-var thisDate = (yyyy-2000)*10000 + mm*100;
-
+//var rootDir = __dirname.replace('','');
+//var fs = require('fs-extra');
+var ID =0;
+var filePath;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
 
-var postdata = '';
+var dbConnectRouter = require('./dbConnect');
+var weatherRouter = require('./weather');
+var fileRouter = require('./file');
+
+app.use('/dbConnect',dbConnectRouter);
+
 app.get('/', (req, res, next) => {
-    res.send('hello world!');
-});
-
-
-app.post('/', function(req,res) {
-  
-
-var form = new formidable.IncomingForm();
-  form.parse(req, function(err, fields, files) {
-    if (err) {
-      console.error(err);
-    }
-  });
-  form.on('end', function(fields, files) {
-    for (var i=0; i < this.openedFiles.length; i++) {
-      var tempPath = this.openedFiles[i].path;
-      var fileName = this.openedFiles[i].name;
-      var fileExt = fileName.split(".")[fileName.split(".").length-1].toLowerCase();
-      var index = fileName.indexOf('/');
-      var newLoc = rootDir + '/';
-
-      var newFileName = 'result.' + fileExt;
-      console.log(tempPath, newLoc + newFileName);
-      fs.copy(tempPath, newLoc + newFileName, function(err) {
-     
-   if (err) {
-          console.error(err);
-        } else {
-          console.log(newLoc + newFileName + ' has been saved!');
-          res.send('Save Completed');
-            
-          uid=2;//dummy
-          SCHEDULES.find({ $or:[ { $and:[ { startDate:{$gte:thisDate+1}},{startDate:{$lte:thisDate+30}},{userID:uid} ] }, { $and:[ {endDate:{$gte:thisDate+1}}, {endDate:{$lte:thisDate+30}},{userID:uid} ] } ] }, {_id:0, __v:0}, function(error, schedules) {
-          console.log('--- Read This Month Schedules of User'+ uid +' ---');
-                        if(error){ console.log(error); }
-            else{ console.log(schedules); }
-          });
-          
-          REQITEMS.find({userID:uid}, {_id:0, __v:0},function(error, reqitems){
-            console.log('--- Read Required Item List of User ' + uid + ' ---');
-            if(error){ console.log(error); }
-            else{ console.log(reqitems); }
-          });
-          
-          USERS.find({}, {_id:0, __v:0},function(error,users) {
-            console.log('--- User Info Test ---');
-            if(error){ console.log(error); }
-            else{ console.log(users); }
-          });
-        }
-      });
-    }
-  }); 
+  res.send('hello world!');
 });
 
 app.listen(port, () => {
-    console.log(`Server is running at ${port}`);
+  console.log(`Server is running at ${port}`);
+});
+
+var schedule1 = {
+  startDate: '2018-05-10-19:30',
+  endDate: '2018-05-10',
+  title: '예나랑 저녁약속',
+  where: '강남역'
+}
+
+var schedule2 = {
+  startDate: '2018-05-10-19:30',
+  endDate: '2018-05-10',
+  title: '수현쓰랑 저녁약속',
+  where: '강남역'
+}
+
+var schedule = [schedule1, schedule2];
+
+app.post('/',function(req, res){
+  console.log(req.body);
+  res.send(req.body);
+});
+
+app.post('/test', function(req,res) {
+
+});
+
+var request, response;
+app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기 +초기에 받은 메세지 개수도 보여줘야,,,
+  request = req;
+  async.waterfall([
+    function(callback) {
+      fileRouter.fileDownloadz(request, function(newFileName){
+        filePath = newFileName;
+        callback(null, filePath); //file.js -> path 수정
+      });
+    },
+    function(arg1, callback) {
+
+      var options = {
+        mode: 'text',
+        pythonPath: '',
+        pythonOptions: ['-u'],
+        scriptPath: '',
+        args: arg1
+      };
+
+      PythonShell.run('test.py',options, function(err, result){
+        if(err) throw err;
+        console.log('path :'+result);
+      });
+/*--------------------------recognize result-------------------------------*/
+      var face = 1;
+      if (face != 1){
+        return res.send('cannot find face');
+      }else{
+        console.log('face racognize success');
+      }
+      callback(null, 'three');
+    },
+    function(arg1, callback) {
+      // dbRouter.query();
+      var messageNum = 3;//쿼리문 결과,,,
+      var weather = weatherRouter.getWeather();
+      res.json({weather: weather, schedule : schedule, messageNum : messageNum});
+      callback(null, 'done');
+    }
+  ],
+  function (err, result) {
+    console.log( result )
+  });
+});
+
+
+
+app.post('/veiwMessage', function(req,res) { //메세지 출력
+  /*
+  1. 디비에 메세지 이름 리스트 쿼리보내기
+  2. 결과받기 (sender / messageTitle)
+  3. json 형태로 라즈베리에 전송
+  */
+  // var messges = dbRouter.veiwMessageQuery(ID,res);
+  res.json(messges);
+});
+
+
+app.post('/join', function(req,res) { //회원가입
+  /*
+  1. 사진 5장 받기
+  2. 얼굴,,,,,,,,,처리,,,,, -> if else 사진에 얼굴이 제대로 없으면 처리! -> 어떻게..?
+  3. 안드로이드로 결과 전송
+  4. 끝!
+  */
 });
