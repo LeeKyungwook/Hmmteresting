@@ -51,5 +51,5 @@ function fileDownloadRaz(req, callback) {
 };
 
 module.exports = {
-  fileDownload: fileDownload
+  fileDownloadRaz: fileDownloadRaz
 };

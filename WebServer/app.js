@@ -4,7 +4,7 @@ var port = 7000;
 var bodyParser = require('body-parser');
 var formidable = require('formidable');
 var async = require('async');
-var PythonShell = require('python-shell');
+// var PythonShell = require('python-shell');
 
 //var rootDir = __dirname.replace('','');
 //var fs = require('fs-extra');
@@ -18,7 +18,7 @@ var dbConnectRouter = require('./dbConnect');
 var weatherRouter = require('./weather');
 var fileRouter = require('./file');
 
-app.use('/dbConnect',dbConnectRouter);
+// app.use('/dbConnect',dbConnectRouter);
 
 app.get('/', (req, res, next) => {
   res.send('hello world!');
@@ -50,7 +50,7 @@ app.post('/',function(req, res){
 });
 
 app.post('/test', function(req,res) {
-
+  dbConnectRouter.testfunction(req,res);
 });
 
 var request, response;
@@ -58,13 +58,13 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
   request = req;
   async.waterfall([
     function(callback) {
-      fileRouter.fileDownloadz(request, function(newFileName){
+      fileRouter.fileDownloadRaz(request, function(newFileName){
         filePath = newFileName;
         callback(null, filePath); //file.js -> path 수정
       });
     },
-    function(arg1, callback) {
 
+    function(arg1, callback) {  //arg1 = filePath
       var options = {
         mode: 'text',
         pythonPath: '',
@@ -72,31 +72,53 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
         scriptPath: '',
         args: arg1
       };
-
       PythonShell.run('test.py',options, function(err, result){
         if(err) throw err;
         console.log('path :'+result);
+        callback(result);
       });
-/*--------------------------recognize result-------------------------------*/
-      var face = 1;
-      if (face != 1){
-        return res.send('cannot find face');
-      }else{
-        console.log('face racognize success');
-      }
-      callback(null, 'three');
     },
-    function(arg1, callback) {
-      // dbRouter.query();
-      var messageNum = 3;//쿼리문 결과,,,
-      var weather = weatherRouter.getWeather();
-      res.json({weather: weather, schedule : schedule, messageNum : messageNum});
-      callback(null, 'done');
+
+    function(arg1, callback) { //arg1 = 'not found' or imagePath
+    if(arg1 == 'sdf'){
+      return res.send('cannot find face');
+    }else{
+      PythonShell.run('test.py',options, function(err, result){
+        if(err) throw err;
+        console.log('path :'+result);
+        callback(result);
+      });
     }
-  ],
-  function (err, result) {
-    console.log( result )
-  });
+  },
+
+  function(arg1, callback) { // arg1 = userName
+    dbConnectRouter.scheduleQuery(arg1,function(schedule){
+      callback(schedule);
+    });
+  },
+
+  function(arg1, arg2, callback) { // arg1 = userName, arg2 = shedule
+    var messageNum = 3;//쿼리문 결과,,,
+    dbConnectRouter.scheduleQuery(arg1,function(schedule){
+
+    });
+    var messageNum = 3;//쿼리문 결과,,,
+  },
+
+  function(arg1, callback) {
+    var weather = weatherRouter.getWeather();
+    res.json({weather: weather, schedule : schedule, messageNum : messageNum});
+    // callback(null, 'done');
+  },
+
+  function(arg1, callback) {
+    callback(null, 'done');
+  }
+],
+
+function (err, result) {
+  console.log( result )
+};
 });
 
 
