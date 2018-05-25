@@ -34,36 +34,46 @@ public class ScheduleDetail extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule_detail);
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
 
-        final String title, User, startDate, startTime, endDate, endTime, prepare, isBroadcast;
+        final String[] title = new String[1];
+        final String[] User = new String[1];
+        final String[] startDate = new String[1];
+        final String[] startTime = new String[1];
+        final String[] endDate = new String[1];
+        final String[] endTime = new String[1];
+        final String[] prepare = new String[1];
+        final String isBroadcast;
 
-        EditText this_edit_title = findViewById(R.id.edit_title);
-        EditText this_edit_startDate = findViewById(R.id.edit_startDate);
-        EditText this_edit_startTime = findViewById(R.id.edit_startTime);
-        EditText this_edit_endDate = findViewById(R.id.edit_endDate);
-        EditText this_edit_endTime = findViewById(R.id.edit_endTime);
-        EditText this_edit_prepare = findViewById(R.id.edit_prepare);
+        final EditText this_edit_title = (EditText) findViewById(R.id.edit_title);
+        final EditText this_edit_startDate = (EditText) findViewById(R.id.edit_startDate);
+        final EditText this_edit_startTime = (EditText) findViewById(R.id.edit_startTime);
+        final EditText this_edit_endDate = (EditText) findViewById(R.id.edit_endDate);
+        final EditText this_edit_endTime = (EditText) findViewById(R.id.edit_endTime);
+        final EditText this_edit_prepare = (EditText) findViewById(R.id.edit_prepare);
 
-        title = this_edit_title.getText().toString();
-        User = intent.getStringExtra("userName");
-        startDate = this_edit_startDate.getText().toString();
-        startTime = this_edit_startTime.getText().toString();
-        endDate = this_edit_endDate.getText().toString();
-        endTime = this_edit_endTime.getText().toString();
-        prepare = this_edit_prepare.getText().toString();
 
-        //make setPrivacy function
+        //make setPrivacy function with radiobutton
 
 
         Button btn_submit = (Button)findViewById(R.id.btn_submit);
         Button.OnClickListener click_btn_submit = new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+
+                title[0] = this_edit_title.getText().toString();
+                User[0] = intent.getStringExtra("userName");
+                startDate[0] = this_edit_startDate.getText().toString();
+                startTime[0] = this_edit_startTime.getText().toString();
+                endDate[0] = this_edit_endDate.getText().toString();
+                endTime[0] = this_edit_endTime.getText().toString();
+                prepare[0] = this_edit_prepare.getText().toString();
+
                 json_addedScheduleDetail =
-                        "{title : \"" + title + "\", User : \"" + User + "\", startDate : \"" + startDate +
-                                "\", startTime : \"" + startTime + "\", endDate : \"" + endDate +
-                                "\", endTime : \"" + endTime + "\" ,reqItems : \"" + prepare + "\" }";
+                        "{title : \"" + title[0] + "\", User : \"" + User[0] + "\", startDate : \"" + startDate[0] +
+                                "\", startTime : \"" + startTime[0] + "\", endDate : \"" + endDate[0] +
+                                "\", endTime : \"" + endTime[0] + "\" ,reqItems : \"" + prepare[0] + "\" }";
+
 
                 Toast.makeText(ScheduleDetail.this, json_addedScheduleDetail, Toast.LENGTH_LONG).show();
 

@@ -18,14 +18,13 @@ public class SignOn extends AppCompatActivity {
         Intent intent = getIntent();
 
         //회원정보 입력
-        EditText this_edit_name = findViewById(R.id.edit_name);
-        EditText this_edit_id = findViewById(R.id.edit_id);
-        EditText this_edit_pwd = findViewById(R.id.edit_pwd);
+        final EditText this_edit_name = findViewById(R.id.edit_name);
+        final EditText this_edit_id = findViewById(R.id.edit_id);
+        final EditText this_edit_pwd = findViewById(R.id.edit_pwd);
 
-        final String name, id, pwd;
-        name = this_edit_name.getText().toString();
-        id = this_edit_id.getText().toString();
-        pwd = this_edit_pwd.getText().toString();
+        final String[] name = new String[1];
+        final String[] id = new String[1];
+        final String[] pwd = new String[1];
 
 
         //카메라액티비티로 이동
@@ -34,7 +33,11 @@ public class SignOn extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                userinfo = "name: "+name+", id: "+id+", password : "+pwd;
+                name[0] = this_edit_name.getText().toString();
+                id[0] = this_edit_id.getText().toString();
+                pwd[0] = this_edit_pwd.getText().toString();
+
+                userinfo = "name: "+ name[0] +", id: "+ id[0] +", password : "+ pwd[0];
                 Toast.makeText(SignOn.this, userinfo, Toast.LENGTH_LONG).show();
 
               /*  Intent go_camera = new Intent(
