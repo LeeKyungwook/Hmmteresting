@@ -24,6 +24,8 @@ def draw_rects(img, rects, color):
         crop_image = crop_image.crop((x1-40, y1-40, x2+40, y2+40))  #crop the image inside the rectangle
         crop_image.save('crop_image.jpg')   #save crop image
 
+        return 1
+
 #initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
 camera.resolution = (640, 480)
@@ -46,15 +48,20 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
     rects = detect(gray, cascade)
     vis = img.copy()
-    draw_rects(vis, rects, (0, 255, 0))
-    
+    #cv2.imshow("Frame", vis)
+
+    if draw_rects(vis, rects, (0, 255, 0)) == 1:
+        break
+     
     #show the frame
     cv2.imshow("Frame", vis)
     key = cv2.waitKey(1) & 0xFF
-
+    
     #clear the stream in preparation for the next frame
     rawCapture.truncate(0)
 
     #if the 'q' key was pressed, break from the loop
     if  key == ord("q"):
         break
+    
+    
