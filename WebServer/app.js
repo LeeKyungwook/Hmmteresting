@@ -4,7 +4,7 @@ var port = 7000;
 var bodyParser = require('body-parser');
 var formidable = require('formidable');
 var async = require('async');
-// var PythonShell = require('python-shell');
+var PythonShell = require('python-shell');
 
 //var rootDir = __dirname.replace('','');
 //var fs = require('fs-extra');
@@ -49,77 +49,86 @@ app.post('/',function(req, res){
   res.send(req.body);
 });
 
-app.post('/test', function(req,res) {
-  dbConnectRouter.testfunction(req,res);
+app.post('/test', function(req,res){
+
 });
 
 var request, response;
 app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기 +초기에 받은 메세지 개수도 보여줘야,,,
   request = req;
-  async.waterfall([
-    function(callback) {
-      fileRouter.fileDownloadRaz(request, function(newFileName){
-        filePath = newFileName;
-        callback(null, filePath); //file.js -> path 수정
+  async.waterfall(
+    [
+      function(callback) {
+        fileRouter.fileDownloadRaz(request, function(newFileName){
+          filePath = newFileName;
+          callback(null, filePath);
+	  //callback(null, 'yena');
+        });
+      },
+
+      function(arg1, callback) {  //arg1 = filePath
+        var options = {
+          mode: 'text',
+          pythonPath: '',
+          pythonOptions: ['-u'],
+          scriptPath: '',
+          args: arg1
+        };
+        PythonShell.run('../face_detection/src/raz_face_resize_alignment.py',options, function(err, result){
+          if(err) {
+            console.log(err);
+            return res.send(err);
+          }
+          console.log("result "+result)
+          callback(null, result);
+        });
+      },
+/*
+      function(arg1, callback) { //arg1 = 'not found' or imagePath
+      if(arg1 == 'Error2 : No Face Found'){
+        return res.send('cannot find face');
+      }else if(arg1 == 'Alignment Completed'){
+        PythonShell.run('../caffe/extract_feature/FaceFeatureExtractor.py',options, function(err, result){
+          if(err) {
+            //throw err;
+            return res.send(err);
+          }
+          console.log("result "+result)
+          callback(null, result);
+        });
+      }
+    },
+*/
+    function(arg1, callback) { // arg1 = userName
+
+
+      var weather = weatherRouter.getWeather();
+      dbConnectRouter.scheduleQuery(arg1,function(schedule_){
+	   schedule = schedule_;
+           callback(null, weather, schedule);
       });
+      var messageNum = 3;//쿼리문 결과,,,
+      
+     // res.json({weather: weather, schedule : schedule, messageNum : messageNum});
+     // callback(null, 'done');
     },
 
-    function(arg1, callback) {  //arg1 = filePath
-      var options = {
-        mode: 'text',
-        pythonPath: '',
-        pythonOptions: ['-u'],
-        scriptPath: '',
-        args: arg1
-      };
-      PythonShell.run('test.py',options, function(err, result){
-        if(err) throw err;
-        console.log('path :'+result);
-        callback(result);
-      });
+    function(arg1, arg2, callback) { // arg1 = userName, arg2 = shedule
+      //var messageNum = 3;//쿼리문 결과,,,
+      res.json({weather: arg1, schedule : arg2, messageNum : 3});
+      callback(null, 'done')
     },
+/*
+    function(arg1, callback) {
+      callback(null, 'done');
+    }*/
+  ],
 
-    function(arg1, callback) { //arg1 = 'not found' or imagePath
-    if(arg1 == 'sdf'){
-      return res.send('cannot find face');
-    }else{
-      PythonShell.run('test.py',options, function(err, result){
-        if(err) throw err;
-        console.log('path :'+result);
-        callback(result);
-      });
-    }
-  },
-
-  function(arg1, callback) { // arg1 = userName
-    dbConnectRouter.scheduleQuery(arg1,function(schedule){
-      callback(schedule);
-    });
-  },
-
-  function(arg1, arg2, callback) { // arg1 = userName, arg2 = shedule
-    var messageNum = 3;//쿼리문 결과,,,
-    dbConnectRouter.scheduleQuery(arg1,function(schedule){
-
-    });
-    var messageNum = 3;//쿼리문 결과,,,
-  },
-
-  function(arg1, callback) {
-    var weather = weatherRouter.getWeather();
-    res.json({weather: weather, schedule : schedule, messageNum : messageNum});
-    // callback(null, 'done');
-  },
-
-  function(arg1, callback) {
-    callback(null, 'done');
-  }
-],
-
-function (err, result) {
-  console.log( result )
-};
+  function (err, result) {
+    console.log( result );
+  });
 });
+
 
 
 
@@ -142,3 +151,4 @@ app.post('/join', function(req,res) { //회원가입
   4. 끝!
   */
 });
+
