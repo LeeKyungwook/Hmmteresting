@@ -8,7 +8,7 @@ if len(sys.argv) != 2:
     print("Error1 : More input need")
     exit()
 
-predictor_path = '/home/kyungwook/yena/Hmmteresting/face_detection/src/face_alignment.dat'
+predictor_path = '/home/kyungwook/kyungwook/Hmmteresting/face_detection/src/face_alignment.dat'
 path = '/home/kyungwook/kyungwook/aligned_img'
 face_file_path = sys.argv[1]
 filename = sys.argv[1].split('/')[5]
