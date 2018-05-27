@@ -148,7 +148,6 @@ if __name__ == '__main__':
             elif(res.text == 3):                        
                 #response가 3이 오면 내부 while 문을 빠져나가 외부 while문으로 감(스마트 미러 종료시 해당 response)
                 break()
-
             else:                                        
                 #다른 response가 올 경우 내부 while continue
                 time.sleep(2)
