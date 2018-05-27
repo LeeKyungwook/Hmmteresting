@@ -30,7 +30,7 @@ function fileDownloadRaz(req, callback) {
 
       // newFileName = fileName.split(".")[0] +"_test." + fileExt;//////////////////
       newFileName = fileName.split(".")[0] + fileExt;//////////////////
-      console.log(tempPath, newLoc + newFileName);
+      // console.log(tempPath, newLoc + newFileName);
       fs.copy(tempPath, newLoc + newFileName, function(err) {
         if (err) {
           console.error(err);
@@ -41,6 +41,7 @@ function fileDownloadRaz(req, callback) {
           console.log(newLoc + newFileName + ' has been saved!');
 
           if (typeof callback === "function"){
+            var filePath = newLoc+newFileName
             callback(newFileName);
           };
           return newFileName;
@@ -51,5 +52,5 @@ function fileDownloadRaz(req, callback) {
 };
 
 module.exports = {
-  fileDownload: fileDownload
+  fileDownloadRaz: fileDownloadRaz
 };

@@ -23,7 +23,7 @@ function getWeather(callback) {
 
   var forecast = new Forecast({
           service: 'forecast.io',
-          key: '04f979b9c6e43c2ed0af5a10252ef78f',
+          key: '****************************',
           units: 'celcius',
           cache: true,
           ttl:{
