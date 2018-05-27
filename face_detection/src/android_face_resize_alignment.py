@@ -8,7 +8,7 @@ import os
 #     print("Error1 : More input need")
 #     exit()
 
-predictor_path = 'face_alignment.dat'
+predictor_path = '/home/kyungwook/yena/Hmmteresting/face_detection/src/face_alignment.dat'
 path = '/home/kyungwook/kyungwook/gallery'
 face_file_path = '/home/kyungwook/kyungwook/android_img'
 filenames = os.listdir(face_file_path)
