@@ -12,6 +12,7 @@ router.get('/', (req, res, next) => {
 
 
 function fileDownloadRaz(req, callback) {
+  console.log('uuuuuuuuuuuuusssssssssser '+req.body.user);
   var newFileName = 'test';
   var form = new formidable.IncomingForm();
   form.parse(req, function(err, fields, files) {

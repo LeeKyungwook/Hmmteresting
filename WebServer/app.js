@@ -62,7 +62,7 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
         fileRouter.fileDownloadRaz(request, function(newFileName){
           filePath = newFileName;
           callback(null, filePath);
-	  //callback(null, 'yena');
+          // callback(null, 'yena');
         });
       },
 
@@ -74,54 +74,67 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
           scriptPath: '',
           args: arg1
         };
+        console.log("==> face_recognize arg1 : "+ arg1);
         PythonShell.run('../face_detection/src/raz_face_resize_alignment.py',options, function(err, result){
           if(err) {
             console.log(err);
             return res.send(err);
           }
-          console.log("result "+result)
+          console.log("<== face_recognize result : "+result)
           callback(null, result);
         });
       },
-/*
+
       function(arg1, callback) { //arg1 = 'not found' or imagePath
+       var options = {
+           mode: 'text',
+           pythonPath: '',
+           pythonOptions: ['-u'],
+           scriptPath: '',
+           args: arg1
+       };
+      console.log("==> align_img arg1 : "+ arg1);
       if(arg1 == 'Error2 : No Face Found'){
         return res.send('cannot find face');
-      }else if(arg1 == 'Alignment Completed'){
+      }else {
         PythonShell.run('../caffe/extract_feature/FaceFeatureExtractor.py',options, function(err, result){
           if(err) {
             //throw err;
+            //console.log(err);
             return res.send(err);
           }
-          console.log("result "+result)
+          console.log("<== align_img result : "+result)
           callback(null, result);
         });
       }
     },
-*/
-    function(arg1, callback) { // arg1 = userName
 
-
+    function(arg1, callback){ // arg1 = userName
+      var str = arg1;
+      if(str.indexOf('None Detected')==0){
+        return res.send('who are you?');
+      }
       var weather = weatherRouter.getWeather();
-      dbConnectRouter.scheduleQuery(arg1,function(schedule_){
-	   schedule = schedule_;
-           callback(null, weather, schedule);
-      });
-      var messageNum = 3;//쿼리문 결과,,,
-      
+      //dbConnectRouter.scheduleQuery(arg1,function(schedule_){
+     	//schedule = schedule_;
+           var messageNum = 3
+           callback(null, weather, schedule, messageNum);
+     // });
+
+
      // res.json({weather: weather, schedule : schedule, messageNum : messageNum});
      // callback(null, 'done');
     },
 
-    function(arg1, arg2, callback) { // arg1 = userName, arg2 = shedule
+    function(arg1, arg2, arg3, callback) { // arg1 = userName, arg2 = shedule
       //var messageNum = 3;//쿼리문 결과,,,
-      res.json({weather: arg1, schedule : arg2, messageNum : 3});
+      res.json({weather: arg1, schedule : arg2, messageNum : arg3});
       callback(null, 'done')
     },
-/*
+
     function(arg1, callback) {
       callback(null, 'done');
-    }*/
+    }
   ],
 
   function (err, result) {
@@ -151,4 +164,3 @@ app.post('/join', function(req,res) { //회원가입
   4. 끝!
   */
 });
-
