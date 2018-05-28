@@ -164,7 +164,9 @@ app.post('/joinInfo', function(req,res) { //회원가입
   userID = req.body.userID;
   ///디비 쿼리,,,,,,,, 확인,,,,
 
-  res.send('nice joinInfo');
+  // res.send('alread joinInfo');
+
+
   return;
 }
 
