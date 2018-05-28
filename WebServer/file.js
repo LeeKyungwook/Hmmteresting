@@ -29,7 +29,7 @@ function fileDownloadRaz(req, callback) {
       var newLoc = rootDir + '/';
 
       // newFileName = fileName.split(".")[0] +"_test." + fileExt;//////////////////
-      newFileName = fileName.split(".")[0] + fileExt;//////////////////
+      newFileName = fileName.split(".")[0] + "." + fileExt;//////////////////
       // console.log(tempPath, newLoc + newFileName);
       fs.copy(tempPath, newLoc + newFileName, function(err) {
         if (err) {
@@ -42,9 +42,9 @@ function fileDownloadRaz(req, callback) {
 
           if (typeof callback === "function"){
             var filePath = newLoc+newFileName
-            callback(newFileName);
+            callback(filePath);
           };
-          return newFileName;
+          return;
         }
       });
     }

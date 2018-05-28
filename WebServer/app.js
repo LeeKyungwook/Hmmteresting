@@ -188,7 +188,7 @@ app.post('/joinInfo', function(req,res) { //회원가입
 
 
   return;
-}
+});
 
 app.post('/joinPicture', function(req,res) { //회원가입
   /*
