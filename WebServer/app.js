@@ -100,7 +100,7 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
         PythonShell.run('../caffe/extract_feature/FaceFeatureExtractor.py',options, function(err, result){
           if(err) {
             //throw err;
-            //console.log(err);
+            console.log(err);
             return res.send(err);
           }
           console.log("<== align_img result : "+result)
