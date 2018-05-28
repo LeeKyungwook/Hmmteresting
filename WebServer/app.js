@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var formidable = require('formidable');
 var async = require('async');
 var PythonShell = require('python-shell');
-var fs = require('fs-extra');
+var fs = require('fs');
 
 //var rootDir = __dirname.replace('','');
 // var userID ='jh';
@@ -21,7 +21,10 @@ var dbConnectRouter = require('./dbConnect');
 var weatherRouter = require('./weather');
 var fileRouter = require('./file');
 
-// app.use('/dbConnect',dbConnectRouter);
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
+app.engine('html', require('ejs').renderFile);
+app.use(express.static('public'));
 
 app.get('/', (req, res, next) => {
   res.send('hello world!');
@@ -34,7 +37,7 @@ app.listen(port, () => {
 var schedule1 = {
   startDate: '2018-05-10-19:30',
   endDate: '2018-05-10',
-  title: '예나랑 저녁약속',
+  title: '저녁약속',
   where: '강남역'
 }
 
@@ -47,14 +50,31 @@ var schedule2 = {
 
 var schedule = [schedule1, schedule2];
 
+var string = "{'key':'value'}";
+
 app.post('/',function(req, res){
   console.log(req.body);
   res.send(req.body);
 });
 
-app.post('/test', function(req,res){
-
+app.get('/test', function (req, res) {
+  // fs.readFile('jh.jpg', function (error, data){
+  //   res.end(data)
+  // })
+  res.render('index', {
+    title: "Hmmteresting Demo",
+    startDate: schedule1.startDate,
+    endDate : schedule1.endDate,
+    title_name : schedule1.title,
+    where : schedule1.where
+  });
 });
+
+app.get('/imgs', function (req,res){
+  fs.readFile('jh.jpg', function (error, data){
+    res.end(data)
+  })
+})
 
 var request, response;
 app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기 +초기에 받은 메세지 개수도 보여줘야,,,
