@@ -8,8 +8,8 @@ import time
 import cv2
 import requests
 
-url = 'http://112.151.162.170:7000/init'
-pwd = '/home/pi/Hmmteresting/Razberry/crop_image.jpg'
+#url = 'http://112.151.162.170:7000/init'
+#pwd = '/home/pi/Hmmteresting/Razberry/crop_image.jpg'
 
 def detect(img, cascade):
     rects = cascade.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(30,30),
@@ -28,14 +28,14 @@ def draw_rects(img, rects, color):
         crop_image = Image.open('rect_image.jpg')
         crop_image = crop_image.crop((x1-40, y1-40, x2+40, y2+40))  #crop the image inside the rectangle
         crop_image.save('crop_image.jpg')   #save crop image
-
         return 1
 
 #initialize the camera and grab a reference to the raw camera capture
 camera = PiCamera()
-camera.resolution = (640, 480)
+camera.resolution = (612, 816)
+#camera.brightness = 50
 camera.framerate = 32
-rawCapture = PiRGBArray(camera, size=(640, 480))
+rawCapture = PiRGBArray(camera, size=(612, 816))
 
 cascade = cv2.CascadeClassifier("/home/pi/opencv-3.3.0/data/haarcascades/haarcascade_frontalface_alt.xml")
 
@@ -53,7 +53,7 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
     rects = detect(gray, cascade)
     vis = img.copy()
-    
+
     if draw_rects(vis, rects, (0, 255, 0)) == 1:
         url = 'http://112.151.162.170:7000/init'
 	pwd = '/home/pi/Hmmteresting/Razberry/test_image.jpg'
@@ -61,25 +61,17 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 
 	res = requests.post(url, files = files)
 	print res.text
-        time.sleep(5)
+        
 
     #show the frame
     cv2.imshow("Frame", vis)
     key = cv2.waitKey(1) & 0xFF
     
-    '''
-    #transfer saved picture (crop_image)
-    files = {'media', open(pwd, 'rb')}
-    res = requests.post(url, files = files)
-    print res.text
-
     time.sleep(5)
-    '''
     #clear the stream in preparation for the next frame
     rawCapture.truncate(0)
 
     #if the 'q' key was pressed, break from the loop
     if  key == ord("q"):
         break
-    
-    
+
