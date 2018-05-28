@@ -123,7 +123,7 @@ if __name__ == '__main__':
         print current_filename
     else :
         #print current_dist
-        print "None Detected --------------------"
+        print "None Detected "
     
     #print current_dist
     #print current_filename

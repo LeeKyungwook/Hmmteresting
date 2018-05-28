@@ -97,9 +97,7 @@ for f in glob.glob(os.path.join(faces_folder_path, "*.jpg")):
         crop_img = img[top:bottom, left:right]
         cv2.imshow("cropped", crop_img)
         cv2.imwrite('crop_img.jpg', crop_img)
-        
-        
-
+  
         # Get the landmarks/parts for the face in box d.
         shape = predictor(img, d)
         print("Part 0: {}, Part 1: {} Part 2: {} ...".format(shape.part(0),
