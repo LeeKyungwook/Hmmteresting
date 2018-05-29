@@ -1,18 +1,18 @@
 package hmmteresting.oikwho;
 
 import android.Manifest;
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -40,20 +40,14 @@ public class TakePhoto extends AppCompatActivity {
 
     private final static int PERMISSIONS_REQUEST_CODE = 100;
     private final static int CAMERA_FACE = Camera.CameraInfo.CAMERA_FACING_FRONT;
-    private AppCompatActivity mActivity;  //?이거 왜만들었음?
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+       getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setContentView(R.layout.activity_take_photo);
-
-        //ActionBar actionBar = getActionBar();
-        //actionBar.hide();
-        Intent intent = getIntent();
 
         Button shutter = findViewById(R.id.btn_shutter);
         shutter.setOnClickListener(new View.OnClickListener() {
@@ -117,7 +111,7 @@ public class TakePhoto extends AppCompatActivity {
     private void resetCam() {
         startCamera();
     }
-
+int pictureTime = 1;
     PictureCallback jpegCallback = new PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
@@ -133,6 +127,10 @@ public class TakePhoto extends AppCompatActivity {
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
             Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
 
+            Matrix matrix = new Matrix();
+            matrix.postRotate(270);
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, wide, high, matrix,true);
+
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             byte[] currentData = stream.toByteArray();
@@ -140,6 +138,11 @@ public class TakePhoto extends AppCompatActivity {
             new SaveImageTask().execute(currentData);
             resetCam();
             Log.d("TakePhoto","사진이 잘 저장되었다");
+            pictureTime ++;
+            if(pictureTime > 3) {
+                pictureTime = 1;
+                finish();
+            }
        }
     };
 
@@ -179,9 +182,6 @@ public class TakePhoto extends AppCompatActivity {
         global_preview.setCamera(global_camera);
     }
 
-    //@Override
-
-
     private class SaveImageTask extends AsyncTask<byte[], Void, Void> {
 
         @Override
@@ -193,7 +193,7 @@ public class TakePhoto extends AppCompatActivity {
                 File dir = new File (sdCard.getAbsolutePath() + "/oikwho");
                 dir.mkdirs();
 
-                String fileName = String.format("%d.jpg", System.currentTimeMillis());
+                String fileName = String.format("suhyun_%d.jpg", pictureTime);
                 File outFile = new File(dir, fileName);
 
                 outStream = new FileOutputStream(outFile);
