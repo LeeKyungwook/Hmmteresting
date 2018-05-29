@@ -80,6 +80,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //서버랑 연결 끊음,..  여기서 끊어?
+        //서버랑 연결 끊음,..  여기서 끊어?아ㅏ닐걸~
     }
 }

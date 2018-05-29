@@ -8,7 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-public class SignOn extends AppCompatActivity {
+public class SignUp extends AppCompatActivity {
 
     String userinfo;
     @Override
@@ -21,15 +21,18 @@ public class SignOn extends AppCompatActivity {
         final EditText this_edit_name = findViewById(R.id.edit_name);
         final EditText this_edit_id = findViewById(R.id.edit_id);
         final EditText this_edit_pwd = findViewById(R.id.edit_pwd);
+        final EditText this_edit_family = findViewById(R.id.edit_family);
 
         final String[] name = new String[1];
         final String[] id = new String[1];
         final String[] pwd = new String[1];
+        final String[] familyCode = new String[1];
 
 
         //카메라액티비티로 이동
         Button goPic = findViewById(R.id.btn_goCamera);
-        Button.OnClickListener click_btn_goPic = new View.OnClickListener(){
+
+        goPic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -38,14 +41,15 @@ public class SignOn extends AppCompatActivity {
                 pwd[0] = this_edit_pwd.getText().toString();
 
                 userinfo = "name: "+ name[0] +", id: "+ id[0] +", password : "+ pwd[0];
-                Toast.makeText(SignOn.this, userinfo, Toast.LENGTH_LONG).show();
+                //Toast.makeText(SignOn.this, userinfo, Toast.LENGTH_LONG).show();
 
-              /*  Intent go_camera = new Intent(
+                Intent go_camera = new Intent(
                         getApplicationContext(),
-                        Camera.class
+                        TakePhoto.class
                 );
-              */
+                startActivity(go_camera);
             }
-        };
+        });
+
     }
 }

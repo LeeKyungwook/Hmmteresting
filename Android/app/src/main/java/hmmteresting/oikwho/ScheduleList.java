@@ -7,7 +7,13 @@ import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+
 public class ScheduleList extends AppCompatActivity {
+
+    private ArrayList<CustomListAdapter.ScheduleDataList> Schedule_Array_Data;
+    private CustomListAdapter.ScheduleDataList Schedule_Data;
+    private CustomListAdapter Schedule_Data_Adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -15,8 +21,6 @@ public class ScheduleList extends AppCompatActivity {
         setContentView(R.layout.activity_schedule_list);
 
         Intent intent = getIntent();
-        ListView scheduleList;
-        String[] dummyItems;
         int getDate = intent.getIntExtra("selectday",-1);
 
         Integer month = getDate/100;
@@ -29,15 +33,20 @@ public class ScheduleList extends AppCompatActivity {
         //서버에서 스케줄 정보 받아오기
 
         //받아온 스케줄정보 표시하기
-        ArrayAdapter<String> dummyAdapter;
-        scheduleList = (ListView)findViewById(R.id.lv_scheduleList);
+        //http://necos.tistory.com/entry/Android-%EC%95%88%EB%93%9C%EB%A1%9C%EC%9D%B4%EB%93%9C-%EB%A6%AC%EC%8A%A4%ED%8A%B8-%EB%B7%B0%EB%A5%BC-%EB%82%B4-%EB%A7%98%EB%8C%80%EB%A1%9C-%EC%82%AC%EC%9A%A9%ED%95%98%EC%9E%90%EC%BB%A4%EC%8A%A4%ED%85%80-%EB%A6%AC%EC%8A%A4%ED%8A%B8%EB%B7%B0
 
-        dummyItems = new String[6];
-        for(int i = 0; i < 6; i ++) {
-            dummyItems[i] = "Listview Example"+i;
-        }
-        dummyAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, dummyItems);
+        ListView scheduleList = (ListView)findViewById(R.id.lv_scheduleList);
+        Schedule_Array_Data = new ArrayList<CustomListAdapter.ScheduleDataList>();
 
-        scheduleList.setAdapter(dummyAdapter);
+        Schedule_Data = new CustomListAdapter.ScheduleDataList("1번째",
+                "5월 28일 4시부터");
+        Schedule_Array_Data.add(Schedule_Data);
+        Schedule_Data = new CustomListAdapter.ScheduleDataList("2번째",
+                "5월29일 13시부터");
+        Schedule_Array_Data.add(Schedule_Data);
+
+        Schedule_Data_Adapter = new CustomListAdapter(this,
+                android.R.layout.simple_list_item_1, Schedule_Array_Data);
+        scheduleList.setAdapter(Schedule_Data_Adapter);
     }
 }

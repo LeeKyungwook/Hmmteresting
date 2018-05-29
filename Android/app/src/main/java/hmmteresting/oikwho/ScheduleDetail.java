@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -43,7 +44,7 @@ public class ScheduleDetail extends AppCompatActivity {
         final String[] endDate = new String[1];
         final String[] endTime = new String[1];
         final String[] prepare = new String[1];
-        final String isBroadcast;
+        final int[] isBroadcast = new int[1];
 
         final EditText this_edit_title = (EditText) findViewById(R.id.edit_title);
         final EditText this_edit_startDate = (EditText) findViewById(R.id.edit_startDate);
@@ -51,6 +52,7 @@ public class ScheduleDetail extends AppCompatActivity {
         final EditText this_edit_endDate = (EditText) findViewById(R.id.edit_endDate);
         final EditText this_edit_endTime = (EditText) findViewById(R.id.edit_endTime);
         final EditText this_edit_prepare = (EditText) findViewById(R.id.edit_prepare);
+        final RadioGroup this_rg_privacy = (RadioGroup) findViewById(R.id.radio_privacy);
 
 
         //make setPrivacy function with radiobutton
@@ -69,6 +71,9 @@ public class ScheduleDetail extends AppCompatActivity {
                 endTime[0] = this_edit_endTime.getText().toString();
                 prepare[0] = this_edit_prepare.getText().toString();
 
+                isBroadcast[0] = this_rg_privacy.getCheckedRadioButtonId();
+
+
                 json_addedScheduleDetail =
                         "{title : \"" + title[0] + "\", User : \"" + User[0] + "\", startDate : \"" + startDate[0] +
                                 "\", startTime : \"" + startTime[0] + "\", endDate : \"" + endDate[0] +
@@ -80,12 +85,7 @@ public class ScheduleDetail extends AppCompatActivity {
                 //sendSch = new SendSchToServer();
                 //sendSch.execute();
 
-                Intent go_main = new Intent(
-                        getApplicationContext(),
-                        MainActivity.class
-                );
-                //send this to server.(server:OK I'll insert into my DB)
-                startActivity(go_main);
+                finish();
             }
         };
         btn_submit.setOnClickListener(click_btn_submit);

@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class SignOnORIn extends AppCompatActivity {
+public class SignUpOrIn extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +34,7 @@ public class SignOnORIn extends AppCompatActivity {
                 //회원가입 액티비티로
                 Intent go_sign_ON = new Intent(
                         getApplicationContext(),
-                        SignOn.class
+                        SignUp.class
                 );
                 startActivity(go_sign_ON);
             }
