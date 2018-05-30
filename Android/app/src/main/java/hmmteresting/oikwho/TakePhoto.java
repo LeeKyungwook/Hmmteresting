@@ -18,6 +18,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
+import android.util.Base64;
 import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
@@ -111,7 +112,7 @@ public class TakePhoto extends AppCompatActivity {
     private void resetCam() {
         startCamera();
     }
-int pictureTime = 1;
+int pictureCount = 1;
     PictureCallback jpegCallback = new PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
@@ -131,6 +132,7 @@ int pictureTime = 1;
             matrix.postRotate(270);
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, wide, high, matrix,true);
 
+
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             byte[] currentData = stream.toByteArray();
@@ -138,11 +140,14 @@ int pictureTime = 1;
             new SaveImageTask().execute(currentData);
             resetCam();
             Log.d("TakePhoto","사진이 잘 저장되었다");
-            pictureTime ++;
-            if(pictureTime > 3) {
-                pictureTime = 1;
+
+            //Log.d("찍은사진 바이트-문자열", bitmapByte);
+
+            //pictureCount ++;
+            //if(pictureCount > 3) {   //사진을 3번 찍겟단거임
+                pictureCount = 1;
                 finish();
-            }
+            //}
        }
     };
 
@@ -182,6 +187,8 @@ int pictureTime = 1;
         global_preview.setCamera(global_camera);
     }
 
+
+
     private class SaveImageTask extends AsyncTask<byte[], Void, Void> {
 
         @Override
@@ -193,7 +200,7 @@ int pictureTime = 1;
                 File dir = new File (sdCard.getAbsolutePath() + "/oikwho");
                 dir.mkdirs();
 
-                String fileName = String.format("suhyun_%d.jpg", pictureTime);
+                String fileName = String.format("suhyun_%d.jpg", pictureCount);
                 File outFile = new File(dir, fileName);
 
                 outStream = new FileOutputStream(outFile);

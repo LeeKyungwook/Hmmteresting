@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
                         Intent go_scheduleDetail = new Intent(getApplicationContext(),
                                 ScheduleDetail.class
                         );
-                        go_scheduleDetail.putExtra("userName","suhuyn");  //"suhyun" is dummy data
+                        go_scheduleDetail.putExtra("userName",sh);  //"suhyun" is dummy data
                         startActivity(go_scheduleDetail);
                     }
                 });

@@ -11,7 +11,7 @@ public class SignUpOrIn extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_on_orin);
+        setContentView(R.layout.activity_sign_up_or_in);
 
         Button signIn = findViewById(R.id.btn_signIN);
         Button signOn = findViewById(R.id.btn_signON);
