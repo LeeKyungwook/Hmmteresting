@@ -11,7 +11,11 @@ import requests
 import os
 import time
 import subprocess
-
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QLabel
+from PyQt5.QtGui import QPainter, QColor, QPen
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
 from os import walk
 
 base_url = 'http://112.151.162.170:7000/'
@@ -61,24 +65,53 @@ class RaspberryModule():
             crop_image = crop_image.crop((x1-40, y1-40, x2+40, y2+40))  #crop the image inside the rectangle
             crop_image.save('crop_image.jpg')   #save crop image
             return 1
+
     def record_vid():
-        # video 찍고url로 비디오 이름 보냄
+        # video recording and return file name
         os.system('./video_message.sh')
         vid_name = subprocess.check_output('./getname_test.sh', shell = True)
         return vid_name
+
     def record_aud():
-        #audio 찍고 url로 비디오 이름 보냄
+        #audio recording and return file name
         aud_name = subprocess.check_output('./audio_message.sh', shell = True)
         return aud_name
 
-class RaspberryUI():
+class RaspberryUI(QWidget):
+ 
+    def __init__(self):
+        super(App, self).__init__()
+        self.title = 'Hmmteresting....'
+        self.left = 10
+        self.top = 10
+        self.width = 1920   # Change Monitor's width
+        self.height = 1080  # Change Monitor's height
+        self.initUI()
+ 
+    def initUI(self):
+        self.setWindowTitle(self.title)
+        self.setGeometry(self.left, self.top, self.width, self.height)
+        # Set window background color
+        self.setAutoFillBackground(True)
+        p = self.palette()
+        p.setColor(self.backgroundRole(), Qt.black)
+        self.setPalette(p)
+ 
+        self.show()
+    
+    def arrange_UI(self):
+        self.setWindowTitle(self.title)
+        self.setGeometry(self.left, self.top, self.width, self.height)
 
-    def initalize_UI():
+        self.setAutoFillBackground(True)
+        p = self.palette()
+        p.setColor(self.backgroundRole(), Qt.white)
+        self.setPalette(p)
 
-    def arrange_UI(self, json):
+        self.show()
 
-    def play_vid_on_UI():
-
+    def close(self): 
+        self.close()
 
 if __name__ == '__main__':
 
@@ -96,7 +129,7 @@ if __name__ == '__main__':
 
     while True:
 
-        raz_ui.initalize_UI()
+        raz_ui.initUI()
         
 	#capture frames from the camera
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
@@ -118,38 +151,38 @@ if __name__ == '__main__':
             cv2.imshow("Frame", vis)
             rawCapture.truncate(0)
 
-        files = {'media' : open(pwd, 'rb') }             #저장된 이미지 불러와야함
-        image_url = base_url + 'file'                    #보내려는 url 주소
+        files = {'media' : open(pwd, 'rb') }
+        image_url = base_url + 'file'
         res = requests.post(image_url, files = files)
 
-        raz_ui.arrange_UI(res.json)
+        #change the color of monitor when server responsed
+        if res is not None:
+            raz_ui.arrange_UI()
 
         while True:
 
             video_url = base_url + 'video'
             res = requests.get(url = video_url)         
-            #get 방식으로 서버에 계속하여 요청을 보내고 응답을 기다림
+            #get request and wait for returing value
 
-            ###### reponse 값은 임의 값으로 함.
-            if (res.text == 1):                         
-                #response가 1이 오면 비디오 찍고 비디오 이름을 서버에 request로 보냄
+            if (res.text == 1):
+                #send video name
                 video_name = raz_module.record_vid()    
-                #record_vid 실행 시, 영상을 저장하고 해당 파일의 전체 경로(video_name)를 보내줘야함
                 video_save_url = video_url + '/vsave'
                 res = requests.post(video_save_url, data = video_name)
             elif (res.text == 2):
-                #audio 녹음 실행 후 녹음 파일 이름 전송
+                #send audio name
                 audio_name = raz_module.record_aud()
                 audio_save_url = audio_url + '/asave'
                 res = requests.post(audio_save_url, data = audio_name)
-            elif(res.text == '영상파일이름'):            
-                #영상 파일 이름에 대한 response가 오면 video 실행.
-                    
-            elif(res.text == 3):                        
-                #response가 3이 오면 내부 while 문을 빠져나가 외부 while문으로 감(스마트 미러 종료시 해당 response)
-                break()
-            else:                                        
-                #다른 response가 올 경우 내부 while continue
+            elif(res.text == 3):
+                #turn on the video
+                break
+            elif(res.text == 4):
+                #break inner loop and go to outer loop
+                break
+            else:
+                #innser loop
                 time.sleep(2)
                 continue
         '''
