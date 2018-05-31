@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-// var dbQueryRouter = require('./dbQuery');
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://127.0.0.1:27017/oikwho');
 var db = mongoose.connection
@@ -12,7 +11,7 @@ db.on('error', function(){
 
 var users = mongoose.Schema({
   Uid:'number',
-  id:'string',
+  id:'string'
   pw:'string'
 });
 
@@ -40,12 +39,13 @@ var uid;
 var dd;
 var mm;
 var yyyy;
-var thisDate = yyyy*10000 + mm*100 + dd;
+var thisDate;// = yyyy*10000 + mm*100 + dd;
 var sch_objID;
 var string_ID;
 
 uid = 2;
 yyyy =2018; mm = 5; dd = 31;
+thisDate = yyyy*10000 + mm*100 + dd;
 sch_objID = "5afd61c4cd2a59ae077d05c5"
 string_ID = "suhyun000"  //dummy
 
@@ -95,21 +95,22 @@ function searchIdQuery(req, callback){
 
 function updateScheduleQuery(req, callback){
   //update schedule by its ObjectId
-  SCHEDULES.update(ObjectId(sch_objID),{$set:{title:'', user: '', startDate: '', startTime: '', endDate: '', endTime: '', isBroadcast: ''}}, function(error, schedules) {
+  SCHEDULES.update({ObjectId(sch_objID)},{$set:{title:"", user: , startDate: , startTime: , endDate: , endTime: , isBroadcast: }}, function(error, schdeules) {
     console.log('--- Update Info Test ---');
     if(error) { console.error(); }
     else{
       console.log(schedules);
-      if (typeof callback === "function") {
+      if (typeof callback === "function"){
         callback('update success');
       };
     }
   });
 };
 
+
 function deleteScheduleQuery(req, callback){
   //delete schedule by its ObjectId
-  SCHEDULES.deleteOne(ObjectId(sch_objID), function(err, users) {
+  SCHEDULES.deleteOne({ObjectId(sch_objID)}, (err, users) {
     console.log('--- Delete Schedule Test ---');
     if(error) { console.error(); }
     else{
@@ -122,8 +123,15 @@ function deleteScheduleQuery(req, callback){
 };
 
 
-function insertUser(req, callback){ //req : name Uid pw
+function insertUserQuery(req, callback){ //req : name Uid pw
+ //insert req user
+ // USERS.
+};
 
+
+function searchUserQuery(req, callback){ //req : name Uid pw
+ //search req user
+ // USERS.
 };
 
 function veiwMessageQuery(req, callback) {
@@ -144,6 +152,7 @@ module.exports = {
   searchIdQuery: searchIdQuery,
   updateScheduleQuery: updateScheduleQuery,
   deleteScheduleQuery: deleteScheduleQuery,
-  insertUser: insertUser,
+  insertUserQuery: insertUserQuery,
+  searchUserQuery: searchUserQuery,
   veiwMessageQuery: veiwMessageQuery
 };

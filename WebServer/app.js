@@ -8,14 +8,11 @@ var PythonShell = require('python-shell');
 var fs = require('fs');
 
 //var rootDir = __dirname.replace('','');
-// var userID ='jh';
-// var userInfo = {
-//   "name" : "jh"
-// };
+var userID ='jh';
 var filePath;
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended : true}));
+app.use(bodyParser.json({limit:'50mb'}));
+app.use(bodyParser.urlencoded({extended : true, limit:'50mb'}));
 
 var dbConnectRouter = require('./dbConnect');
 var weatherRouter = require('./weather');
@@ -85,9 +82,9 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
         fileRouter.fileDownloadRaz(request, function(newFileName){
           filePath = newFileName;
           callback(null, filePath);
-          // callback(null, 'yena');
         });
       },
+
 
       function(arg1, callback) {  //arg1 = filePath
         var options = {
@@ -132,31 +129,35 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
       }
     },
 
+
     function(arg1, callback){ // arg1 = userName
-      var str = arg1;
       var weather;
-      // var schedule;
       var messageNum;
-      if(str.indexOf('None Detected')==0){
+
+      if(arg1.indexOf('None Detected')>=0){
         return res.send('who are you?');
       }
 
+      messageNum = 3;
+
       weatherRouter.getWeather(function(weather_){
         weather = weather_;
+        //	callback(null, weather, schedule, messageNum);
       });
 
       //*DB
-      messageNum = 3
+      //      messageNum = 3
       //*
 
-      //dbConnectRouter.scheduleQuery(arg1,function(schedule_){
-      //schedule = schedule_;
-      callback(null, weather, schedule, messageNum);
-      // });
+      dbConnectRouter.scheduleQuery(arg1,userID,function(schedule){
+        dbConnectRouter.requiredItemQuery(userID,function(requiredItem){
+          callback(null, weather, schedule, requiredItem, messageNum);
+        });
+      });
     },
 
-    function(arg1, arg2, arg3, callback) { // arg1 = userName, arg2 = shedule, arg3 = messageNum
-      res.json({weather: arg1, schedule : arg2, messageNum : arg3});
+    function(arg1, arg2, arg3, arg4,callback) { // arg1 = userName, arg2 = shedule, arg3 = requiredItem, arg4 = messageNum
+      res.json({weather: arg1, schedule : arg2, requiredItem : arg3, messageNum : arg4});
       callback(null, 'done')
     },
   ],
@@ -179,16 +180,42 @@ app.post('/veiwMessage', function(req,res) { //메세지 출력
   res.json(messges);
 });
 
-app.post('/joinInfo', function(req,res) { //회원가입
+
+var path = require('path');
+function decode_base64(base64str , filename){
+  var buf = Buffer.from(base64str,'base64');
+  fs.writeFile(path.join(__dirname,'/',filename), buf, function(error){
+    if(error){
+      throw error;
+    }else{
+      console.log('File created from base64 string!');
+      return true;
+    }
+  });
+}
+
+app.post('/jhTest', function(req,res) {
+  console.log(req);
+  res.send(schedule1);
+});
+
+app.post('/join', function(req,res) { //회원가입
   var userName = req.body.name;
   userID = req.body.userID;
+  console.log(req.body);
+  // decode_base64(req.body.image,'androidTest.jpg');
+  // decode_base64(req.body.command.image,'androidTest.jpg');
+
   ///디비 쿼리,,,,,,,, 확인,,,,
+  res.send('join us *^^*');
 
   // res.send('alread joinInfo');
 
 
   return;
 });
+
+
 
 app.post('/joinPicture', function(req,res) { //회원가입
   /*
