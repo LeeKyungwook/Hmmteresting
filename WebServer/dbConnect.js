@@ -11,7 +11,7 @@ db.on('error', function(){
 
 var users = mongoose.Schema({
   Uid:'number',
-  id:'string'
+  id:'string',
   pw:'string'
 });
 
@@ -95,7 +95,7 @@ function searchIdQuery(req, callback){
 
 function updateScheduleQuery(req, callback){
   //update schedule by its ObjectId
-  SCHEDULES.update({ObjectId(sch_objID)},{$set:{title:"", user: , startDate: , startTime: , endDate: , endTime: , isBroadcast: }}, function(error, schdeules) {
+  SCHEDULES.update(ObjectId(sch_objID),{$set:{title:"", user: "", startDate: "", startTime: "", endDate: "", endTime:"" , isBroadcast:"" }}, function(error, schedules) {
     console.log('--- Update Info Test ---');
     if(error) { console.error(); }
     else{
@@ -110,7 +110,7 @@ function updateScheduleQuery(req, callback){
 
 function deleteScheduleQuery(req, callback){
   //delete schedule by its ObjectId
-  SCHEDULES.deleteOne({ObjectId(sch_objID)}, (err, users) {
+  SCHEDULES.deleteOne(ObjectId(sch_objID), function(err, users) {
     console.log('--- Delete Schedule Test ---');
     if(error) { console.error(); }
     else{

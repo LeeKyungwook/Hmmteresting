@@ -70,7 +70,7 @@ app.get('/init', function (req, res) {
 });
 
 app.get('/imgs', function (req,res){
-  fs.readFile(userName+'.jpg', function (error, data){
+  fs.readFile('./image/'+userName, function (error, data){
     res.end(data)
   })
 })
@@ -128,7 +128,7 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
             return res.send(err);
           }
           console.log("<== align_img result : "+result);
-	  userName = result.split(".")[4];
+	  //userName = result.split(".")[0];
           callback(null, result);
         });
       }
@@ -142,7 +142,7 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
       if(str.indexOf('None Detected')>=0){
         return res.send('who are you?');
       }else {
-	userName = 'jh';
+	userName = arg1;
       }
 	
       messageNum = 3;
