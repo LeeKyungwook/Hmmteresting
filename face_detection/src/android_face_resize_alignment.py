@@ -11,6 +11,7 @@ import os
 predictor_path = '/home/kyungwook/kyungwook/Hmmteresting/face_detection/src/face_alignment.dat'
 path = '/home/kyungwook/kyungwook/gallery'
 face_file_path = '/home/kyungwook/kyungwook/android_img'
+demo_path = '/home/kyungwook/kyungwook/Hmmteresting/WebServer/image'
 filenames = os.listdir(face_file_path)
 
 for filename in filenames:
@@ -50,5 +51,6 @@ for filename in filenames:
     for image in images:   
         bgr_img = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
         cv2.imwrite(os.path.join(path , filename), bgr_img)
+        cv2.imwrite(os.path.join(demo_path , filename), bgr_img)
         
 print("Alignment & Save Completed")
