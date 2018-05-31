@@ -12,14 +12,14 @@ import os
 import time
 import subprocess
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QLabel
-from PyQt5.QtGui import QPainter, QColor, QPen
-from PyQt5.QtGui import QIcon
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtWidgets import *
+from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 from os import walk
 
-base_url = 'http://112.151.162.170:7000/'
-pwd = '/home/pi/crop_image.jpg'
+base_url = 'http://112.151.162.170:7000/jhTest'
+pwd = '/home/pi/Hmmteresting/Razberry/test_image.jpg'
 
 class RaspberryModule():
     '''
@@ -79,58 +79,78 @@ class RaspberryModule():
 
 class RaspberryUI(QWidget):
  
-    def __init__(self):
-        super(App, self).__init__()
-        self.title = 'Hmmteresting....'
-        self.left = 10
-        self.top = 10
-        self.width = 1920   # Change Monitor's width
-        self.height = 1080  # Change Monitor's height
-        self.initUI()
- 
-    def initUI(self):
-        self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
-        # Set window background color
-        self.setAutoFillBackground(True)
-        p = self.palette()
+    def initUI(self, Mainwindow):
+
+        MainWindow.setObjectName("Hmmteresting...")
+        MainWindow.resize(800, 600)
+        MainWindow.setAutoFillBackground(True)
+        p = MainWindow.palette()
         p.setColor(self.backgroundRole(), Qt.black)
-        self.setPalette(p)
- 
-        self.show()
+        MainWindow.setPalette(p)
+
+    def scheduleUI(self, MainWindow):
+        MainWindow.setObjectName("Hmmteresting...")
+        MainWindow.resize(800, 600)
+        MainWindow.setAutoFillBackground(True)
+        p = MainWindow.palette()
+        p.setColor(self.backgroundRole(), Qt.black)
+        MainWindow.setPalette(p)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.Date = QtWidgets.QLabel(self.centralwidget)
+        self.Date.setGeometry(QtCore.QRect(30, 30, 141, 31))
+        self.Date.setTextFormat(QtCore.Qt.PlainText)
+        self.Date.setObjectName("Date")
+        self.Time = QtWidgets.QLabel(self.centralwidget)
+        self.Time.setGeometry(QtCore.QRect(30, 70, 141, 31))
+        self.Time.setTextFormat(QtCore.Qt.PlainText)
+        self.Time.setObjectName("Time")
+        self.Schedule = QtWidgets.QLabel(self.centralwidget)
+        self.Schedule.setGeometry(QtCore.QRect(30, 120, 171, 211))
+        self.Schedule.setObjectName("Schedule")
+        self.Name = QtWidgets.QLabel(self.centralwidget)
+        self.Name.setGeometry(QtCore.QRect(230, 30, 301, 51))
+        self.Name.setObjectName("Name")
+        MainWindow.setCentralWidget(self.centralwidget)
+
+        MainWindow.setWindowTitle("Hmmteresting")
+        self.Date.setText("Date")
+        self.Date.setStyleSheet('color : white')
+        self.Time.setText("Time")
+        self.Time.setStyleSheet('color : white')
+        self.Schedule.setText("Schedule")
+        self.Schedule.setStyleSheet('color : white')
+        self.Name.setText("Name")
     
-    def arrange_UI(self):
-        self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
-
-        self.setAutoFillBackground(True)
-        p = self.palette()
-        p.setColor(self.backgroundRole(), Qt.white)
-        self.setPalette(p)
-
-        self.show()
-
-    def close(self): 
-        self.close()
+    def closeUI(self, MainWindow):
+        return 0
 
 if __name__ == '__main__':
+    
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = RaspberryUI()
 
+    ui.initUI(MainWindow)
+    #ui.scheduleUI(MainWindow)
+    MainWindow.show()
+    #sys.exit(app.exec_())
+
+    print("plz!!")
     raz_module = RaspberryModule()
-    raz_ui = RaspberryUI()
+    #raz_ui = RaspberryUI()
 
     #Camera setting
     camera = PiCamera()
-    camera.resolution = (640, 480)
+    camera.resolution = (612, 816)
     camera.framerate = 32
-    rawCapture = PiRGBArray(camera, size=(640, 480))
+    rawCapture = PiRGBArray(camera, size=(612, 816))
     cascade = cv2.CascadeClassifier("/home/pi/opencv-3.3.0/data/haarcascades/haarcascade_frontalface_alt.xml")
     
     time.sleep(0.1)
-
+    
     while True:
 
-        raz_ui.initUI()
-        
 	#capture frames from the camera
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
             #grab the raw Numpy array representing the image, then initialize the timestamp
@@ -140,7 +160,6 @@ if __name__ == '__main__':
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             gray = cv2.equalizeHist(gray)
 
-        #if (raz_module.detect(img, cascade) != 1):
             rects = raz_module.detect(gray, cascade)
             vis = img.copy()
         
@@ -148,17 +167,20 @@ if __name__ == '__main__':
                 break
             
             #show the frame
-            cv2.imshow("Frame", vis)
+            #cv2.imshow("Frame", vis)
             rawCapture.truncate(0)
 
         files = {'media' : open(pwd, 'rb') }
         image_url = base_url + 'file'
         res = requests.post(image_url, files = files)
+        print res.text
 
         #change the color of monitor when server responsed
         if res is not None:
-            raz_ui.arrange_UI()
-
+            ui.schedule_UI()
+            break
+        
+        '''
         while True:
 
             video_url = base_url + 'video'
@@ -185,8 +207,4 @@ if __name__ == '__main__':
                 #innser loop
                 time.sleep(2)
                 continue
-        '''
-        else:
-            time.sleep(2)
-            continue
         '''

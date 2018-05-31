@@ -57,7 +57,6 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
     #draw_rects(vis, rects, (0, 255, 0))
     
     if draw_rects(vis, rects, (0, 255, 0)) == 1:
-        time.sleep(3)
         url = 'http://112.151.162.170:7000/init'
 	pwd = '/home/pi/Hmmteresting/Razberry/test_image.jpg'
 	files = {'media' : open(pwd, 'rb') }
@@ -65,7 +64,6 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	print res.text
         time.sleep(5)
     
-
     #show the frame
     #cv2.imshow("Frame", vis)
 
