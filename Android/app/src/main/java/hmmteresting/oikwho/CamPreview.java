@@ -109,6 +109,8 @@ public class CamPreview extends ViewGroup implements SurfaceHolder.Callback{
         try {
             if(mCamera != null) {
                 mCamera.setPreviewDisplay(holder);
+
+
             }
         } catch (IOException e) {
             Log.e("CameraPreview", "서페이스 생성의 setPreviewDisplay()가 IO익셉션을 일으켯다");

@@ -54,36 +54,34 @@ public class ScheduleDetail extends AppCompatActivity {
         final EditText this_edit_prepare = (EditText) findViewById(R.id.edit_prepare);
         final RadioGroup this_rg_privacy = (RadioGroup) findViewById(R.id.radio_privacy);
 
-
         //make setPrivacy function with radiobutton
-
 
         Button btn_submit = (Button)findViewById(R.id.btn_submit);
         Button.OnClickListener click_btn_submit = new View.OnClickListener(){
             @Override
             public void onClick(View v) {
 
-                title[0] = this_edit_title.getText().toString();
-                User[0] = intent.getStringExtra("userName");
-                startDate[0] = this_edit_startDate.getText().toString();
-                startTime[0] = this_edit_startTime.getText().toString();
-                endDate[0] = this_edit_endDate.getText().toString();
-                endTime[0] = this_edit_endTime.getText().toString();
-                prepare[0] = this_edit_prepare.getText().toString();
+            title[0] = this_edit_title.getText().toString();
+            User[0] = intent.getStringExtra("userName");
+            startDate[0] = this_edit_startDate.getText().toString();
+            startTime[0] = this_edit_startTime.getText().toString();
+            endDate[0] = this_edit_endDate.getText().toString();
+            endTime[0] = this_edit_endTime.getText().toString();
+            prepare[0] = this_edit_prepare.getText().toString();
+            isBroadcast[0] = this_rg_privacy.getCheckedRadioButtonId();
 
-                isBroadcast[0] = this_rg_privacy.getCheckedRadioButtonId();
-
-
-                json_addedScheduleDetail =
-                        "{title : \"" + title[0] + "\", User : \"" + User[0] + "\", startDate : \"" + startDate[0] +
-                                "\", startTime : \"" + startTime[0] + "\", endDate : \"" + endDate[0] +
-                                "\", endTime : \"" + endTime[0] + "\" ,reqItems : \"" + prepare[0] + "\" }";
-
+            json_addedScheduleDetail =
+                    "{ \"title\" : \"" + title[0] + "\", \"User\" : \"" + User[0] + "\", "
+                            + "\"startDate\" : " + startDate[0] + ", \"startTime\" : "
+                            + startTime[0] + ", \"endDate\" : " + endDate[0]
+                            + ", \"endTime\" : " + endTime[0]
+                            + ", \"reqItems\" : \"" + prepare[0] + "\" }";
+//{"title" : "aaaa", "User" : "suhyun", "startDate" : 20180502, "startTime" : 1300, ..., "reqItems" : "ssssss"}
 
                 Toast.makeText(ScheduleDetail.this, json_addedScheduleDetail, Toast.LENGTH_LONG).show();
 
-                //sendSch = new SendSchToServer();
-                //sendSch.execute();
+                sendSch = new SendSchToServer();
+                sendSch.execute();
 
                 finish();
             }

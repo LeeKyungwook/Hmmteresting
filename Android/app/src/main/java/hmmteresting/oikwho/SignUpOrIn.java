@@ -1,6 +1,9 @@
 package hmmteresting.oikwho;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -29,14 +32,16 @@ public class SignUpOrIn extends AppCompatActivity {
         });
 
         signOn.setOnClickListener(new View.OnClickListener() {
+            @TargetApi(Build.VERSION_CODES.M)
             @Override
             public void onClick(View v) {
-                //회원가입 액티비티로
-                Intent go_sign_ON = new Intent(
-                        getApplicationContext(),
-                        SignUp.class
-                );
-                startActivity(go_sign_ON);
+
+            //회원가입 액티비티로
+            Intent go_sign_ON = new Intent(
+                    getApplicationContext(),
+                    SignUp.class
+            );
+            startActivity(go_sign_ON);
             }
         });
 

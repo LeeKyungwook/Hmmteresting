@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_takePhoto"
@@ -12,16 +12,19 @@
     <SurfaceView
         android:id="@+id/view_camSurface"
         android:layout_width="match_parent"
-        android:layout_height="450dp"
+        android:layout_height="match_parent"
         android:layout_gravity="top|center_horizontal"
-        android:foregroundGravity="bottom" />
+        android:foregroundGravity="bottom"></SurfaceView>
 
     <Button
         android:id="@+id/btn_shutter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="5dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center|end"
+        android:layout_marginBottom="28dp"
         android:background="@color/customPrimaryDark"
         android:text="shutter" />
-</LinearLayout>
+
+</RelativeLayout>

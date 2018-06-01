@@ -1,11 +1,15 @@
 package hmmteresting.oikwho;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Camera.ShutterCallback;
@@ -20,12 +24,14 @@ import android.os.Bundle;
 import android.content.Intent;
 import android.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
@@ -39,8 +45,13 @@ public class TakePhoto extends AppCompatActivity {
     Camera global_camera;
     Context global_ctx;
 
+    SurfaceHolder surfaceHolder;
+    LayoutInflater controlInflatter = null;
+
     private final static int PERMISSIONS_REQUEST_CODE = 100;
     private final static int CAMERA_FACE = Camera.CameraInfo.CAMERA_FACING_FRONT;
+
+    String username;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +61,12 @@ public class TakePhoto extends AppCompatActivity {
 
         setContentView(R.layout.activity_take_photo);
 
+        Intent fromSignUp = getIntent();
+        username = fromSignUp.getStringExtra("username");
+
         Button shutter = findViewById(R.id.btn_shutter);
+        //shutter.invalidate();
+
         shutter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,7 +114,7 @@ public class TakePhoto extends AppCompatActivity {
             global_camera = null;
         }
 
-        ((LinearLayout)findViewById(R.id.layout_takePhoto)).removeView(global_preview);
+        ((RelativeLayout)findViewById(R.id.layout_takePhoto)).removeView(global_preview);
         global_preview = null;
     }
 
@@ -112,7 +128,7 @@ public class TakePhoto extends AppCompatActivity {
     private void resetCam() {
         startCamera();
     }
-int pictureCount = 1;
+
     PictureCallback jpegCallback = new PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
@@ -141,22 +157,16 @@ int pictureCount = 1;
             resetCam();
             Log.d("TakePhoto","사진이 잘 저장되었다");
 
-            //Log.d("찍은사진 바이트-문자열", bitmapByte);
-
-            //pictureCount ++;
-            //if(pictureCount > 3) {   //사진을 3번 찍겟단거임
-                pictureCount = 1;
                 finish();
-            //}
        }
     };
 
     public void startCamera() {
         if(global_preview == null) {
             global_preview = new CamPreview(this, (SurfaceView)findViewById(R.id.view_camSurface));
-            global_preview.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            global_preview.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT));
-            ((LinearLayout)findViewById(R.id.layout_takePhoto)).addView(global_preview);
+            ((RelativeLayout)findViewById(R.id.layout_takePhoto)).addView(global_preview);
             global_preview.setKeepScreenOn(true);
         }
         global_preview.setCamera(null);
@@ -200,7 +210,7 @@ int pictureCount = 1;
                 File dir = new File (sdCard.getAbsolutePath() + "/oikwho");
                 dir.mkdirs();
 
-                String fileName = String.format("suhyun_%d.jpg", pictureCount);
+                String fileName = String.format( username + ".jpg" );
                 File outFile = new File(dir, fileName);
 
                 outStream = new FileOutputStream(outFile);
