@@ -11,8 +11,10 @@ db.on('error', function(){
 
 var users = mongoose.Schema({
   Uid:'number',
+  name: 'string',
   id:'string',
-  pw:'string'
+  pw:'string',
+  family:'number'
 });
 
 var schedules = mongoose.Schema({
@@ -50,8 +52,9 @@ sch_objID = "5afd61c4cd2a59ae077d05c5"
 string_ID = "suhyun000"  //dummy
 
 
-function scheduleQuery(req, callback) {
+function scheduleQuery(thisDate, userName, callback) {
   //search 20180531's schedules
+  // var thisDate = req.thisDate;
   SCHEDULES.find({ $and:[{ "startDate":{$lte:thisDate} }, {"endDate":{$gte:thisDate}}, {user:uid}] }, { __v:0}, function(error, schedules) {
     console.log('--- Read today\'s Schedules of User'+ uid +' ---');
     if(error){ console.log(error); }

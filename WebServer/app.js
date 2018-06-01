@@ -9,8 +9,9 @@ var fs = require('fs');
 
 
 var username ='none';
+var usernamejpg =username+'.jpg';
 global.userName = username;
-var filePath;
+global.userNameJpg = usernamejpg;
 
 app.use(bodyParser.json({limit:'50mb'}));
 app.use(bodyParser.urlencoded({extended : true, limit:'50mb'}));
@@ -60,7 +61,7 @@ app.get('/init', function (req, res) {
   //   res.end(data)
   // })
   res.render('index', {
-    name : global.userName,
+    name: global.userName,
     title: "Hmmteresting Demo",
     startDate: schedule1.startDate,
     endDate : schedule1.endDate,
@@ -70,7 +71,7 @@ app.get('/init', function (req, res) {
 });
 
 app.get('/imgs', function (req,res){
-  fs.readFile('./image/'+userName, function (error, data){
+  fs.readFile('./image/'+userNameJpg, function (error, data){
     res.end(data)
   })
 })
@@ -81,8 +82,7 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
   async.waterfall(
     [
       function(callback) {
-        fileRouter.fileDownloadRaz(request, function(newFileName){
-          filePath = newFileName;
+        fileRouter.fileDownload(request, function(filePath){
           callback(null, filePath);
         });
       },
@@ -124,12 +124,12 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
           if(err) {
             //throw err;
             //console.log(err);
-
             return res.send(err);
           }
-          console.log("<== align_img result : "+result);
-	  //userName = result.split(".")[0];
-          callback(null, result);
+          console.log("<== align_img result : "+result);//result = jh2.jpg
+	         userName = result.split(".")[0]; //======================================> jh2에서 2분리
+           userNameJpg = userName +'.jpg'
+           callback(null, result);
         });
       }
     },
@@ -137,30 +137,28 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
     function(arg1, callback){ // arg1 = userName
       var str = arg1;
       var weather;
-      // var schedule;
       var messageNum;
       if(str.indexOf('None Detected')>=0){
         return res.send('who are you?');
       }else {
-	userName = arg1;
+        userName = arg1;
+        userNameJpg = userName + '.jpg'
       }
-	
+
       messageNum = 3;
 
       weatherRouter.getWeather(function(weather_){
         weather = weather_;
-//	callback(null, weather, schedule, messageNum);
       });
 
       //*DB
-//      messageNum = 3
+      //messageNum = 3
       //*
 
       dbConnectRouter.scheduleQuery(arg1,userName,function(schedule){
         dbConnectRouter.requiredItemQuery(userName,function(requiredItem){
-	   callback(null, weather, schedule, requiredItem, messageNum);
-	});
-      	//callback(null, weather, schedule, requiredItem, messageNum);
+          callback(null, weather, schedule, requiredItem, messageNum);
+        });
       });
     },
 
@@ -176,7 +174,7 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
 });
 
 
-app.post('/jhTest', function(req,res) { 
+app.post('/jhTest', function(req,res) {
   console.log(req);
   res.send(schedule1);
 });
@@ -193,52 +191,28 @@ app.post('/veiwMessage', function(req,res) { //메세지 출력
 });
 
 
-var path = require('path');
-
-function decode_base64(base64str , filename){
-
-  var buf = Buffer.from(base64str,'base64');
-
-  fs.writeFile(path.join(__dirname,'/',filename), buf, function(error){
-    if(error){
-      throw error;
-    }else{
-      console.log('File created from base64 string!');
-      return true;
-    }
-  });
-
-}
-
 
 
 app.post('/join', function(req,res) { //회원가입
-  //var userName = req.body.name;
-  //console.log(req.body);
-  fileRouter.fileDownloadRaz(req, function(newFileName){
-	console.log('joinjoin'+userName);
-	res.send('사진 받았댱');
-	return;
+  fileRouter.fileDownload(req, function(filePath){
+	console.log('joinjoin '+userName);
+  var userNameJpg = (filePath.split("/")[filePath.split("/").length-1]);//.split(".")[0];
+  userName = userNameJpg.split(".")[0];
+	return res.send(userName+' 사진 받았댱');
   });
-/*  userID = req.body.userID;
-  console.log(req.body);
-  decode_base64(req.body.image,'androidTest.jpg');
- // decode_base64(req.body.command.image,'androidTest.jpg');
-*/
   //res.send('join fail *^^*');
   ///디비 쿼리,,,,,,,, 확인,,,,
 
 
   // res.send('alread joinInfo');
-
-
   return;
 });
 
 
-app.post('/joinInfo', function(req,res){
+app.post('/joinInfo', function(req,res){ //사용자의 정보가 db에 있는지 없는지 확인하고 없으면 insert
   userName = req.body.name;
-  res.send('Info accept');
+
+  res.send('joinInfo accept');
 });
 
 
@@ -249,4 +223,10 @@ app.post('/joinPicture', function(req,res) { //회원가입
   3. 안드로이드로 결과 전송
   4. 끝!
   */
+});
+
+
+app.post('/showSchedule', function(req,res) { //req = 날짜
+  // scheduleQuery()
+  res.send(schedule);
 });
