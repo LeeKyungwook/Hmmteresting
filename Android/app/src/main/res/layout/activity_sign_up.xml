@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_margin="7dp"
     android:orientation="vertical"
     tools:context=".SignUp">
 
@@ -15,7 +16,7 @@
 
     <EditText
         android:id="@+id/edit_name"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName" />
@@ -28,7 +29,7 @@
 
     <EditText
         android:id="@+id/edit_id"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPersonName" />
@@ -41,7 +42,7 @@
 
     <EditText
         android:id="@+id/edit_pwd"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="textPassword" />
@@ -54,7 +55,7 @@
 
     <EditText
         android:id="@+id/edit_family"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
         android:inputType="number" />
@@ -63,17 +64,12 @@
         android:id="@+id/btn_goCamera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="face photo" />
+        android:text="사진 찍기" />
 
-    <Button
-        android:id="@+id/btn_signUp_submit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="SUBMIT" />
 
     <Button
         android:id="@+id/btn_signUp_sendpict"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="사진만보냄" />
+        android:text="SUBMIT" />
 </LinearLayout>

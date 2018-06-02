@@ -90,7 +90,7 @@
                 android:text="준비물" />
 
             <EditText
-                android:id="@+id/edit_prepare"
+                android:id="@+id/edit_reqitems"
                 android:layout_width="match_parent"
                 android:layout_height="74dp"
                 android:ems="10"

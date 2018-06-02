@@ -45,9 +45,6 @@ public class TakePhoto extends AppCompatActivity {
     Camera global_camera;
     Context global_ctx;
 
-    SurfaceHolder surfaceHolder;
-    LayoutInflater controlInflatter = null;
-
     private final static int PERMISSIONS_REQUEST_CODE = 100;
     private final static int CAMERA_FACE = Camera.CameraInfo.CAMERA_FACING_FRONT;
 
@@ -57,8 +54,8 @@ public class TakePhoto extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-       getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_take_photo);
 
         Intent fromSignUp = getIntent();
@@ -135,29 +132,32 @@ public class TakePhoto extends AppCompatActivity {
             Log.d("TakePhoto","jpeg로 저장할것임");
 
             //카메라로 얻은 사진 jpeg로 저장하는 과정이 들어갈것임
-            int wide = global_camera.getParameters().getPictureSize().width;
-            int high = global_camera.getParameters().getPictureSize().height;
+            int wide = (global_camera.getParameters().getPictureSize().width)/4;
+            int high = (global_camera.getParameters().getPictureSize().height)/4;
 
-            int orientation = 90;
+            int orientation = 270;
 
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+
+            options.inSampleSize = 4;
+
             Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
 
             Matrix matrix = new Matrix();
-            matrix.postRotate(270);
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, wide, high, matrix,true);
+            matrix.postRotate(orientation);
 
+            bitmap = Bitmap.createScaledBitmap(bitmap, wide, high, true);
+            Bitmap rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, wide, high, matrix,true);
 
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+            rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
             byte[] currentData = stream.toByteArray();
 
             new SaveImageTask().execute(currentData);
             resetCam();
             Log.d("TakePhoto","사진이 잘 저장되었다");
-
-                finish();
+            finish();
        }
     };
 

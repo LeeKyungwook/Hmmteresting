@@ -99,7 +99,7 @@ public class SignUp extends AppCompatActivity {
             }
         });
 
-        Button submit = findViewById(R.id.btn_signUp_submit);
+        //Button submit = findViewById(R.id.btn_signUp_submit);
         Button picture = findViewById(R.id.btn_signUp_sendpict);
 
         picture.setOnClickListener(new View.OnClickListener() {
@@ -128,6 +128,7 @@ public class SignUp extends AppCompatActivity {
             }
         });
 
+/*
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,7 +165,7 @@ public class SignUp extends AppCompatActivity {
                         } );
                 Log.d("회원가입","남수현.jpg를 전송했다.");
             }
-        });
+        });*/
     }
 
     class SendToServer extends AsyncTask<Void, Void, Void> {

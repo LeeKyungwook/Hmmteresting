@@ -31,27 +31,27 @@ public class ScheduleDetail extends AppCompatActivity {
     String json_addedScheduleDetail;
     SendSchToServer sendSch;
 
+    final String[] title = new String[1];
+    final String[] User = new String[1];
+    final String[] startDate = new String[1];
+    final String[] startTime = new String[1];
+    final String[] endDate = new String[1];
+    final String[] endTime = new String[1];
+    final String[] reqitems = new String[1];
+    final String[] isBroadcast = new String[1];
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_schedule_detail);
         final Intent intent = getIntent();
 
-        final String[] title = new String[1];
-        final String[] User = new String[1];
-        final String[] startDate = new String[1];
-        final String[] startTime = new String[1];
-        final String[] endDate = new String[1];
-        final String[] endTime = new String[1];
-        final String[] prepare = new String[1];
-        final int[] isBroadcast = new int[1];
-
         final EditText this_edit_title = (EditText) findViewById(R.id.edit_title);
         final EditText this_edit_startDate = (EditText) findViewById(R.id.edit_startDate);
         final EditText this_edit_startTime = (EditText) findViewById(R.id.edit_startTime);
         final EditText this_edit_endDate = (EditText) findViewById(R.id.edit_endDate);
         final EditText this_edit_endTime = (EditText) findViewById(R.id.edit_endTime);
-        final EditText this_edit_prepare = (EditText) findViewById(R.id.edit_prepare);
+        final EditText this_edit_reqitems = (EditText) findViewById(R.id.edit_reqitems);
         final RadioGroup this_rg_privacy = (RadioGroup) findViewById(R.id.radio_privacy);
 
         //make setPrivacy function with radiobutton
@@ -67,15 +67,15 @@ public class ScheduleDetail extends AppCompatActivity {
             startTime[0] = this_edit_startTime.getText().toString();
             endDate[0] = this_edit_endDate.getText().toString();
             endTime[0] = this_edit_endTime.getText().toString();
-            prepare[0] = this_edit_prepare.getText().toString();
-            isBroadcast[0] = this_rg_privacy.getCheckedRadioButtonId();
+            reqitems[0] = this_edit_reqitems.getText().toString();
+            isBroadcast[0] = Integer.toString(this_rg_privacy.getCheckedRadioButtonId());
 
             json_addedScheduleDetail =
                     "{ \"title\" : \"" + title[0] + "\", \"User\" : \"" + User[0] + "\", "
                             + "\"startDate\" : " + startDate[0] + ", \"startTime\" : "
                             + startTime[0] + ", \"endDate\" : " + endDate[0]
                             + ", \"endTime\" : " + endTime[0]
-                            + ", \"reqItems\" : \"" + prepare[0] + "\" }";
+                            + ", \"reqItems\" : \"" + reqitems[0] + "\" }";
 //{"title" : "aaaa", "User" : "suhyun", "startDate" : 20180502, "startTime" : 1300, ..., "reqItems" : "ssssss"}
 
                 Toast.makeText(ScheduleDetail.this, json_addedScheduleDetail, Toast.LENGTH_LONG).show();
@@ -99,13 +99,20 @@ public class ScheduleDetail extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
             HttpClient client = HttpClientBuilder.create().build();
-            HttpPost post = new HttpPost("http://112.151.162.170:7000");
+            HttpPost post = new HttpPost("http://112.151.162.170:7000/addSchedule");
             ArrayList<NameValuePair> nameValues =
                     new ArrayList<NameValuePair>();
 
             try{
                 //must set values that passed by POST rules
-                nameValues.add(new BasicNameValuePair("command", URLDecoder.decode(json_addedScheduleDetail,"UTF-8")));
+                nameValues.add(new BasicNameValuePair("title", URLDecoder.decode(title[0],"UTF-8")));
+                nameValues.add(new BasicNameValuePair("User",URLDecoder.decode(User[0], "UTF-8")));
+                nameValues.add(new BasicNameValuePair("startDate",URLDecoder.decode(startDate[0], "UTF-8")));
+                nameValues.add(new BasicNameValuePair("startTime",URLDecoder.decode(startTime[0], "UTF-8")));
+                nameValues.add(new BasicNameValuePair("endDate",URLDecoder.decode(endDate[0], "UTF-8")));
+                nameValues.add(new BasicNameValuePair("endTime",URLDecoder.decode(endTime[0], "UTF-8")));
+                nameValues.add(new BasicNameValuePair("reqItems",URLDecoder.decode(reqitems[0], "UTF-8")));
+                nameValues.add(new BasicNameValuePair("isBroadcast",URLDecoder.decode(isBroadcast[0], "UTF-8")));
 
                 //setting values to HttpPost
                 post.setEntity(new UrlEncodedFormEntity(nameValues, "UTF-8"));
