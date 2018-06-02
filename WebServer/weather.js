@@ -10,20 +10,11 @@ router.get('/',function(req, res){
 });
 
 function getWeather(callback) {
-
-  var weatherData = {
-    summary: 'Clear',
-    icon: 'clear-night',
-    temperature: 10.43,
-    humidity: 0.58,
-    windSpeed: 2.84,
-  };
-
-  /*var Forecast = require('forecast');
+  var Forecast = require('forecast');
 
   var forecast = new Forecast({
           service: 'forecast.io',
-          key: '****************************',
+          key: '3ed04ee2692b0344d29afd96a34b18fe',
           units: 'celcius',
           cache: true,
           ttl:{
@@ -35,13 +26,13 @@ function getWeather(callback) {
   forecast.get([37.5,127], function(err, weather){
           console.dir(weather.currently);
           if(err) return console.dir(err);
-
+	  weatherData = weather;
   //      console.dir();
   //      console.dir(weather.currently.summary);
   //      console.dir(weather.currently.temperature);
   });
 
-  weatherData = weather.currently*/
+
   if (typeof callback === "function"){
     callback(weatherData);
   }

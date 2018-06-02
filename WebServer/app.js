@@ -142,7 +142,7 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
         if(arg1.indexOf('None Detected')>=0){
           return res.send('who are you?');
         }else {
-          global.userName = arg1.split(".")[0];
+          global.userName = (arg1.toString()).split(".")[0];
           global.userNameJpg = global.userName + '.jpg'
         }
 
