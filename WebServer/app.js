@@ -69,7 +69,8 @@ app.get('/init', function (req, res) {
 });
 
 app.get('/imgs', function (req,res){
-  fs.readFile('./image/'+userNameJpg, function (error, data){
+  fs.readFile('./image/'+global.userNameJpg, function (error, data){
+    console.log("userNameJpg    "+global.userNameJpg);
     res.end(data)
   })
 })
@@ -80,7 +81,7 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
   async.waterfall(
     [
       function(callback) {
-        fileRouter.fileDownload(request, function(filePath){
+        fileRouter.fileDownloadRaz(request, function(filePath){
           callback(null, filePath);
         });
       },
@@ -125,8 +126,8 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
               return res.send(err);
             }
             console.log("<== align_img result : "+result);//result = jh2.jpg
-            userName = result.split(".")[0]; //======================================> jh2에서 2분리
-            userNameJpg = userName +'.jpg'
+            userName = result//.split(".")[0]; //======================================> jh2에서 2분리
+            userNameJpg = userName// +'.jpg'
             callback(null, result);
           });
         }
@@ -139,8 +140,8 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
         if(str.indexOf('None Detected')>=0){
           return res.send('who are you?');
         }else {
-          userName = arg1;
-          userNameJpg = userName + '.jpg'
+          // userName = arg1;
+          // userNameJpg = userName + '.jpg'
         }
 
         messageNum = 3;
@@ -153,11 +154,12 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
         //messageNum = 3
         //*
 
-        dbConnectRouter.scheduleQuery(arg1,userName,function(schedule){
-          dbConnectRouter.requiredItemQuery(userName,function(requiredItem){
-            callback(null, weather, schedule, requiredItem, messageNum);
-          });
-        });
+       // dbConnectRouter.scheduleQuery(arg1,userName,function(schedule){
+        //  dbConnectRouter.requiredItemQuery(userName,function(requiredItem){
+            // callback(null, weather, schedule, requiredItem, messageNum);
+            callback(null, weather, schedule, 'requiredItem', messageNum);
+        //  });
+       // });
       },
 
       function(arg1, arg2, arg3, arg4,callback) { // arg1 = weather, arg2 = shedule, arg3 : requiredItem, arg4 = messageNum
@@ -197,9 +199,9 @@ app.post('/join', function(req,res) { //회원가입
   async.waterfall(
     [
       function(callback) {
-        fileRouter.fileDownload(req, function(filePath){
-          userNameJpg = (filePath.split("/")[filePath.split("/").length-1]);//.split(".")[0];
-          userName = userNameJpg.split(".")[0];
+        fileRouter.fileDownloadAndroid(req, function(filePath){
+          // userNameJpg = (filePath.split("/")[filePath.split("/").length-1]);//.split(".")[0];
+          // userName = userNameJpg.split(".")[0];
           callback(null, filePath);
           // return res.send(userName+' 사진 받았댱');
         });
@@ -234,6 +236,7 @@ app.post('/join', function(req,res) { //회원가입
     ],
     function (err, result) {
       console.log( result );
+      res.send('Hello!');
     }
   );
 
