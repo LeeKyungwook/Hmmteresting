@@ -28,7 +28,7 @@ var schedules = mongoose.Schema({
   isBroadcast:'number'
 });
 
-var meassages = mongoose.Schema({
+var messages = mongoose.Schema({
   from : 'number',
   to : 'number',
   title : 'string'
@@ -125,14 +125,15 @@ function userName2UidQuery(req, callback){
 
 function insertScheduleQuery(req, callback){
   var request = req;
-  if(error) {
+ /* if(error) {
     console.log(error);
     return callback('insert Schedule error');
-  } else {
-    db.collection(SCHEDULES).insert(request);
+  } else {*/
+    console.log('request '+request);
+    db.collection('schedules').insert(request);
     console.log('insert Schedule success');
     return callback('insert Schedule success');
-  }
+ // }
 };
 
 

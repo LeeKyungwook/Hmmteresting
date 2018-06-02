@@ -149,9 +149,9 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
         var date = (new Date()).toFormat('YYYYMMDD');
 
         var json = {
-          userName = userName,
-          startDate = date,
-          endDate = date
+          userName :global.userName,
+          startDate :date,
+          endDate :date
         };
 
         weatherRouter.getWeather(function(weather_){
@@ -321,7 +321,8 @@ app.post('/showSchedule', function(req,res) { //req = 날짜
 });
 
 app.post('/addSchedule', function(req,res) { //req = 날짜
-  dbConnectRouter.insertScheduleQuery(req, function(result){
+  console.log(req.body);
+  dbConnectRouter.insertScheduleQuery(req.body, function(result){
     res.send(result);
   });
 });
