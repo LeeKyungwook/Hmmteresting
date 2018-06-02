@@ -6,6 +6,7 @@ var formidable = require('formidable');
 var async = require('async');
 var PythonShell = require('python-shell');
 var fs = require('fs');
+require('date-utils');
 
 
 var username ='none';
@@ -58,14 +59,18 @@ app.post('/',function(req, res){
 
 app.get('/init', function (req, res) {
 
-  res.render('index', {
-    name: global.userName,
-    title: "Hmmteresting Demo",
-    startDate: schedule1.startDate,
-    endDate : schedule1.endDate,
-    title_name : schedule1.title,
-    where : schedule1.where
-  });
+  if(userName == 'none'){
+    res.render('index2',{});
+  }else {
+    res.render('index', {
+      name: global.userName,
+      title: "Hmmteresting Demo",
+      startDate: schedule1.startDate,
+      endDate : schedule1.endDate,
+      title_name : schedule1.title,
+      where : schedule1.where
+    });
+  }
 });
 
 app.get('/imgs', function (req,res){
@@ -76,7 +81,7 @@ app.get('/imgs', function (req,res){
 })
 
 var request, response;
-app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기 +초기에 받은 메세지 개수도 보여줘야,,,
+app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기 +초기에 받은 <메세지 개수>도 보여줘야,,,
   request = req;
   async.waterfall(
     [
@@ -121,45 +126,47 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
         }else {
           PythonShell.run('../caffe/extract_feature/FaceFeatureExtractor.py',options, function(err, result){
             if(err) {
-              //throw err;
-              //console.log(err);
+              console.log(err);
               return res.send(err);
             }
             console.log("<== align_img result : "+result);//result = jh2.jpg
-            userName = result//.split(".")[0]; //======================================> jh2에서 2분리
-            userNameJpg = userName// +'.jpg'
             callback(null, result);
           });
         }
       },
 
-      function(arg1, callback){ // arg1 = userName
-        var str = arg1;
+      function(arg1, callback){
+        // arg1 = jh2.jpg
         var weather;
         var messageNum;
-        if(str.indexOf('None Detected')>=0){
+        if(arg1.indexOf('None Detected')>=0){
           return res.send('who are you?');
         }else {
-          // userName = arg1;
-          // userNameJpg = userName + '.jpg'
+          global.userName = arg1.split(".")[0];
+          global.userNameJpg = global.userName + '.jpg'
         }
 
-        messageNum = 3;
+        var date = (new Date()).toFormat('YYYYMMDD');
+
+        var json = {
+          userName = global.userName,
+          startDate = date,
+          endDate = date
+        };
 
         weatherRouter.getWeather(function(weather_){
           weather = weather_;
         });
 
         //*DB
-        //messageNum = 3
+        messageNum = 3;
         //*
 
-       // dbConnectRouter.scheduleQuery(arg1,userName,function(schedule){
-        //  dbConnectRouter.requiredItemQuery(userName,function(requiredItem){
-            // callback(null, weather, schedule, requiredItem, messageNum);
-            callback(null, weather, schedule, 'requiredItem', messageNum);
-        //  });
-       // });
+        dbConnectRouter.scheduleQuery(json, function(schedule){
+          dbConnectRouter.requiredItemQuery(json, function(requiredItem){
+            callback(null, weather, schedule, requiredItem, messageNum);
+          });
+        });
       },
 
       function(arg1, arg2, arg3, arg4,callback) { // arg1 = weather, arg2 = shedule, arg3 : requiredItem, arg4 = messageNum
@@ -192,18 +199,13 @@ app.post('/veiwMessage', function(req,res) { //메세지 출력
 });
 
 
-
-
 app.post('/join', function(req,res) { //회원가입
   request = req;
   async.waterfall(
     [
       function(callback) {
         fileRouter.fileDownloadAndroid(req, function(filePath){
-          // userNameJpg = (filePath.split("/")[filePath.split("/").length-1]);//.split(".")[0];
-          // userName = userNameJpg.split(".")[0];
           callback(null, filePath);
-          // return res.send(userName+' 사진 받았댱');
         });
       },
 
@@ -226,7 +228,7 @@ app.post('/join', function(req,res) { //회원가입
         });
       },
 
-      function(arg1, callback) { // arg1 = weather, arg2 = shedule, arg3 : requiredItem, arg4 = messageNum
+      function(arg1, callback) {
         if(arg1 == 'Error2 : No Face Found'){
           return res.send('cannot find face');
         }else {
@@ -240,30 +242,75 @@ app.post('/join', function(req,res) { //회원가입
     }
   );
 
-
-  //res.send('join fail *^^*');
-  ///디비 쿼리,,,,,,,, 확인,,,,
-
-
-  // res.send('alread joinInfo');
   return;
 });
 
 
 app.post('/joinInfo', function(req,res){ //사용자의 정보가 db에 있는지 없는지 확인하고 없으면 insert
-  userName = req.body.name;
+  var request = req;
 
-  res.send('joinInfo accept');
+  dbConnectRouter.userName2UidQuery(request, function(Uid){
+    if(Uid != null){
+      console.log('이미 존재하는 이름입니다.');
+      return res.send('이미 존재하는 이름입니다.');
+    }else {
+      dbConnectRouter.userId2UidQuery(request, function(Uid){
+        if(Uid != null){
+          console.log('이미 존재하는 ID 입니다.');
+          return res.send('이미 존재하는 ID 입니다.');
+        }else {
+          /* insertUser */
+          return res.send('joinInfo accept');
+        }
+      });
+    }
+  });
 });
 
 
 app.post('/joinPicture', function(req,res) { //회원가입
-  /*
-  1. 사진 5장 받기
-  2. 얼굴,,,,,,,,,처리,,,,, -> if else 사진에 얼굴이 제대로 없으면 처리! -> 어떻게..?
-  3. 안드로이드로 결과 전송
-  4. 끝!
-  */
+  request = req;
+  async.waterfall(
+    [
+      function(callback) {
+        fileRouter.fileDownloadAndroid(req, function(filePath){
+          callback(null, filePath);
+        });
+      },
+
+      function(arg1, callback) {  //arg1 = filePath
+        var options = {
+          mode: 'text',
+          pythonPath: '',
+          pythonOptions: ['-u'],
+          scriptPath: '',
+          args: arg1
+        };
+        console.log("==> android face_recognize arg1 : "+ arg1);
+        PythonShell.run('../face_detection/src/android_face_resize_alignment.py',options, function(err, result){
+          if(err) {
+            console.log(err);
+            return res.send(err);
+          }
+          console.log("<== android face_recognize result : "+result);
+          callback(null, result);
+        });
+      },
+
+      function(arg1, callback) {
+        if(arg1 == 'Error2 : No Face Found'){
+          return res.send('cannot find face');
+        }else {
+          callback(null, 'done');
+        }
+      }
+    ],
+    function (err, result) {
+      console.log( result );
+      res.send('Nice Meet You *^^*');
+    }
+  );
+  return;
 });
 
 
@@ -271,4 +318,10 @@ app.post('/showSchedule', function(req,res) { //req = 날짜
   // scheduleQuery()
   console.log(req.body);
   res.send(schedule);
+});
+
+app.post('/addSchedule', function(req,res) { //req = 날짜
+  dbConnectRouter.insertScheduleQuery(req, function(result){
+    res.send(result);
+  });
 });

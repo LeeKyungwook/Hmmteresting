@@ -24,22 +24,26 @@ var schedules = mongoose.Schema({
   startTime:'number',
   endDate:'number',
   endTime:'number',
+  reqItems:'string',
   isBroadcast:'number'
 });
 
-var reqItems = mongoose.Schema({
-  date:'number',
-  user:'number',
-  memo:'string'
-});
+/*var reqItems = mongoose.Schema({
+date:'number',
+user:'number',
+memo:'string'
+});  */
 
-var meassage = mongoose.Schema({
-
+var meassages = mongoose.Schema({
+  from : 'number',
+  to : 'number',
+  title : 'string'
 });
 
 var USERS = mongoose.model('users', users);
 var SCHEDULES = mongoose.model('schedules', schedules);
 var REQITEMS = mongoose.model('reqitems', reqItems);
+var MESSAGES = mongoose.model('messages',messages);
 
 var uid;
 var dd;
@@ -56,49 +60,88 @@ sch_objID = "5afd61c4cd2a59ae077d05c5"
 string_ID = "suhyun000"  //dummy
 
 
-function scheduleQuery(thisDate, userName, callback) {
+function scheduleQuery(req, callback) {
   //search 20180531's schedules
-  // var thisDate = req.thisDate;
-  SCHEDULES.find({ $and:[{ "startDate":{$lte:thisDate} }, {"endDate":{$gte:thisDate}}, {user:uid}] }, { __v:0}, function(error, schedules) {
-    console.log('--- Read today\'s Schedules of User'+ uid +' ---');
-    if(error){ console.log(error); }
-    else{
-      console.log(schedules);
-      if (typeof callback === "function"){
-        callback(schedules);
+  var request = req;
+
+  userName2UidQuery(userName, function(Uid){
+    SCHEDULES.find({ $and:[{ "startDate":{$lte:request.startDate} }, {"endDate":{$gte:request.endDate}}, {user:Uid}] }, { __v:0}, function(error, schedules) {
+      console.log('--- Read today\'s Schedules of User'+ uid +' ---');
+      if(error){ console.log(error); }
+      else{
+        console.log(schedules);
+        if (typeof callback === "function"){
+          callback(schedules);
+        };
       };
-    };
+    });
   });
 };
+
 
 function requiredItemQuery(req, callback){
   //search today's requiredItems
-  REQITEMS.find({ $and:[{ date:thisDate }, {user:uid}] }, {_id:0, __v:0},function(error, reqitems){
-    console.log('--- Read Required today\'s Item List of User ' + uid + ' ---');
-    if(error){ console.log(error); }
-    else{
-      console.log(reqitems);
-      if (typeof callback === "function"){
-        callback(reqitems);
+  var request = req;
+
+  userName2UidQuery(userName, function(Uid){
+    REQITEMS.find({ $and:[{ date:request.startDate }, {user:Uid}] }, {_id:0, __v:0},function(error, reqitems){
+      console.log('--- Read Required today\'s Item List of User ' + Uid + ' ---');
+      if(error){ console.log(error); }
+      else{
+        console.log(reqitems);
+        if (typeof callback === "function"){
+          callback(reqitems);
+        };
       };
-    };
+    });
   });
 };
 
 
-function searchIdQuery(req, callback){
+function userId2UidQuery(req, callback){
   //search user whose id is string_ID
   USERS.find({ id:string_ID }, { _id:0, __v:0 },function(error,users) {
     console.log('--- User Info Test ---');
-    if(error){ console.log(error); }
-    else{
+    if(error){
+      console.log(error);
+    }else{
       console.log(users);
       if (typeof callback === "function"){
-        callback(users);
+        callback(users.Uid);
       };
     }
   });
 };
+
+
+function userName2UidQuery(req, callback){
+  //search user whose name is userName
+  USERS.find({ name:req.userName }, { _id:0, __v:0 },function(error,users) {
+    console.log('--- User Info Test ---');
+    if(error){
+      console.log(error);
+    } else{
+      console.log(users);
+      if (typeof callback === "function"){
+        callback(users.Uid);
+      };
+    }
+  });
+};
+
+
+function insertScheduleQuery(req, callback){
+  var request = req;
+  if(error) {
+    console.log(error);
+    return callback('insert Schedule error');
+  } else {
+    db.collection(SCHEDULES).insert(request);
+    console.log('insert Schedule success');
+    return callback('insert Schedule success');
+  }
+};
+
 
 function updateScheduleQuery(req, callback){
   //update schedule by its ObjectId
@@ -117,7 +160,8 @@ function updateScheduleQuery(req, callback){
 
 function deleteScheduleQuery(req, callback){
   //delete schedule by its ObjectId
-  SCHEDULES.deleteOne(ObjectId(sch_objID), function(err, users) {
+  var request = req;
+  SCHEDULES.deleteOne(ObjectId(request._id), function(err, users) {
     console.log('--- Delete Schedule Test ---');
     if(error) { console.error(); }
     else{
@@ -131,18 +175,25 @@ function deleteScheduleQuery(req, callback){
 
 
 function insertUserQuery(req, callback){ //req : name Uid pw
- //insert req user
- // USERS.
+  //insert req user
+  // USERS.
+
+  callback('delete success');
 };
 
 
-function searchUserQuery(req, callback){ //req : name Uid pw
- //search req user
- // USERS.
+function sendMessageQuery(req, callback) {
+
+  callback('delete success');
+};
+
+function receiveMessageQuery(req, callback) {
+
+  callback('delete success');
 };
 
 function veiwMessageQuery(req, callback) {
-  // MESSAGES.find({to:ID})
+  // MESSAGES.find({to:Uid})
   // .sort({uploadDate:-1})
   // .limit(5)
   // .exec(function(err, messages){
@@ -151,15 +202,21 @@ function veiwMessageQuery(req, callback) {
   // });
 };
 
+function howManyMassageQuery(req, callback) {
 
+};
 
 module.exports = {
   scheduleQuery: scheduleQuery,
   requiredItemQuery: requiredItemQuery,
-  searchIdQuery: searchIdQuery,
+  userId2UidQuery: userId2UidQuery,
+  userName2UidQuery: userName2UidQuery,
+  insertScheduleQuery: insertScheduleQuery,
   updateScheduleQuery: updateScheduleQuery,
   deleteScheduleQuery: deleteScheduleQuery,
   insertUserQuery: insertUserQuery,
-  searchUserQuery: searchUserQuery,
-  veiwMessageQuery: veiwMessageQuery
+  sendMessageQuery: sendMessageQuery,
+  receiveMessageQuery: receiveMessageQuery,
+  veiwMessageQuery: veiwMessageQuery,
+  howManyMassageQuery: howManyMassageQuery
 };
