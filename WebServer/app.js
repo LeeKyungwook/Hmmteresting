@@ -149,7 +149,7 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
         var date = (new Date()).toFormat('YYYYMMDD');
 
         var json = {
-          userName = global.userName,
+          userName = userName,
           startDate = date,
           endDate = date
         };

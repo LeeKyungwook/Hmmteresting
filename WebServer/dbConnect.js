@@ -28,12 +28,6 @@ var schedules = mongoose.Schema({
   isBroadcast:'number'
 });
 
-/*var reqItems = mongoose.Schema({
-date:'number',
-user:'number',
-memo:'string'
-});  */
-
 var meassages = mongoose.Schema({
   from : 'number',
   to : 'number',
@@ -42,7 +36,6 @@ var meassages = mongoose.Schema({
 
 var USERS = mongoose.model('users', users);
 var SCHEDULES = mongoose.model('schedules', schedules);
-var REQITEMS = mongoose.model('reqitems', reqItems);
 var MESSAGES = mongoose.model('messages',messages);
 
 var uid;
@@ -84,7 +77,7 @@ function requiredItemQuery(req, callback){
   var request = req;
 
   userName2UidQuery(userName, function(Uid){
-    REQITEMS.find({ $and:[{ date:request.startDate }, {user:Uid}] }, {_id:0, __v:0},function(error, reqitems){
+    SCHEDULES.find({ $and:[{ date:request.startDate }, {user:Uid}] }, {_id:0, __v:0, title:0, user:0, startDate:0, endDate:0, endTime:0, isBroadcast:0},function(error, reqitems){
       console.log('--- Read Required today\'s Item List of User ' + Uid + ' ---');
       if(error){ console.log(error); }
       else{
