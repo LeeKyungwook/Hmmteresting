@@ -10,7 +10,6 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
 from PyQt5.QtGui import QIcon, QPixmap
-import sys
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -19,16 +18,7 @@ class App(QWidget):
     
     with open('test.json') as data_file:
         data = json.load(data_file)
-    
-    def initUI(self, Mainwindow):
-
-        MainWindow.setObjectName("Hmmteresting...")
-        MainWindow.resize(1920, 1080)
-        MainWindow.setAutoFillBackground(True)
-        p = MainWindow.palette()
-        p.setColor(self.backgroundRole(), Qt.black)
-        MainWindow.setPalette(p)
-    
+     
     def scheduleUI(self, MainWindow):
 
         pixmap_weather = QPixmap('/home/kyungwook/kyungwook/weather_img/cloud.PNG')
@@ -127,8 +117,6 @@ class App(QWidget):
         self.Message_number.setStyleSheet('color : red')
         self.Message_number.setAlignment(Qt.AlignRight)
 
-
-    
     def closeUI(self, MainWindow):
         QApplication.quit()
 
@@ -139,6 +127,5 @@ if __name__ == '__main__':
     MainWindow = QtWidgets.QMainWindow()
     ui = App()
     ui.scheduleUI(MainWindow)
-    #ui.initUI(MainWindow)
     MainWindow.show()
     app.exec_()
