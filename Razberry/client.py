@@ -12,10 +12,7 @@ import os
 import time
 import subprocess
 import sys
-from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import Qt
+
 from os import walk
 
 base_url = 'http://112.151.162.170:7000/jhTest'
@@ -58,6 +55,7 @@ class RaspberryModule():
 
     def draw_rects(self, img, rects, color):
         for x1, y1, x2, y2 in rects:
+            cv2.imwrite("test_image.jpg", img)
             rect_image = cv2.rectangle(img, (x1-40, y1-40), (x2+40, y2+40), color, 2)
             print(x1, y1, x2, y2)   #rectangle coordinate
             cv2.imwrite("rect_image.jpg", rect_image)   #save a rectangle-drawn picture
@@ -77,68 +75,11 @@ class RaspberryModule():
         aud_name = subprocess.check_output('./audio_message.sh', shell = True)
         return aud_name
 
-class RaspberryUI(QWidget):
- 
-    def initUI(self, Mainwindow):
-
-        MainWindow.setObjectName("Hmmteresting...")
-        MainWindow.resize(800, 600)
-        MainWindow.setAutoFillBackground(True)
-        p = MainWindow.palette()
-        p.setColor(self.backgroundRole(), Qt.black)
-        MainWindow.setPalette(p)
-
-    def scheduleUI(self, MainWindow):
-        MainWindow.setObjectName("Hmmteresting...")
-        MainWindow.resize(800, 600)
-        MainWindow.setAutoFillBackground(True)
-        p = MainWindow.palette()
-        p.setColor(self.backgroundRole(), Qt.black)
-        MainWindow.setPalette(p)
-        self.centralwidget = QtWidgets.QWidget(MainWindow)
-        self.centralwidget.setObjectName("centralwidget")
-        self.Date = QtWidgets.QLabel(self.centralwidget)
-        self.Date.setGeometry(QtCore.QRect(30, 30, 141, 31))
-        self.Date.setTextFormat(QtCore.Qt.PlainText)
-        self.Date.setObjectName("Date")
-        self.Time = QtWidgets.QLabel(self.centralwidget)
-        self.Time.setGeometry(QtCore.QRect(30, 70, 141, 31))
-        self.Time.setTextFormat(QtCore.Qt.PlainText)
-        self.Time.setObjectName("Time")
-        self.Schedule = QtWidgets.QLabel(self.centralwidget)
-        self.Schedule.setGeometry(QtCore.QRect(30, 120, 171, 211))
-        self.Schedule.setObjectName("Schedule")
-        self.Name = QtWidgets.QLabel(self.centralwidget)
-        self.Name.setGeometry(QtCore.QRect(230, 30, 301, 51))
-        self.Name.setObjectName("Name")
-        MainWindow.setCentralWidget(self.centralwidget)
-
-        MainWindow.setWindowTitle("Hmmteresting")
-        self.Date.setText("Date")
-        self.Date.setStyleSheet('color : white')
-        self.Time.setText("Time")
-        self.Time.setStyleSheet('color : white')
-        self.Schedule.setText("Schedule")
-        self.Schedule.setStyleSheet('color : white')
-        self.Name.setText("Name")
-    
-    def closeUI(self, MainWindow):
-        return 0
-
 if __name__ == '__main__':
     
-    app = QtWidgets.QApplication(sys.argv)
-    MainWindow = QtWidgets.QMainWindow()
-    ui = RaspberryUI()
-
-    ui.initUI(MainWindow)
-    #ui.scheduleUI(MainWindow)
-    MainWindow.show()
-    #sys.exit(app.exec_())
-
-    print("plz!!")
+    #start init UI
+    os.system('python init.py &')
     raz_module = RaspberryModule()
-    #raz_ui = RaspberryUI()
 
     #Camera setting
     camera = PiCamera()
@@ -176,8 +117,8 @@ if __name__ == '__main__':
         print res.text
 
         #change the color of monitor when server responsed
-        if res is not None:
-            ui.schedule_UI()
+        if res.text is not None:
+            os.system('python schedule.py &')
             break
         
         '''
