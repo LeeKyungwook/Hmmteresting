@@ -57,9 +57,7 @@ app.post('/',function(req, res){
 });
 
 app.get('/init', function (req, res) {
-  // fs.readFile('jh.jpg', function (error, data){
-  //   res.end(data)
-  // })
+
   res.render('index', {
     name: global.userName,
     title: "Hmmteresting Demo",
@@ -87,7 +85,6 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
         });
       },
 
-
       function(arg1, callback) {  //arg1 = filePath
         var options = {
           mode: 'text',
@@ -107,70 +104,72 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
         });
       },
 
-      function(arg1, callback) { //arg1 = 'not found' or imagePath
-      var options = {
-        mode: 'text',
-        pythonPath: '',
-        pythonOptions: ['-u'],
-        scriptPath: '',
-        args: arg1
-      };
+      function(arg1, callback) {
+        //arg1 = 'not found' or imagePath
+        var options = {
+          mode: 'text',
+          pythonPath: '',
+          pythonOptions: ['-u'],
+          scriptPath: '',
+          args: arg1
+        };
 
-      console.log("==> align_img arg1 : "+ arg1);
-      if(arg1 == 'Error2 : No Face Found'){
-        return res.send('cannot find face');
-      }else {
-        PythonShell.run('../caffe/extract_feature/FaceFeatureExtractor.py',options, function(err, result){
-          if(err) {
-            //throw err;
-            //console.log(err);
-            return res.send(err);
-          }
-          console.log("<== align_img result : "+result);//result = jh2.jpg
-	         userName = result.split(".")[0]; //======================================> jh2에서 2분리
-           userNameJpg = userName +'.jpg'
-           callback(null, result);
+        console.log("==> align_img arg1 : "+ arg1);
+        if(arg1 == 'Error2 : No Face Found'){
+          return res.send('cannot find face');
+        }else {
+          PythonShell.run('../caffe/extract_feature/FaceFeatureExtractor.py',options, function(err, result){
+            if(err) {
+              //throw err;
+              //console.log(err);
+              return res.send(err);
+            }
+            console.log("<== align_img result : "+result);//result = jh2.jpg
+            userName = result.split(".")[0]; //======================================> jh2에서 2분리
+            userNameJpg = userName +'.jpg'
+            callback(null, result);
+          });
+        }
+      },
+
+      function(arg1, callback){ // arg1 = userName
+        var str = arg1;
+        var weather;
+        var messageNum;
+        if(str.indexOf('None Detected')>=0){
+          return res.send('who are you?');
+        }else {
+          userName = arg1;
+          userNameJpg = userName + '.jpg'
+        }
+
+        messageNum = 3;
+
+        weatherRouter.getWeather(function(weather_){
+          weather = weather_;
         });
-      }
-    },
 
-    function(arg1, callback){ // arg1 = userName
-      var str = arg1;
-      var weather;
-      var messageNum;
-      if(str.indexOf('None Detected')>=0){
-        return res.send('who are you?');
-      }else {
-        userName = arg1;
-        userNameJpg = userName + '.jpg'
-      }
+        //*DB
+        //messageNum = 3
+        //*
 
-      messageNum = 3;
-
-      weatherRouter.getWeather(function(weather_){
-        weather = weather_;
-      });
-
-      //*DB
-      //messageNum = 3
-      //*
-
-      dbConnectRouter.scheduleQuery(arg1,userName,function(schedule){
-        dbConnectRouter.requiredItemQuery(userName,function(requiredItem){
-          callback(null, weather, schedule, requiredItem, messageNum);
+        dbConnectRouter.scheduleQuery(arg1,userName,function(schedule){
+          dbConnectRouter.requiredItemQuery(userName,function(requiredItem){
+            callback(null, weather, schedule, requiredItem, messageNum);
+          });
         });
-      });
-    },
+      },
 
-    function(arg1, arg2, arg3, arg4,callback) { // arg1 = userName, arg2 = shedule, arg3 = messageNum
-      res.json({weather: arg1, schedule : arg2, requiredItem : arg3, messageNum : arg4});
-      callback(null, 'done')
-    },
-  ],
+      function(arg1, arg2, arg3, arg4,callback) { // arg1 = weather, arg2 = shedule, arg3 : requiredItem, arg4 = messageNum
+        res.json({weather: arg1, schedule : arg2, requiredItem : arg3, messageNum : arg4});
+        callback(null, 'done')
+      }
+    ],
 
-  function (err, result) {
-    console.log( result );
-  });
+    function (err, result) {
+      console.log( result );
+    }
+  );
 });
 
 
@@ -194,12 +193,51 @@ app.post('/veiwMessage', function(req,res) { //메세지 출력
 
 
 app.post('/join', function(req,res) { //회원가입
-  fileRouter.fileDownload(req, function(filePath){
-	console.log('joinjoin '+userName);
-  var userNameJpg = (filePath.split("/")[filePath.split("/").length-1]);//.split(".")[0];
-  userName = userNameJpg.split(".")[0];
-	return res.send(userName+' 사진 받았댱');
-  });
+  request = req;
+  async.waterfall(
+    [
+      function(callback) {
+        fileRouter.fileDownload(req, function(filePath){
+          userNameJpg = (filePath.split("/")[filePath.split("/").length-1]);//.split(".")[0];
+          userName = userNameJpg.split(".")[0];
+          callback(null, filePath);
+          // return res.send(userName+' 사진 받았댱');
+        });
+      },
+
+      function(arg1, callback) {  //arg1 = filePath
+        var options = {
+          mode: 'text',
+          pythonPath: '',
+          pythonOptions: ['-u'],
+          scriptPath: '',
+          args: arg1
+        };
+        console.log("==> android face_recognize arg1 : "+ arg1);
+        PythonShell.run('../face_detection/src/android_face_resize_alignment.py',options, function(err, result){
+          if(err) {
+            console.log(err);
+            return res.send(err);
+          }
+          console.log("<== android face_recognize result : "+result);
+          callback(null, result);
+        });
+      },
+
+      function(arg1, callback) { // arg1 = weather, arg2 = shedule, arg3 : requiredItem, arg4 = messageNum
+        if(arg1 == 'Error2 : No Face Found'){
+          return res.send('cannot find face');
+        }else {
+          callback(null, 'done');
+        }
+      }
+    ],
+    function (err, result) {
+      console.log( result );
+    }
+  );
+
+
   //res.send('join fail *^^*');
   ///디비 쿼리,,,,,,,, 확인,,,,
 
@@ -228,5 +266,6 @@ app.post('/joinPicture', function(req,res) { //회원가입
 
 app.post('/showSchedule', function(req,res) { //req = 날짜
   // scheduleQuery()
+  console.log(req.body);
   res.send(schedule);
 });

@@ -33,6 +33,10 @@ var reqItems = mongoose.Schema({
   memo:'string'
 });
 
+var meassage = mongoose.Schema({
+
+});
+
 var USERS = mongoose.model('users', users);
 var SCHEDULES = mongoose.model('schedules', schedules);
 var REQITEMS = mongoose.model('reqitems', reqItems);
