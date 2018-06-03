@@ -34,9 +34,7 @@ public class MainActivity extends AppCompatActivity {
                 btn_delete_schedule.setVisibility(View.VISIBLE);
                 btn_update_schedule.setVisibility(View.VISIBLE);
 
-                selectedDate[0] = year%100;
-                selectedDate[0] = selectedDate[0] *100 + month;
-                selectedDate[0] = selectedDate[0] *100 + dayOfMonth;
+                selectedDate[0] = year*10000 + (month + 1)*100 + dayOfMonth;
 
                 btn_add_schedule.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -57,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
                         Intent go_scheduleList = new Intent(getApplicationContext(),
                                 ScheduleList.class);
                         go_scheduleList.putExtra("selectday", selectedDate[0]);
+                        go_scheduleList.putExtra("userName", sh);
                         startActivity(go_scheduleList);
 
                         Toast.makeText(getApplicationContext(), "delete", Toast.LENGTH_SHORT).show();

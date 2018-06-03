@@ -8,14 +8,15 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CustomListAdapter extends ArrayAdapter<CustomListAdapter.ScheduleDataList> {
 
     private Context mycontext = null;
 
-    public CustomListAdapter(@NonNull Context context, int resource, @NonNull List objects) {
-        super(context, resource, objects);
+    public CustomListAdapter(Context context, int txtViewresource, ArrayList<ScheduleDataList> objects) {
+        super(context, txtViewresource, objects);
         this.mycontext = context;
     }
 
@@ -32,7 +33,7 @@ public class CustomListAdapter extends ArrayAdapter<CustomListAdapter.ScheduleDa
 
         pView = (PointerView)view.getTag();
 
-        ScheduleDataList receivedDataList = (ScheduleDataList) getItem(nPosition); //focus in this
+        ScheduleDataList receivedDataList = getItem(nPosition); //focus in this
 
         if(receivedDataList != null) {
             pView.getMainTitleView().setText(receivedDataList.getMainTitle());
@@ -42,6 +43,8 @@ public class CustomListAdapter extends ArrayAdapter<CustomListAdapter.ScheduleDa
         return view;
     }
 
+    /*뷰 재사용을 위한 클래스
+    * 클래스 자체를 view tag로 저장-불러오기함*/
     private class PointerView {
         private View myBaseView = null;
         private TextView myMainTitle = null;
@@ -66,6 +69,7 @@ public class CustomListAdapter extends ArrayAdapter<CustomListAdapter.ScheduleDa
         }
     }
 
+    /*리스트의 데이터 클래스*/
     static class ScheduleDataList {
         private String MainTitle;
         private String SubTitle;
