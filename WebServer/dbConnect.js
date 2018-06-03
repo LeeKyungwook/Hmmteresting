@@ -57,8 +57,8 @@ function scheduleQuery(req, callback) {
   //search 20180531's schedules
   var request = req;
 
-  userName2UidQuery(userName, function(Uid){
-    SCHEDULES.find({ $and:[{ "startDate":{$lte:request.startDate} }, {"endDate":{$gte:request.endDate}}, {user:Uid}] }, { __v:0}, function(error, schedules) {
+  userName2UidQuery(request.userName, function(Uid){
+    SCHEDULES.find({ $and:[{ startDate:{$lte:request.thisDate} }, {endDate:{$gte:request.thisDate}}, {user:Uid}] }, { __v:0}, function(error, schedules) {
       console.log('--- Read today\'s Schedules of User'+ uid +' ---');
       if(error){
          console.log(error);
@@ -78,8 +78,8 @@ function scheduleQuery(req, callback) {
 function requiredItemQuery(req, callback){
   //search today's requiredItems
   var request = req;
-  userName2UidQuery(userName, function(Uid){
-    SCHEDULES.find({ $and:[{ date:request.startDate }, {user:Uid}] }, {_id:0, __v:0, title:0, user:0, startDate:0, endDate:0, endTime:0, isBroadcast:0},function(error, reqitems){
+  userName2UidQuery(request.userName, function(Uid){
+    SCHEDULES.find({ $and:[{ startDate:{$lte:request.thisDate} }, {endDate:{$gte:request.thisDate}}, {user:Uid}] }, {_id:0, __v:0, title:0, user:0, startDate:0, endDate:0, endTime:0, isBroadcast:0},function(error, reqitems){
       console.log('--- Read Required today\'s Item List of User ' + Uid + ' ---');
       if(error){
         console.log(error);

@@ -160,8 +160,7 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
 
         var json = {
           userName : global.userName,
-          startDate : date,
-          endDate : date
+          thisDate : date
         };
 
         weatherRouter.getWeather(function(weather_){
@@ -313,7 +312,7 @@ app.post('/joinPicture', function(req,res) { //회원가입
 });
 
 
-app.post('/showSchedule', function(req,res) { //req = 날짜
+app.post('/showSchedule', function(req,res) {
   // scheduleQuery()
   console.log(req.body);
   dbConnectRouter.scheduleQuery(req.body, function(schedule){
@@ -321,13 +320,15 @@ app.post('/showSchedule', function(req,res) { //req = 날짜
   });
 });
 
-app.post('/addSchedule', function(req,res) { //req = 날짜
+app.post('/addSchedule', function(req,res) {
+  console.log(req.body);
   dbConnectRouter.insertScheduleQuery(req.body, function(result){
     res.send(result);
   });
 });
 
 app.post('deleteSchedule',function(req, res){
+  console.log(req.body);
   dbConnectRouter.insertScheduleQuery(req.body, function(result){
     res.send(result);
   });
