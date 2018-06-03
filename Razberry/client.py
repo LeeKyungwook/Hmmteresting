@@ -12,10 +12,11 @@ import os
 import time
 import subprocess
 import sys
+import ast
 
 from os import walk
 
-base_url = 'http://112.151.162.170:7000/jhTest'
+base_url = 'http://112.151.162.170:7000/init'
 pwd = '/home/pi/Hmmteresting/Razberry/test_image.jpg'
 
 class RaspberryModule():
@@ -77,8 +78,6 @@ class RaspberryModule():
 
 if __name__ == '__main__':
     
-    #start init UI
-    os.system('python init.py &')
     raz_module = RaspberryModule()
 
     #Camera setting
@@ -89,8 +88,17 @@ if __name__ == '__main__':
     cascade = cv2.CascadeClassifier("/home/pi/opencv-3.3.0/data/haarcascades/haarcascade_frontalface_alt.xml")
     
     time.sleep(0.1)
-    
+
+    '''
+    os.system('python init.py &')
+    time.sleep(3)
+    os.system('pkill -9 -ef schedule.py')
+    '''
+
     while True:
+        os.system('python init.py &')
+        time.sleep(3)
+        os.system('pkill -9 -ef schedule.py')
 
 	#capture frames from the camera
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
@@ -105,22 +113,36 @@ if __name__ == '__main__':
             vis = img.copy()
         
             if raz_module.draw_rects(vis, rects, (0, 255, 0)) == 1:
-                break
-            
+                
+                files = {'media' : open(pwd, 'rb') }
+                image_url = base_url
+                res = requests.post(image_url, files = files)
+	        
+                #make json fionoe named test.json
+                if res.text == 'cannot find face':
+                    print res.text
+                elif res.text == 'who are you?':
+                    print res.text
+                else :
+                    print("detected!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+                    print res.text
+
+                    json_data = ast.literal_eval(res.text)
+                    with open('test.json', 'w') as make_file:
+                        json.dump(json_data, make_file, ensure_ascii=False)
+
+                    break
+                    
             #show the frame
             #cv2.imshow("Frame", vis)
             rawCapture.truncate(0)
 
-        files = {'media' : open(pwd, 'rb') }
-        image_url = base_url + 'file'
-        res = requests.post(image_url, files = files)
-        print res.text
-
+        rawCapture.truncate(0)
         #change the color of monitor when server responsed
-        if res.text is not None:
-            os.system('python schedule.py &')
-            break
-        
+        os.system('python schedule.py &')
+        time.sleep(3)
+        os.system('pkill -9 -ef init.py')
+        time.sleep(5)
         '''
         while True:
 

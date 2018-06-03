@@ -2,7 +2,9 @@
 # coding=utf8
 import sys
 import json
+import time
 
+from time import localtime, strftime
 from pprint import pprint
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtWidgets import *
@@ -14,6 +16,9 @@ from PyQt5.QtGui import QIcon, QPixmap
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+date_text = strftime("%A, %B %d %Y", localtime()) 
+time_text = strftime("%Y.%m.%d %I:%S %p", localtime())
+
 class App(QWidget):
     
     with open('test.json') as data_file:
@@ -21,8 +26,8 @@ class App(QWidget):
      
     def scheduleUI(self, MainWindow):
 
-        pixmap_weather = QPixmap('/home/kyungwook/kyungwook/weather_img/cloud.PNG')
-        pixmap_message = QPixmap('/home/kyungwook/kyungwook/weather_img/message.PNG')
+        pixmap_weather = QPixmap('/home/pi/weather_img/sun_cloud.PNG')
+        pixmap_message = QPixmap('/home/pi/weather_img/message.PNG')
 
         MainWindow.setObjectName("Hmmteresting...")
         MainWindow.resize(1920, 1080)
@@ -51,7 +56,7 @@ class App(QWidget):
         self.Weather_image.setPixmap(pixmap_weather)
         self.Weather_image.setObjectName("Weather_image") 
         self.Temperature = QtWidgets.QLabel(self.centralwidget)
-        self.Temperature.setGeometry(QtCore.QRect(1570, 230, 310, 120))
+        self.Temperature.setGeometry(QtCore.QRect(1570, 240, 310, 120))
         self.Temperature.setObjectName("Temperature")
 
         self.Schedule = QtWidgets.QLabel(self.centralwidget)
@@ -65,26 +70,29 @@ class App(QWidget):
         self.Materials.setObjectName("Materials")
 
         ########################## 영상 메세지 들어 올 시에 이미지 ###############################
-        self.Message_image.setGeometry(QtCore.QRect(1780, 850, 100, 100))
+        self.Message_image.setGeometry(QtCore.QRect(1780, 900, 100, 100))
         self.Message_image.setPixmap(pixmap_message)
         self.Message_image.setObjectName("Message_image")
         self.Message_number = QtWidgets.QLabel(self.centralwidget)
-        self.Message_number.setGeometry(QtCore.QRect(1860, 860, 30, 30))
+        self.Message_number.setGeometry(QtCore.QRect(1860, 910, 30, 30))
         self.Message_number.setObjectName("Message_number")
         ########################################################################################
       
         MainWindow.setCentralWidget(self.centralwidget)
         MainWindow.setWindowTitle("Hmmteresting")
 
-        date_text = self.data["Date"]
-        time_text = self.data["Time"]
-        user_id = self.data["Name"]
+        user_id = self.data["name"]
         say_hello = "안녕! " + user_id
         temperature_num = "18.5"
         temparature_index = temperature_num + "˚C"
-        schedule_text = "9:00 ~ 11:00 Ajou Greative Contest\n11:00 ~ 12:00 : 점심시간 \n13:00 ~ 15:00 : 시상식"
-        materials_text = "노트북, 공유기"
-        message_number = "1"
+	if user_id == "이준호":
+		schedule_text = self.data["schedule"][0]["startTime"] + " ~ " + self.data["schedule"][0]["endTime"] + ' ' +self.data["schedule"][0]["title"] + '\n' + self.data["schedule"][1]["startTime"] + " ~ " + self.data["schedule"][1]["endTime"] + ' ' + self.data["schedule"][1]["title"]
+        	materials_text = self.data["requiredItem"][0] + ' ' + self.data["requiredItem"][1]
+	else:
+		schedule_text = " "
+		materials_text = " "
+
+	message_number = self.data["messageNum"]
 
         self.UserName.setText(say_hello)
         self.UserName.setFont(QtGui.QFont('SansSerif', 70))
@@ -97,15 +105,18 @@ class App(QWidget):
         self.Time.setAlignment(Qt.AlignRight)
         self.Time.setFont(QtGui.QFont('SansSerif', 40))
         self.Time.setStyleSheet('color : white')
+
         self.Schedule.setText(schedule_text)
-        self.Schedule.setFont(QtGui.QFont('SansSerif', 20))
+        self.Schedule.setFont(QtGui.QFont('SansSerif', 25))
         self.Schedule.setStyleSheet('color : white')
+	self.Materials.setText(materials_text)
+        self.Materials.setFont(QtGui.QFont('SansSerif', 20))
+        self.Materials.setStyleSheet('color : white')
+	
+
         self.Materaials_name.setText("☆ 챙겨야 할 것 ☆")
         self.Materaials_name.setFont(QtGui.QFont('SansSerif', 25))
         self.Materaials_name.setStyleSheet('color : white')
-        self.Materials.setText(materials_text)
-        self.Materials.setFont(QtGui.QFont('SansSerif', 20))
-        self.Materials.setStyleSheet('color : white')
         self.Temperature.setText(temparature_index)
         self.Temperature.setFont(QtGui.QFont('SansSerif', 60))
         self.Temperature.setStyleSheet('color : white')
@@ -127,5 +138,5 @@ if __name__ == '__main__':
     MainWindow = QtWidgets.QMainWindow()
     ui = App()
     ui.scheduleUI(MainWindow)
-    MainWindow.show()
+    MainWindow.showFullScreen()
     app.exec_()

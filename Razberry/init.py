@@ -29,5 +29,5 @@ if __name__ == '__main__':
     MainWindow = QtWidgets.QMainWindow()
     ui = App()
     ui.initUI(MainWindow)
-    MainWindow.show()
+    MainWindow.showFullScreen()
     app.exec_()

@@ -1,4 +1,5 @@
 #import the necessary packages
+#-*-coding:utf-8-*-
 from picamera.array import PiRGBArray
 from picamera import PiCamera
 from PIL import Image
@@ -7,9 +8,12 @@ sys.path.append('/usr/local/lib/python2.7/site-packages')
 import time
 import cv2
 import requests
+import json
+import ast
 
 #url = 'http://112.151.162.170:7000/init'
 #pwd = '/home/pi/Hmmteresting/Razberry/crop_image.jpg'
+
 
 def detect(img, cascade):
     rects = cascade.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(30,30),
@@ -61,11 +65,25 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	pwd = '/home/pi/Hmmteresting/Razberry/test_image.jpg'
 	files = {'media' : open(pwd, 'rb') }
 	res = requests.post(url, files = files)
-	print res.text
+
+        #make json fionoe named test.json
+        if res.text == 'cannot find face':
+            print res.text
+        elif res.text == 'who are you?':
+            print res.text
+            print('who are you?')
+        else :
+            print("detected!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+            print res.text
+
+            json_data = ast.literal_eval(res.text)
+            with open('test.json', 'w') as make_file:
+                json.dump(json_data, make_file, ensure_ascii=False)
+
         time.sleep(5)
     
     #show the frame
-    #cv2.imshow("Frame", vis)
+    cv2.imshow("Frame", vis)
 
     #clear the stream in preparation for the next frame
     rawCapture.truncate(0)
