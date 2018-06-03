@@ -172,16 +172,24 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
         messageNum = 1;
         //*
 
-        dbConnectRouter.scheduleQuery(json, function(schedule){
+        callback(null, weather, schedule, requiredItem, messageNum);
+
+        /*dbConnectRouter.scheduleQuery(json, function(schedule){
           dbConnectRouter.requiredItemQuery(json, function(requiredItem){
             callback(null, weather, schedule, requiredItem, messageNum);
           });
-        });
+        });*/
       },
 
-      function(arg1, arg2, arg3, arg4,callback) { // arg1 = weather, arg2 = shedule, arg3 : requiredItem, arg4 = messageNum
-        res.json({weather: arg1, schedule : arg2, requiredItem : arg3, messageNum : arg4});
-        callback(null, 'done')
+      function(arg1, arg2, arg3, arg4, callback) { // arg1 = weather, arg2 = shedule, arg3 : requiredItem, arg4 = messageNum
+        if(global.userName == '남수현'){
+          arg2 = null;
+          arg3 = null;
+          arg4 = 0;
+        }else{
+          es.json({name: global.userName, weather: arg1, schedule : arg2, requiredItem : arg3, messageNum : arg4});
+          callback(null, 'done');
+        }
       }
     ],
 
@@ -195,6 +203,17 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
 app.post('/jhTest', function(req,res) {
   console.log(req);
   res.send(schedule1);
+});
+
+
+app.post('/veiwMessage', function(req,res) { //메세지 출력
+  /*
+  1. 디비에 메세지 이름 리스트 쿼리보내기
+  2. 결과받기 (sender / messageTitle)
+  3. json 형태로 라즈베리에 전송
+  */
+  // var messges = dbRouter.veiwMessageQuery(ID,res);
+  res.json(messges);
 });
 
 
@@ -316,83 +335,11 @@ app.post('/joinPicture', function(req,res) { //회원가입
 app.post('/showSchedule', function(req,res) { //req = 날짜
   // scheduleQuery()
   console.log(req.body);
-  dbConnectRouter.scheduleQuery(req.body, function(schedule){
-    res.send(schedule);
-  });
+  res.send(schedule);
 });
 
 app.post('/addSchedule', function(req,res) { //req = 날짜
   dbConnectRouter.insertScheduleQuery(req.body, function(result){
     res.send(result);
   });
-});
-
-app.post('deleteSchedule',function(req, res){
-  dbConnectRouter.insertScheduleQuery(req.body, function(result){
-    res.send(result);
-  });
-});
-
-
-app.post('/veiwMessage', function(req,res) { //메세지 출력
-  /*
-  1. 디비에 메세지 이름 리스트 쿼리보내기
-  2. 결과받기 (sender / messageTitle)
-  3. json 형태로 라즈베리에 전송
-  */
-  // var messges = dbRouter.veiwMessageQuery(ID,res);
-  res.json(messges);
-});
-
-
-global.client_Param = null
-global.msg_recipient = null
-app.post('/stt',function(req, res){
-
-  var input = req.body.command
-  if(input.indexOf('에게 보내 줘') != -1){
-    var strArray = input.split('에게');
-    msg_recipient = strArray[0];
-    client_Param = '1';
-    console.log(msg_recipient);
-    res.send('1')
-
-  }else if (input.indexOf('읽기') != -1){
-    client_Param = '2';
-    res.send('2');
-
-  }else if ((input.indexOf('') != -1)){
-    res.send('3');
-  }
-});
-
-
-app.post('/raz_client', function(req, res) {
-
-  var responseArray = new Array();
-  var responseObject = new Object();
-
-  responseObject.choiceParam = client_Param;
-  if (client_Param == "1") {         /////////////////////// Sending Message
-    responseArray.push(responseObject);
-    var jsonInfo = JSON.stringify(responseArray);
-    console.log(jsonInfo);
-    msg_recipient = null;
-    client_Param = null;
-    res.send('Recording Message');
-
-  } else if (client_Param == "2"){   /////////////////////// Showing Message
-    responseObject.videoName = 'abceefg.ts'
-    responseArray.push(responseObject);
-    var jsonInfo = JSON.stringify(responseArray);
-    console.log(jsonInfo);
-    msg_recipient = null;
-    client_Param = null;
-    res.send("Showing Message");
-
-  } else {                           //////////////////////// Nothing
-    client_Param = null;
-    console.log("nothing..... ");
-    res.send('Wait');
-  }
 });

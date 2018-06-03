@@ -28,7 +28,7 @@ var schedules = mongoose.Schema({
   isBroadcast:'number'
 });
 
-var meassages = mongoose.Schema({
+var messages = mongoose.Schema({
   from : 'number',
   to : 'number',
   title : 'string'
@@ -125,20 +125,16 @@ function userName2UidQuery(req, callback){
 
 function insertScheduleQuery(req, callback){
   var request = req;
-  if(error) {
-    console.log(error);
-    return callback('insert Schedule error');
-  } else {
-    db.collection(SCHEDULES).insert(request);
-    console.log('insert Schedule success');
-    return callback('insert Schedule success');
-  }
+  db.collection('schedules').insert(request);
+  console.log('insert Schedule success');
+  return callback('insert Schedule success');
 };
 
 
 function updateScheduleQuery(req, callback){
   //update schedule by its ObjectId
-  SCHEDULES.update(ObjectId(sch_objID),{$set:{title:"", user: "", startDate: "", startTime: "", endDate: "", endTime:"" , isBroadcast:"" }}, function(error, schedules) {
+  var request = req;
+  SCHEDULES.update(ObjectId(request._id),{$set:{title:requset.title, user: request.user, startDate: request.startDate, startTime: request.startTime, endDate: request.endDate, endTime:request.endTime , isBroadcast:request.isBroadcast}}, function(error, schedules) {
     console.log('--- Update Info Test ---');
     if(error) { console.error(); }
     else{
@@ -168,23 +164,29 @@ function deleteScheduleQuery(req, callback){
 
 
 function insertUserQuery(req, callback){ //req : name Uid pw
-  //insert req user
-  // USERS.
-
-  callback('delete success');
+  var request = req;
+  db.collection('users').insert(request);
+  console.log('insert Schedule success');
+  return callback('insert Schedule success');
 };
 
 
-function sendMessageQuery(req, callback) {
-
-  callback('delete success');
+function sendMessageQuery(req, callback) { //req : from to title
+  var request = req;
+  db.collection('messages').insert(request);
+  console.log('insert Schedule success');
+  return callback('insert Schedule success');
 };
 
-function receiveMessageQuery(req, callback) {
+function receiveMessageQuery(req, callback) { //req : from to title
+  var request = req;
 
-  callback('delete success');
+  
+  callback('delete success'); //to from message
 };
 
+
+//////////////////아직안씀
 function veiwMessageQuery(req, callback) {
   // MESSAGES.find({to:Uid})
   // .sort({uploadDate:-1})
