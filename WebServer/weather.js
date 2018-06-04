@@ -26,16 +26,17 @@ function getWeather(callback) {
   forecast.get([37.5,127], function(err, weather){
           console.dir(weather.currently);
           if(err) return console.dir(err);
-	  weatherData = weather;
-  //      console.dir();
+	  weatherData = weather.currently;
+	  callback(weatherData); 
+ //      console.dir();
   //      console.dir(weather.currently.summary);
   //      console.dir(weather.currently.temperature);
   });
 
 
-  if (typeof callback === "function"){
-    callback(weatherData);
-  }
+  //if (typeof callback === "function"){
+  //  callback(weatherData);
+ // }
   return weatherData;
 };
 
