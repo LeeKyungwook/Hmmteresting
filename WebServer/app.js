@@ -93,7 +93,6 @@ app.get('/imgs', function (req,res){
 var request, response;
 app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기 +초기에 받은 <메세지 개수>도 보여줘야,,,
   request = req;
-  // reponse = res;
   async.waterfall(
     [
       function(callback) {
@@ -134,6 +133,8 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
         console.log("==> align_img arg1 : "+ arg1);
         if(arg1 == 'Error2 : No Face Found'){
           return res.send('cannot find face');
+        }else if(arg1 == 'Error3 : Too Many Faces'){
+          return res.send('Too Many Faces');
         }else {
           PythonShell.run('../caffe/extract_feature/FaceFeatureExtractor.py',options, function(err, result){
             if(err) {
@@ -166,25 +167,31 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
           //*
 
           weatherRouter.getWeather(function(weather){
-            dbConnectRouter.scheduleQuery(json, function(schedule){
-              dbConnectRouter.requiredItemQuery(json, function(requiredItem){
+            // dbConnectRouter.scheduleQuery(json, function(schedule){
+              // dbConnectRouter.requiredItemQuery(json, function(requiredItem){
                 callback(null, weather, schedule, requiredItem, messageNum);
-              });
-            });
+              // });
+            // });
           });
         }
       },
 
       function(arg1, arg2, arg3, arg4,callback) { // arg1 = weather, arg2 = shedule, arg3 : requiredItem, arg4 = messageNum
-        var json = {
-          name : global.userName,
-          weather: arg1,
-          schedule : arg2,
-          requiredItem : arg3,
-          messageNum : arg4
-        };
+        // var json = {
+        //   name : global.userName,
+        //   weather: arg1,
+        //   schedule : arg2,
+        //   requiredItem : arg3,
+        //   messageNum : arg4
+        // };
+	console.log("weather : "+arg1.body);
+       // var json = arg1;
+       // json.user = global.userName;
+       // json.schedule = arg2;
+       // json.requiredItem = arg3;
+       // json.messageNum = arg4.toString();
 
-        res.json(JSON.stringify(json));
+        res.json(arg1);
         callback(null, 'done');
       }
     ],
@@ -234,6 +241,8 @@ app.post('/join', function(req,res) { //회원가입
       function(arg1, callback) {
         if(arg1 == 'Error2 : No Face Found'){
           return res.send('cannot find face');
+        }else if(arg1 == 'Error3 : Too Many Faces'){
+          return res.send('Too Many Faces');
         }else {
           callback(null, 'done');
         }
@@ -308,6 +317,8 @@ app.post('/joinPicture', function(req,res) { //회원가입
       function(arg1, callback) {
         if(arg1 == 'Error2 : No Face Found'){
           return res.send('cannot find face');
+        }else if(arg1 == 'Error3 : Too Many Faces'){
+          return res.send('Too Many Faces');
         }else {
           callback(null, 'done');
         }
@@ -359,7 +370,24 @@ app.post('/veiwMessage', function(req,res) { //메세지 출력
 });
 
 
-app.post('/sendMessage', function(req,res) { //메세지 출력
+app.post('/init/sendVideoMessage', function(req,res) { //메세지 출력
+  var title = 'abceefg.ts';
+  // var title = req.body.title;
+
+  var json = {
+    from : global.userName,
+    to : global.msg_recipient,
+    title : title
+  };
+
+  dbConnectRouter.sendMessageQuery(json, function(result){
+    global.msg_recipient = null;
+    return res.json(result);
+  });
+});
+
+
+app.post('/init/sendVoiceMessage', function(req,res) { //메세지 출력
   var title = 'abceefg.ts';
   // var title = req.body.title;
 
@@ -379,7 +407,6 @@ app.post('/sendMessage', function(req,res) { //메세지 출력
 global.client_Param = null
 global.msg_recipient = null
 app.post('/stt',function(req, res){
-
   var input = req.body.command
   if(input.indexOf('에게 보내 줘') != -1){
     var strArray = input.split('에게');
@@ -387,11 +414,9 @@ app.post('/stt',function(req, res){
     client_Param = '1';
     console.log(msg_recipient);
     res.send('1')
-
   }else if (input.indexOf('읽기') != -1){
     client_Param = '2';
     res.send('2');
-
   }else if ((input.indexOf('') != -1)){
     res.send('3');
   }

@@ -19,33 +19,27 @@ function getWeather(callback) {
     windSpeed: 2.84,
   };
 
-  /*var Forecast = require('forecast');
+  var Forecast = require('forecast');
 
   var forecast = new Forecast({
-          service: 'forecast.io',
-          key: '****************************',
-          units: 'celcius',
-          cache: true,
-          ttl:{
-                  minutes: 27,
-                  seconds: 45
-          }
+    service: 'forecast.io',
+    key: '3ed04ee2692b0344d29afd96a34b18f',
+    units: 'celcius',
+    cache: true,
+    ttl:{
+      minutes: 27,
+      seconds: 45
+    }
   });
 
   forecast.get([37.5,127], function(err, weather){
-          console.dir(weather.currently);
-          if(err) return console.dir(err);
-
-  //      console.dir();
-  //      console.dir(weather.currently.summary);
-  //      console.dir(weather.currently.temperature);
+    console.dir(weather.currently);
+    if(err) return console.dir(err);
+    weatherData = weather.currently
+    if (typeof callback === "function"){
+      return callback(weatherData);
+    }else return weatherData;
   });
-
-  weatherData = weather.currently*/
-  if (typeof callback === "function"){
-    callback(weatherData);
-  }
-  return weatherData;
 };
 
 module.exports = {
