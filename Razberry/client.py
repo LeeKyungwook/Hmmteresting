@@ -142,7 +142,7 @@ if __name__ == '__main__':
         os.system('python schedule.py &')
         time.sleep(3)
         os.system('pkill -9 -ef init.py')
-        time.sleep(5)
+        time.sleep(15)
         '''
         while True:
 

@@ -107,10 +107,10 @@ class App(QWidget):
         self.Time.setStyleSheet('color : white')
 
         self.Schedule.setText(schedule_text)
-        self.Schedule.setFont(QtGui.QFont('SansSerif', 25))
+        self.Schedule.setFont(QtGui.QFont('SansSerif', 40))
         self.Schedule.setStyleSheet('color : white')
 	self.Materials.setText(materials_text)
-        self.Materials.setFont(QtGui.QFont('SansSerif', 20))
+        self.Materials.setFont(QtGui.QFont('SansSerif', 40))
         self.Materials.setStyleSheet('color : white')
 	
 
