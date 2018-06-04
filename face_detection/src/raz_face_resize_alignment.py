@@ -12,7 +12,6 @@ predictor_path = '/home/kyungwook/kyungwook/Hmmteresting/face_detection/src/face
 path = '/home/kyungwook/kyungwook/aligned_img'
 face_file_path = sys.argv[1]
 filename = os.path.basename(face_file_path)
-#filename = sys.argv[1].split('/')[5]
 
 # Load all the models we need: a detector to find the faces, a shape predictor
 # to find face landmarks so we can precisely localize the face
@@ -21,7 +20,6 @@ sp = dlib.shape_predictor(predictor_path)
 
 # Load the image using Dlib
 img = dlib.load_rgb_image(face_file_path)
-# resize_img = cv2.resize(img, (200,200), interpolation = cv2.INTER_AREA)
 
 # Ask the detector to find the bounding boxes of each face. The 1 in the
 # second argument indicates that we should upsample the image 1 time. This
@@ -32,6 +30,11 @@ dets = detector(img, 1)
 num_faces = len(dets)
 if num_faces == 0:
     print("Error2 : No Face Found")
+    #print("Sorry, there were no faces found in '{}'".format(face_file_path))
+    exit()
+
+elif num_faces != 1 and num_faces != 0:
+    print("Error3 : Too Many Faces")
     #print("Sorry, there were no faces found in '{}'".format(face_file_path))
     exit()
 

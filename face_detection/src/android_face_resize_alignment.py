@@ -3,6 +3,7 @@ import sys
 import cv2
 import dlib
 import os
+import shutil
 
 # if len(sys.argv) != 2:
     
@@ -12,7 +13,6 @@ import os
 predictor_path = '/home/kyungwook/kyungwook/Hmmteresting/face_detection/src/face_alignment.dat'
 path = '/home/kyungwook/kyungwook/gallery'
 face_file_path = '/home/kyungwook/kyungwook/Hmmteresting/WebServer/android_img'
-demo_path = '/home/kyungwook/kyungwook/Hmmteresting/WebServer/image'
 filenames = os.listdir(face_file_path)
 
 for filename in filenames:
@@ -40,6 +40,11 @@ for filename in filenames:
         #print("Sorry, there were no faces found in '{}'".format(face_file_path))
         exit()
 
+    elif num_faces != 1 and num_faces != 0:
+        print("Error3 : Too Many Face")
+        #print("Sorry, there were no faces found in '{}'".format(face_file_path))
+        exit()
+
     # Find the 5 face landmarks we need to do the alignment.
     faces = dlib.full_object_detections()
     for detection in dets:
@@ -55,6 +60,7 @@ for filename in filenames:
     for image in images:   
         bgr_img = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
         cv2.imwrite(os.path.join(path , filename), bgr_img)
-        cv2.imwrite(os.path.join(demo_path , filename), bgr_img)
-        
+
+    os.remove(full_filename)
+    
 print("Alignment & Save Completed")
