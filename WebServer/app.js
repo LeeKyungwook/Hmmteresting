@@ -93,6 +93,7 @@ app.get('/imgs', function (req,res){
 var request, response;
 app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기 +초기에 받은 <메세지 개수>도 보여줘야,,,
   request = req;
+  // reponse = res;
   async.waterfall(
     [
       function(callback) {
@@ -146,41 +147,45 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
       },
 
       function(arg1, callback){
-        // arg1 = jh2.jpg
-        var weather;
         var messageNum;
-        if(arg1.indexOf('None Detected')>=0){
+        if(arg1.toString() == 'None Detected '){
           return res.send('who are you?');
         }else {
           global.userName = (arg1.toString()).split(".")[0];
           global.userNameJpg = global.userName + '.jpg'
-        }
 
-        var date = (new Date()).toFormat('YYYYMMDD');
+          var date = (new Date()).toFormat('YYYYMMDD');
 
-        var json = {
-          userName : global.userName,
-          thisDate : date
-        };
+          // var json = {
+          //   userName : global.userName,
+          //   thisDate : date
+          // };
 
-        weatherRouter.getWeather(function(weather_){
-          weather = weather_;
-        });
+          //*DB
+          messageNum = 1;
+          //*
 
-        //*DB
-        messageNum = 1;
-        //*
-
-        dbConnectRouter.scheduleQuery(json, function(schedule){
-          dbConnectRouter.requiredItemQuery(json, function(requiredItem){
-            callback(null, weather, schedule, requiredItem, messageNum);
+          weatherRouter.getWeather(function(weather){
+            dbConnectRouter.scheduleQuery(json, function(schedule){
+              dbConnectRouter.requiredItemQuery(json, function(requiredItem){
+                callback(null, weather, schedule, requiredItem, messageNum);
+              });
+            });
           });
-        });
+        }
       },
 
       function(arg1, arg2, arg3, arg4,callback) { // arg1 = weather, arg2 = shedule, arg3 : requiredItem, arg4 = messageNum
-        res.json({weather: arg1, schedule : arg2, requiredItem : arg3, messageNum : arg4});
-        callback(null, 'done')
+        var json = {
+          name : global.userName,
+          weather: arg1,
+          schedule : arg2,
+          requiredItem : arg3,
+          messageNum : arg4
+        };
+
+        res.json(JSON.stringify(json));
+        callback(null, 'done');
       }
     ],
 
@@ -257,8 +262,13 @@ app.post('/joinInfo', function(req,res){ //사용자의 정보가 db에 있는�
           console.log('이미 존재하는 ID 입니다.');
           return res.send('이미 존재하는 ID 입니다.');
         }else {
-          /* insertUser */
-          return res.send('joinInfo accept');
+          dbConnectRouter.insertUserQuery(reauest, function(result){
+            if(result == 'insert user success'){
+              return res.send('join us *^^*');
+            }else {
+              return res.send(result);
+            }
+          });
         }
       });
     }
@@ -316,6 +326,7 @@ app.post('/showSchedule', function(req,res) {
   // scheduleQuery()
   console.log(req.body);
   dbConnectRouter.scheduleQuery(req.body, function(schedule){
+    console.log(schedule);
     res.send(schedule);
   });
 });
@@ -323,13 +334,15 @@ app.post('/showSchedule', function(req,res) {
 app.post('/addSchedule', function(req,res) {
   console.log(req.body);
   dbConnectRouter.insertScheduleQuery(req.body, function(result){
+    console.log(result);
     res.send(result);
   });
 });
 
-app.post('deleteSchedule',function(req, res){
+app.post('/deleteSchedule',function(req, res){
   console.log(req.body);
   dbConnectRouter.insertScheduleQuery(req.body, function(result){
+    console.log(result);
     res.send(result);
   });
 });
@@ -341,8 +354,25 @@ app.post('/veiwMessage', function(req,res) { //메세지 출력
   2. 결과받기 (sender / messageTitle)
   3. json 형태로 라즈베리에 전송
   */
-  // var messges = dbRouter.veiwMessageQuery(ID,res);
+
   res.json(messges);
+});
+
+
+app.post('/sendMessage', function(req,res) { //메세지 출력
+  var title = 'abceefg.ts';
+  // var title = req.body.title;
+
+  var json = {
+    from : global.userName,
+    to : global.msg_recipient,
+    title : title
+  };
+
+  dbConnectRouter.sendMessageQuery(json, function(result){
+    global.msg_recipient = null;
+    return res.json(result);
+  });
 });
 
 
@@ -378,22 +408,31 @@ app.post('/raz_client', function(req, res) {
     responseArray.push(responseObject);
     var jsonInfo = JSON.stringify(responseArray);
     console.log(jsonInfo);
-    msg_recipient = null;
+    // msg_recipient = null;
     client_Param = null;
-    res.send('Recording Message');
+    return res.send('Recording Message');
 
   } else if (client_Param == "2"){   /////////////////////// Showing Message
-    responseObject.videoName = 'abceefg.ts'
-    responseArray.push(responseObject);
-    var jsonInfo = JSON.stringify(responseArray);
-    console.log(jsonInfo);
-    msg_recipient = null;
-    client_Param = null;
-    res.send("Showing Message");
+    var json = {
+      to : global.userName
+    }
+    dbConnectRouter.receiveMessageQuery(global.userName,function(message){
+      if(messageTitle == 'receiveMessage error'){
+        return res.send(message);
+      }else{
+        responseObject.videoName = message.title;
+        responseArray.push(responseObject);
+        var jsonInfo = JSON.stringify(responseArray);
+        console.log(jsonInfo);
+        msg_recipient = null;
+        client_Param = null;
+        return res.send(message);
+      }
+    });
 
   } else {                           //////////////////////// Nothing
     client_Param = null;
     console.log("nothing..... ");
-    res.send('Wait');
+    return res.send('Wait');
   }
 });

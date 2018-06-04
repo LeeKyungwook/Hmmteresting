@@ -147,9 +147,8 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
 
       function(arg1, callback){
         // arg1 = jh2.jpg
-        var weather;
         var messageNum;
-        if(arg1.indexOf('None Detected')>=0){
+        if((arg1.toString() == 'None Detected '){
           return res.send('who are you?');
         }else {
           global.userName = (arg1.toString()).split(".")[0];
@@ -164,15 +163,13 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
           endDate : date
         };
 
-        weatherRouter.getWeather(function(weather_){
-          weather = weather_;
-        });
-
         //*DB
         messageNum = 1;
         //*
 
-        callback(null, weather, schedule, requiredItem, messageNum);
+        weatherRouter.getWeather(function(weather){
+          callback(null, weather, schedule, requiredItem, messageNum);
+        });
 
         /*dbConnectRouter.scheduleQuery(json, function(schedule){
           dbConnectRouter.requiredItemQuery(json, function(requiredItem){
@@ -187,7 +184,7 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
           arg3 = null;
           arg4 = 0;
         }else{
-          es.json({name: global.userName, weather: arg1, schedule : arg2, requiredItem : arg3, messageNum : arg4});
+          res.json({name: global.userName, weather: arg1, schedule : arg2, requiredItem : arg3, messageNum : arg4});
           callback(null, 'done');
         }
       }

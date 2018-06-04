@@ -56,13 +56,12 @@ string_ID = "suhyun000"  //dummy
 function scheduleQuery(req, callback) {
   //search 20180531's schedules
   var request = req;
-
   userName2UidQuery(request.userName, function(Uid){
     SCHEDULES.find({ $and:[{ startDate:{$lte:request.thisDate} }, {endDate:{$gte:request.thisDate}}, {user:Uid}] }, { __v:0}, function(error, schedules) {
       console.log('--- Read today\'s Schedules of User'+ uid +' ---');
       if(error){
-         console.log(error);
-         callback('show schedule error');
+        console.log(error);
+        callback('show schedule error');
       }
       else{
         console.log(schedules);
@@ -179,8 +178,8 @@ function deleteScheduleQuery(req, callback){
 function insertUserQuery(req, callback){ //req : name Uid pw
   var request = req;
   db.collection('users').insert(request);
-  console.log('insert Schedule success');
-  return callback('insert Schedule success');
+  console.log('insert user success');
+  return callback('insert user success');
 };
 
 
@@ -191,11 +190,33 @@ function sendMessageQuery(req, callback) { //req : from to title
   return callback('insert Schedule success');
 };
 
-function receiveMessageQuery(req, callback) { //req : from to title
+
+function deleteMessageQuery(req, callback){
+  var request = req;
+  MESSAGES.deleteOne({$and :[{to : request.to},{title : request.title}]}, function(err) {
+
+  });
+};
+
+
+function receiveMessageQuery(req, callback) { //req : from
   var request = req;
 
+  userName2UidQuery(requset,function(uid){
+    MESSAGES.find({ to : uid }, { _id:0, __v:0, to:0 },function(error,message) {
+      if(error){
+        console.log(error);
+        callback('receiveMessge error');
+      } else{
+        console.log(message);
 
-  callback('delete success'); //to from message
+        /////////////////////////////////////delete
+        if (typeof callback === "function"){
+          callback(message);
+        };
+      }
+    });
+  })
 };
 
 
@@ -209,6 +230,7 @@ function veiwMessageQuery(req, callback) {
   //   return messges;
   // });
 };
+
 
 function howManyMassageQuery(req, callback) {
 
