@@ -20,37 +20,13 @@ base_url = 'http://112.151.162.170:7000/init'
 pwd = '/home/pi/Hmmteresting/Razberry/test_image.jpg'
 
 class RaspberryModule():
-    '''
-    def iniaialize_picam(self):
-        camera = PiCamera()
-        camera.resolution = (640, 480)
-        camera.framerate = 32
-        rawCapture = PiRGBArray(camera, size=(640, 480))
 
-        cascade = cv2.CascadeClassifier("/home/pi/opencv-3.3.0/data/haarcascades/haarcascade_frontalface_alt.xml")
-       
-       #allow the camera to warmup
-        time.sleep(0.1)
-
-        
-        #capture frames from the camera
-        for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
-            #grab the raw Numpy array representing the image, then initialize the timestamp
-            #and occupied/unoccupied text
-            img = frame.array
-
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            gray = cv2.equalizeHist(gray)
-
-            return gray
-        
-    '''    
     def detect(self, img, cascade):
         rects = cascade.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(30,30),
                             flags=cv2.CASCADE_SCALE_IMAGE)
         if len(rects) == 0:
             return []
-            #return 1
+
         rects[:,2:] += rects[:,:2]
         return rects
 
@@ -65,9 +41,13 @@ class RaspberryModule():
             crop_image.save('crop_image.jpg')   #save crop image
             return 1
 
-    def record_vid():
-        # video recording and return file name
-        os.system('./video_message.sh')
+    def start_record_vid():
+        #start video recording
+        os.system('./video_start.sh')
+
+    def stop_record_vid():
+        #stop video recording
+        os.system('./video_stop.sh')
         vid_name = subprocess.check_output('./getname_test.sh', shell = True)
         return vid_name
 
@@ -118,7 +98,8 @@ if __name__ == '__main__':
                 image_url = base_url
                 res = requests.post(image_url, files = files)
 	        
-                #make json fionoe named test.json
+                print type(res.json())
+
                 if res.text == 'cannot find face':
                     print res.text
                 elif res.text == 'who are you?':
@@ -126,7 +107,8 @@ if __name__ == '__main__':
                 else :
                     print("detected!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
                     print res.text
-
+            
+                    #make json file named test.json
                     json_data = ast.literal_eval(res.text)
                     with open('test.json', 'w') as make_file:
                         json.dump(json_data, make_file, ensure_ascii=False)
@@ -142,32 +124,36 @@ if __name__ == '__main__':
         os.system('python schedule.py &')
         time.sleep(3)
         os.system('pkill -9 -ef init.py')
-        time.sleep(15)
-        '''
+        time.sleep(60)
+
         while True:
 
-            video_url = base_url + 'video'
-            res = requests.get(url = video_url)         
+            res = requests.post(url = video_url)         
             #get request and wait for returing value
 
             if (res.text == 1):
-                #send video name
-                video_name = raz_module.record_vid()    
-                video_save_url = video_url + '/vsave'
+                #record and send video name
+                raz.module.start_record_vid()
+
+                now = time.time()
+                future = now + 60
+
+                if time.time() > future or 음성종료:
+                    video_name = raz_module.stop.record_vid()
+
+                video_save_url = base_url + '/sendVoiceMessage'
                 res = requests.post(video_save_url, data = video_name)
-            elif (res.text == 2):
-                #send audio name
+            elif res.text == 2:
+                #record and send audio name
                 audio_name = raz_module.record_aud()
-                audio_save_url = audio_url + '/asave'
+                audio_save_url = base_url + '/sendAudioMessage'
                 res = requests.post(audio_save_url, data = audio_name)
-            elif(res.text == 3):
+            elif res.text == 3:
                 #turn on the video
-                break
-            elif(res.text == 4):
+            elif res.text == 4:
                 #break inner loop and go to outer loop
                 break
             else:
                 #innser loop
                 time.sleep(2)
                 continue
-        '''

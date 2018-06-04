@@ -6,12 +6,3 @@ sleep 2
 
 #echo ">> starting picam"
 touch hooks/start_record
-sleep 30 
-
-#echo ">> finish recording"
-touch hooks/stop_record
-sleep 1
-
-killall picam
-
-#echo ">> done"

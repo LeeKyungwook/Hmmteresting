@@ -4,6 +4,9 @@ import sys
 import json
 import time
 
+from pytz import timezone
+from datetime import datetime
+
 from time import localtime, strftime
 from pprint import pprint
 from PyQt5 import QtWidgets, QtCore, QtGui
@@ -16,9 +19,26 @@ from PyQt5.QtGui import QIcon, QPixmap
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+#KST = datetime.now(timezone('Asia/Seoul'))
 date_text = strftime("%A, %B %d %Y", localtime()) 
-time_text = strftime("%Y.%m.%d %I:%S %p", localtime())
+#time_text = KST.strftime("%Y.%m.%d %I:%S %p")
 
+now = time.localtime()
+
+now_hour = now.tm_hour
+
+
+if now.tm_hour > 12:
+    now_hour = now_hour-12
+    am_pm = 'PM'
+else:
+    am_pm = 'AM'
+
+time_text = "%04d.%02d.%02d %02d:%02d %s" % (now.tm_year, now.tm_mon, now.tm_mday, now_hour, now.tm_min, am_pm)
+
+#now = time.localtime()
+
+ 
 class App(QWidget):
     
     with open('test.json') as data_file:
@@ -83,7 +103,7 @@ class App(QWidget):
 
         user_id = self.data["name"]
         say_hello = "안녕! " + user_id
-        temperature_num = "18.5"
+        temperature_num = "25.5"
         temparature_index = temperature_num + "˚C"
 	if user_id == "이준호":
 		schedule_text = self.data["schedule"][0]["startTime"] + " ~ " + self.data["schedule"][0]["endTime"] + ' ' +self.data["schedule"][0]["title"] + '\n' + self.data["schedule"][1]["startTime"] + " ~ " + self.data["schedule"][1]["endTime"] + ' ' + self.data["schedule"][1]["title"]
