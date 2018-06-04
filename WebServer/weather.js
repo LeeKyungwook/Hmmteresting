@@ -11,7 +11,7 @@ router.get('/',function(req, res){
 
 function getWeather(callback) {
   var Forecast = require('forecast');
-
+  var weatherData;
   var forecast = new Forecast({
           service: 'forecast.io',
           key: '3ed04ee2692b0344d29afd96a34b18fe',

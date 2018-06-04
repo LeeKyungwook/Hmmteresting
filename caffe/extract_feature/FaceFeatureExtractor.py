@@ -117,12 +117,12 @@ if __name__ == '__main__':
 
         # print dist
 
-    # print '--------------------------'
-    if (current_dist > 0.5):
-       # print current_dist
+    # #print '--------------------------'
+    if (current_dist > 0.55):
+        # print current_dist
         print current_filename
     else :
-        #print current_dist
+        # print current_dist
         print "None Detected "
     
     #print current_dist
