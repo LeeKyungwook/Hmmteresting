@@ -35,20 +35,30 @@ app.listen(port, () => {
 });
 
 var schedule1 = {
-  startDate: '2018-05-10-19:30',
-  endDate: '2018-05-10',
-  title: '저녁약속',
-  where: '강남역'
+  title: '점심약속',
+  user: '123',
+  startDate: '2018-06-04',
+  startTime:'12:00',
+  endDate: '2018-06-04',
+  endTime: '13:00',
+  reqItmes: '',
+  isBroadcast: '1'
 }
 
 var schedule2 = {
-  startDate: '2018-05-10-19:30',
-  endDate: '2018-05-10',
-  title: '수현쓰랑 저녁약속',
-  where: '강남역'
+  title: '캡스톤 수업',
+  user: '123',
+  startDate: '2018-06-04',
+  startTime:'16:30',
+  endDate: '2018-06-04',
+  endTime: '21:00',
+  reqItmes: '노트북',
+  isBroadcast: '1'
 }
 
 var schedule = [schedule1, schedule2];
+
+var requiredItem = ['노트북', '과자']
 
 var string = "{'key':'value'}";
 
@@ -123,6 +133,8 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
         console.log("==> align_img arg1 : "+ arg1);
         if(arg1 == 'Error2 : No Face Found'){
           return res.send('cannot find face');
+        }else if(arg1 == 'Error3 : Too Many Faces'){
+          return res.send('Too Many Faces');
         }else {
           PythonShell.run('../caffe/extract_feature/FaceFeatureExtractor.py',options, function(err, result){
             if(err) {
@@ -136,42 +148,51 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
       },
 
       function(arg1, callback){
-        // arg1 = jh2.jpg
-        var weather;
         var messageNum;
-        if(arg1.indexOf('None Detected')>=0){
+        if(arg1.toString() == 'None Detected '){
           return res.send('who are you?');
         }else {
           global.userName = (arg1.toString()).split(".")[0];
           global.userNameJpg = global.userName + '.jpg'
-        }
 
-        var date = (new Date()).toFormat('YYYYMMDD');
+          var date = (new Date()).toFormat('YYYYMMDD');
 
-        var json = {
-          userName :global.userName,
-          startDate :date,
-          endDate :date
-        };
+          // var json = {
+          //   userName : global.userName,
+          //   thisDate : date
+          // };
 
-        weatherRouter.getWeather(function(weather_){
-          weather = weather_;
-        });
+          //*DB
+          messageNum = 1;
+          //*
 
-        //*DB
-        messageNum = 3;
-        //*
-
-        dbConnectRouter.scheduleQuery(json, function(schedule){
-          dbConnectRouter.requiredItemQuery(json, function(requiredItem){
-            callback(null, weather, schedule, requiredItem, messageNum);
+          weatherRouter.getWeather(function(weather){
+            // dbConnectRouter.scheduleQuery(json, function(schedule){
+              // dbConnectRouter.requiredItemQuery(json, function(requiredItem){
+                callback(null, weather, schedule, requiredItem, messageNum);
+              // });
+            // });
           });
-        });
+        }
       },
 
       function(arg1, arg2, arg3, arg4,callback) { // arg1 = weather, arg2 = shedule, arg3 : requiredItem, arg4 = messageNum
-        res.json({weather: arg1, schedule : arg2, requiredItem : arg3, messageNum : arg4});
-        callback(null, 'done')
+        // var json = {
+        //   name : global.userName,
+        //   weather: arg1,
+        //   schedule : arg2,
+        //   requiredItem : arg3,
+        //   messageNum : arg4
+        // };
+	console.log("weather : "+arg1.body);
+       // var json = arg1;
+       // json.user = global.userName;
+       // json.schedule = arg2;
+       // json.requiredItem = arg3;
+       // json.messageNum = arg4.toString();
+
+        res.json(arg1);
+        callback(null, 'done');
       }
     ],
 
@@ -185,17 +206,6 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
 app.post('/jhTest', function(req,res) {
   console.log(req);
   res.send(schedule1);
-});
-
-
-app.post('/veiwMessage', function(req,res) { //메세지 출력
-  /*
-  1. 디비에 메세지 이름 리스트 쿼리보내기
-  2. 결과받기 (sender / messageTitle)
-  3. json 형태로 라즈베리에 전송
-  */
-  // var messges = dbRouter.veiwMessageQuery(ID,res);
-  res.json(messges);
 });
 
 
@@ -231,6 +241,8 @@ app.post('/join', function(req,res) { //회원가입
       function(arg1, callback) {
         if(arg1 == 'Error2 : No Face Found'){
           return res.send('cannot find face');
+        }else if(arg1 == 'Error3 : Too Many Faces'){
+          return res.send('Too Many Faces');
         }else {
           callback(null, 'done');
         }
@@ -259,8 +271,13 @@ app.post('/joinInfo', function(req,res){ //사용자의 정보가 db에 있는�
           console.log('이미 존재하는 ID 입니다.');
           return res.send('이미 존재하는 ID 입니다.');
         }else {
-          /* insertUser */
-          return res.send('joinInfo accept');
+          dbConnectRouter.insertUserQuery(reauest, function(result){
+            if(result == 'insert user success'){
+              return res.send('join us *^^*');
+            }else {
+              return res.send(result);
+            }
+          });
         }
       });
     }
@@ -300,6 +317,8 @@ app.post('/joinPicture', function(req,res) { //회원가입
       function(arg1, callback) {
         if(arg1 == 'Error2 : No Face Found'){
           return res.send('cannot find face');
+        }else if(arg1 == 'Error3 : Too Many Faces'){
+          return res.send('Too Many Faces');
         }else {
           callback(null, 'done');
         }
@@ -314,15 +333,131 @@ app.post('/joinPicture', function(req,res) { //회원가입
 });
 
 
-app.post('/showSchedule', function(req,res) { //req = 날짜
+app.post('/showSchedule', function(req,res) {
   // scheduleQuery()
   console.log(req.body);
-  res.send(schedule);
+  dbConnectRouter.scheduleQuery(req.body, function(schedule){
+    console.log(schedule);
+    res.send(schedule);
+  });
 });
 
-app.post('/addSchedule', function(req,res) { //req = 날짜
+app.post('/addSchedule', function(req,res) {
   console.log(req.body);
   dbConnectRouter.insertScheduleQuery(req.body, function(result){
+    console.log(result);
     res.send(result);
   });
+});
+
+app.post('/deleteSchedule',function(req, res){
+  console.log(req.body);
+  dbConnectRouter.insertScheduleQuery(req.body, function(result){
+    console.log(result);
+    res.send(result);
+  });
+});
+
+
+app.post('/veiwMessage', function(req,res) { //메세지 출력
+  /*
+  1. 디비에 메세지 이름 리스트 쿼리보내기
+  2. 결과받기 (sender / messageTitle)
+  3. json 형태로 라즈베리에 전송
+  */
+
+  res.json(messges);
+});
+
+
+app.post('/init/sendVideoMessage', function(req,res) { //메세지 출력
+  var title = 'abceefg.ts';
+  // var title = req.body.title;
+
+  var json = {
+    from : global.userName,
+    to : global.msg_recipient,
+    title : title
+  };
+
+  dbConnectRouter.sendMessageQuery(json, function(result){
+    global.msg_recipient = null;
+    return res.json(result);
+  });
+});
+
+
+app.post('/init/sendVoiceMessage', function(req,res) { //메세지 출력
+  var title = 'abceefg.ts';
+  // var title = req.body.title;
+
+  var json = {
+    from : global.userName,
+    to : global.msg_recipient,
+    title : title
+  };
+
+  dbConnectRouter.sendMessageQuery(json, function(result){
+    global.msg_recipient = null;
+    return res.json(result);
+  });
+});
+
+
+global.client_Param = null
+global.msg_recipient = null
+app.post('/stt',function(req, res){
+  var input = req.body.command
+  if(input.indexOf('에게 보내 줘') != -1){
+    var strArray = input.split('에게');
+    msg_recipient = strArray[0];
+    client_Param = '1';
+    console.log(msg_recipient);
+    res.send('1')
+  }else if (input.indexOf('읽기') != -1){
+    client_Param = '2';
+    res.send('2');
+  }else if ((input.indexOf('') != -1)){
+    res.send('3');
+  }
+});
+
+
+app.post('/raz_client', function(req, res) {
+
+  var responseArray = new Array();
+  var responseObject = new Object();
+
+  responseObject.choiceParam = client_Param;
+  if (client_Param == "1") {         /////////////////////// Sending Message
+    responseArray.push(responseObject);
+    var jsonInfo = JSON.stringify(responseArray);
+    console.log(jsonInfo);
+    // msg_recipient = null;
+    client_Param = null;
+    return res.send('Recording Message');
+
+  } else if (client_Param == "2"){   /////////////////////// Showing Message
+    var json = {
+      to : global.userName
+    }
+    dbConnectRouter.receiveMessageQuery(global.userName,function(message){
+      if(messageTitle == 'receiveMessage error'){
+        return res.send(message);
+      }else{
+        responseObject.videoName = message.title;
+        responseArray.push(responseObject);
+        var jsonInfo = JSON.stringify(responseArray);
+        console.log(jsonInfo);
+        msg_recipient = null;
+        client_Param = null;
+        return res.send(message);
+      }
+    });
+
+  } else {                           //////////////////////// Nothing
+    client_Param = null;
+    console.log("nothing..... ");
+    return res.send('Wait');
+  }
 });
