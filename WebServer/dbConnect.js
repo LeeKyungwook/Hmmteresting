@@ -20,17 +20,17 @@ var users = mongoose.Schema({
 var schedules = mongoose.Schema({
   title:'string',
   user:'number',
-  startDate:'number',
-  startTime:'number',
-  endDate:'number',
-  endTime:'number',
+  startDate:'string',
+  startTime:'string',
+  endDate:'string',
+  endTime:'string',
   reqItems:'string',
   isBroadcast:'number'
 });
 
 var messages = mongoose.Schema({
-  from : 'number',
-  to : 'number',
+  from : 'string',
+  to : 'string',
   title : 'string'
 });
 
@@ -38,26 +38,11 @@ var USERS = mongoose.model('users', users);
 var SCHEDULES = mongoose.model('schedules', schedules);
 var MESSAGES = mongoose.model('messages',messages);
 
-var uid;
-var dd;
-var mm;
-var yyyy;
-var thisDate;// = yyyy*10000 + mm*100 + dd;
-var sch_objID;
-var string_ID;
-
-uid = 2;
-yyyy =2018; mm = 5; dd = 31;
-thisDate = yyyy*10000 + mm*100 + dd;
-sch_objID = "5afd61c4cd2a59ae077d05c5"
-string_ID = "suhyun000"  //dummy
-
-
-function scheduleQuery(req, callback) {
+function todayScheduleQuery(req, callback) {
   //search 20180531's schedules
   var request = req;
   userName2UidQuery(request.userName, function(Uid){
-    SCHEDULES.find({ $and:[{ startDate:{$lte:request.thisDate} }, {endDate:{$gte:request.thisDate}}, {user:Uid}] }, { __v:0}, function(error, schedules) {
+    SCHEDULES.find({ $and:[{ startDate:request.thisDate }, {endDate:request.thisDate}, {user:Uid}] }, { __v:0}, function(error, schedules) {
       console.log('--- Read today\'s Schedules of User'+ uid +' ---');
       if(error){
         console.log(error);
@@ -70,6 +55,45 @@ function scheduleQuery(req, callback) {
         };
       };
     });
+  });
+};
+
+function scheduleQuery(req, callback) {
+  //search 20180531's schedules
+  var request = req;
+  userName2UidQuery(request.userName, function(Uid){
+    SCHEDULES.find({ $and:[{ startDate:{$lte:request.thisDate} }, {endDate:{$gte:request.thisDate}}, {user:Uid}] }, { __v:0}, function(error, schedules) {
+      console.log('--- Read Schedules of User'+ uid +' ---');
+      if(error){
+        console.log(error);
+        callback('show schedule error');
+      }
+      else{
+        console.log(schedules);
+        if (typeof callback === "function"){
+          callback(schedules);
+        };
+      };
+    });
+  });
+};
+
+
+function shareScheduleQuery(req, callback) {
+  //search 20180531's schedules
+  var request = req;
+  SCHEDULES.find({ $and:[{ startDate:{$lte:request.thisDate} }, {endDate:{$gte:request.thisDate}}, {isBroadcast : 1}] }, { __v:0}, function(error, schedules) {
+    console.log('--- Read Share Schedules of User'+ uid +' ---');
+    if(error){
+      console.log(error);
+      callback('show schedule error');
+    }
+    else{
+      console.log(schedules);
+      if (typeof callback === "function"){
+        callback(schedules);
+      };
+    };
   });
 };
 
@@ -96,8 +120,7 @@ function requiredItemQuery(req, callback){
 
 
 function userId2UidQuery(req, callback){
-  //search user whose id is string_ID
-  USERS.find({ id:string_ID }, { _id:0, __v:0 },function(error,users) {
+  USERS.find({ id:req.id }, { _id:0, __v:0 },function(error,users) {
     console.log('--- User Info Test ---');
     if(error){
       console.log(error);
@@ -113,7 +136,6 @@ function userId2UidQuery(req, callback){
 
 
 function userName2UidQuery(req, callback){
-  //search user whose name is userName
   USERS.find({ name:req.userName }, { _id:0, __v:0 },function(error,users) {
     console.log('--- User Info Test ---');
     if(error){
@@ -123,6 +145,22 @@ function userName2UidQuery(req, callback){
       console.log(users);
       if (typeof callback === "function"){
         callback(users.Uid);
+      };
+    }
+  });
+};
+
+
+function familyNumber2userNameQuery(req, callback){
+  USERS.find({ family : req.to }, { _id:0, __v:0 },function(error,users) {
+    console.log('--- User Info Test ---');
+    if(error){
+      console.log(error);
+      callback('familyNum -> userName error');
+    } else{
+      console.log(users);
+      if (typeof callback === "function"){
+        callback(users.name);
       };
     }
   });
@@ -166,7 +204,6 @@ function deleteScheduleQuery(req, callback){
       callback('delete Schedule error')
     }
     else{
-      console.log('successfully deleted... good bey schedule');
       if (typeof callback === "function"){
         callback('delete Schedule success');
       };
@@ -185,16 +222,28 @@ function insertUserQuery(req, callback){ //req : name Uid pw
 
 function sendMessageQuery(req, callback) { //req : from to title
   var request = req;
-  db.collection('messages').insert(request);
-  console.log('insert Schedule success');
-  return callback('insert Schedule success');
+  familyNumber2userNameQuery(request, function(toName){
+    request.to = toName;
+    db.collection('messages').insert(request);
+    console.log('insert Schedule success');
+    return callback('insert Schedule success');
+  });
 };
 
 
 function deleteMessageQuery(req, callback){
   var request = req;
-  MESSAGES.deleteOne({$and :[{to : request.to},{title : request.title}]}, function(err) {
-
+  MESSAGES.deleteOne({$and :[{to : request.to},{title : request.title}]}, function(err,result) {
+    console.log('--- Delete Message Test ---');
+    if(error) {
+      console.error();
+      callback('delete Message error')
+    }
+    else{
+      if (typeof callback === "function"){
+        callback('delete Message success');
+      };
+    }
   });
 };
 
@@ -209,11 +258,11 @@ function receiveMessageQuery(req, callback) { //req : from
         callback('receiveMessge error');
       } else{
         console.log(message);
-
-        /////////////////////////////////////delete
-        if (typeof callback === "function"){
-          callback(message);
-        };
+        deleteMessageQuery(message, function(deleteMessage){
+          if (typeof callback === "function"){
+            callback(message);
+          };
+        });
       }
     });
   })
@@ -234,13 +283,17 @@ function veiwMessageQuery(req, callback) {
 
 function howManyMassageQuery(req, callback) {
 
+
 };
 
 module.exports = {
+  todayScheduleQuery: todayScheduleQuery,
   scheduleQuery: scheduleQuery,
+  shareScheduleQuery: shareScheduleQuery,
   requiredItemQuery: requiredItemQuery,
   userId2UidQuery: userId2UidQuery,
   userName2UidQuery: userName2UidQuery,
+  familyNumber2userNameQuery: familyNumber2userNameQuery,
   insertScheduleQuery: insertScheduleQuery,
   updateScheduleQuery: updateScheduleQuery,
   deleteScheduleQuery: deleteScheduleQuery,
