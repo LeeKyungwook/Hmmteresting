@@ -11,6 +11,8 @@ import requests
 import json
 import ast
 
+reload(sys)
+sys.setdefaultencoding('utf-8')
 #url = 'http://112.151.162.170:7000/init'
 #pwd = '/home/pi/Hmmteresting/Razberry/crop_image.jpg'
 
@@ -65,6 +67,8 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
 	pwd = '/home/pi/Hmmteresting/Razberry/test_image.jpg'
 	files = {'media' : open(pwd, 'rb') }
 	res = requests.post(url, files = files)
+        
+        print type(res)
 
         #make json fionoe named test.json
         if res.text == 'cannot find face':
@@ -76,7 +80,9 @@ for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=
             print("detected!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
             print res.text
 
-            json_data = ast.literal_eval(res.text)
+            #json_data = ast.literal_eval(res.text)
+            json_data = json.loads(res.text)
+            print type(json_data)
             with open('test.json', 'w') as make_file:
                 json.dump(json_data, make_file, ensure_ascii=False)
 
