@@ -2,7 +2,8 @@
 #import the necessary packages
 from picamera.array import PiRGBArray
 from picamera import PiCamera
-from PIL import Image
+from threading import Timer
+
 import sys
 sys.path.append('/usr/local/lib/python2.7/site-packages')
 import time
@@ -22,8 +23,19 @@ from os import walk
 base_url = 'http://112.151.162.170:7000/init'
 raz_url = 'http://112.151.162.170:7000/raz_client'
 pwd = '/home/pi/Hmmteresting/Razberry/test_image.jpg'
+cascade = cv2.CascadeClassifier("/home/pi/opencv-3.3.0/data/haarcascades/haarcascade_frontalface_alt.xml")
 
 class RaspberryModule():
+    
+
+    def start_camera(self, camera):
+        #camera = PiCamera()
+        camera.resolution = (612, 816)
+        camera.framerate = 32
+        #rawCapture = PiRGBArray(camera, size=(612, 816))
+        #cascade = cv2.CascadeClassifier("/home/pi/opencv-3.3.0/data/haarcascades/haarcascade_frontalface_alt.xml")
+    
+        time.sleep(0.1)
 
     def detect(self, img, cascade):
         rects = cascade.detectMultiScale(img, scaleFactor=1.3, minNeighbors=4, minSize=(30,30),
@@ -39,10 +51,6 @@ class RaspberryModule():
             cv2.imwrite("test_image.jpg", img)
             rect_image = cv2.rectangle(img, (x1-40, y1-40), (x2+40, y2+40), color, 2)
             print(x1, y1, x2, y2)   #rectangle coordinate
-            cv2.imwrite("rect_image.jpg", rect_image)   #save a rectangle-drawn picture
-            crop_image = Image.open('rect_image.jpg')
-            crop_image = crop_image.crop((x1-40, y1-40, x2+40, y2+40))  #crop the image inside the rectangle
-            crop_image.save('crop_image.jpg')   #save crop image
             return 1
 
     def start_record_vid(self):
@@ -63,21 +71,10 @@ class RaspberryModule():
 if __name__ == '__main__':
     
     raz_module = RaspberryModule()
-
-    #Camera setting
     camera = PiCamera()
-    camera.resolution = (612, 816)
-    camera.framerate = 32
-    rawCapture = PiRGBArray(camera, size=(612, 816))
-    cascade = cv2.CascadeClassifier("/home/pi/opencv-3.3.0/data/haarcascades/haarcascade_frontalface_alt.xml")
-    
-    time.sleep(0.1)
 
-    '''
-    os.system('python init.py &')
-    time.sleep(3)
-    os.system('pkill -9 -ef schedule.py')
-    '''
+    raz_module.start_camera(camera)
+    rawCapture = PiRGBArray(camera, size=(612, 816))
 
     while True:
         os.system('python init.py &')
@@ -129,55 +126,114 @@ if __name__ == '__main__':
         
         #change the color of monitor when server responsed
         os.system('python schedule.py &')
-        time.sleep(3)
+        time.sleep(5)
         os.system('pkill -9 -ef init.py')
-        time.sleep(3)
+
+        subprocess.call(["mplayer", "../../tts/hello.mp3"])
+
+        now = time.localtime()
+        now_min = now.tm_min
+        now_sec = now.tm_sec
+        now_time = now_min * 60 + now_sec
+        future = now_time + 180
+
+        '''
+        t = Timer(60.0, raz_module.stop_UI)
+        t.start()
+        '''
 
         while True:
-        
+
+            now = time.localtime()
+            if (now.tm_min * 60 + now.tm_sec) > future:
+                print('natural exit')
+
+                #Camera setting
+                camera = PiCamera()
+                raz_module.start_camera(camera)
+                rawCapture = PiRGBArray(camera, size=(612, 816))
+
+                time.sleep(0.1)
+                
+                break
+
             try: 
                 print ("Sending.............................") 
                 res = requests.post(raz_url)
             #get request and wait for returing value
             except requests.exceptions.ConnectionError:
-                print("zzzzzzzzzzzzzzzzzz")
+                print("ConnectionError.............")
                 time.sleep(5)
-                print("..................")
                 continue
             
-            
             input_data = json.loads(res.text)
+            with open('test.json', 'w') as make_file:
+                json.dump(input_data, make_file, ensure_ascii=False)
+
             client_Param = input_data["client_Param"]
             print client_Param
-
+            
             if (client_Param == "1"):
                 #record and send video name
+                subprocess.call(["mplayer", "../../tts/start_record_video.mp3"])
+
                 raz_module.start_record_vid()
-                now = time.time()
                 time.sleep(5)
                 video_name = raz_module.stop_record_vid()
+                camera.close()
+                '''
+                now = time.localtime()
+                now_min = now.tm_min
+                now_sec = now.tm_sec
+                now_time = now_min * 60 + now_sec
                 
-                print ("tttttttttttttttttttttttttttssssssssssssssssssssss")
+                future = now_time + 60
+
+                while True:
+                    if (now.tm_min * 60 + now.tm_sec) > future:
+                        video_name = raz_module.stop_record_vid()
+                        break
+                '''
+
+                subprocess.call(["mplayer", "../../tts/stop_record_video.mp3"])        
                 video_save_url = base_url + '/sendMessage'
-                data = {"title" : "abc.ts"}
+                data = {"title" : video_name}
                 #headers = {'Content-type' : 'application/json', 'Accept' : 'text/plain'}
                 res = requests.post(video_save_url, data = data)
-            # elif (client_Param == 2):
+
+            #elif (client_Param == 2):
             #    #record and send audio name
             #    #turn on the video
             #    
             #    audio_name = raz_module.record_aud()
             #    audio_save_url = base_url + '/sendAudioMessage'
-            #    res = requests.post(audio_save_url, data = audio_name)
-                
+            #    res = requests.post(audio_save_url, data = audio_name) 
             elif (client_Param == "2"):
-                continue
                 #turn on the video
+                messageTitle = input_data["messageTitle"]
+
+                os.system('python schedule.py &')
+                subprocess.call(["mplayer", "../../tts/showvideo.mp3"])
+
+                print('video starting..........')
+
+                os.system('omxplayer -o local ./rec/archive/' + messageTitle)
+                continue
             elif (client_Param == "3"):
                 #break inner loop and go to outer loop
+                subprocess.call(["mplayer", "../../tts/goodbye.mp3"])
+
+                print("good bye.............." )
+
+                #Camera setting
+                camera = PiCamera()
+                raz_module.start_camera(camera)
+                print('test............................')
+                rawCapture = PiRGBArray(camera, size=(612, 816))
+                print("camera on!!!!!!!!!!!!!!")
                 break
             else :
                 #innser loop
-                print("pppppppppppppppppppppeaceeeeeeeeeeeee")
+                print("normal condition")
                 time.sleep(5)
                 continue

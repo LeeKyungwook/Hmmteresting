@@ -35,9 +35,6 @@ else:
     am_pm = 'AM'
 
 time_text = "%04d.%02d.%02d %02d:%02d %s" % (now.tm_year, now.tm_mon, now.tm_mday, now_hour, now.tm_min, am_pm)
-
-#now = time.localtime()
-
  
 class App(QWidget):
     
@@ -83,24 +80,25 @@ class App(QWidget):
         self.Schedule.setGeometry(QtCore.QRect(30, 180, 800, 300))
         self.Schedule.setObjectName("Schedule")
         self.Materaials_name = QtWidgets.QLabel(self.centralwidget)
-        self.Materaials_name.setGeometry(QtCore.QRect(30, 800, 800, 60))
+        self.Materaials_name.setGeometry(QtCore.QRect(30, 700, 800, 60))
         self.Materaials_name.setObjectName("Materaials_name")
         self.Materials = QtWidgets.QLabel(self.centralwidget)
-        self.Materials.setGeometry(QtCore.QRect(100, 875, 800, 50))
+        self.Materials.setGeometry(QtCore.QRect(100, 775, 800, 50))
         self.Materials.setObjectName("Materials")
 
-        ########################## 영상 메세지 들어 올 시에 이미지 ###############################
-        self.Message_image.setGeometry(QtCore.QRect(1780, 900, 100, 100))
-        self.Message_image.setPixmap(pixmap_message)
-        self.Message_image.setObjectName("Message_image")
-        self.Message_number = QtWidgets.QLabel(self.centralwidget)
-        self.Message_number.setGeometry(QtCore.QRect(1860, 910, 30, 30))
-        self.Message_number.setObjectName("Message_number")
+	self.VideoMessage = QtWidgets.QLabel(self.centralwidget)
+	self.VideoMessage.setGeometry(QtCore.QRect(1550, 700, 900, 60))
+	self.VideoMessage.setObjectName("VideoMessage")
+
+	self.VideoMessage_title = QtWidgets.QLabel(self.centralwidget)
+	self.VideoMessage_title.setGeometry(QtCore.QRect(1585, 680, 800, 300))
+	self.VideoMessage_title.setObjectName("VideoMessage_titile")
+
         ########################################################################################
-      
         MainWindow.setCentralWidget(self.centralwidget)
         MainWindow.setWindowTitle("Hmmteresting")
 
+        #--------------------------------------------------------------------------------------------------------------#
         user_id = self.data["user"]
         say_hello = "안녕! " + user_id
         temperature_num = self.data["weather"]["temperature"]
@@ -110,8 +108,8 @@ class App(QWidget):
         materials_text = ''
         schedule_text = ''
 
-        #for index, requiredItem in enumerate(self.data["requiredItem"]):
-        #    materials_text += requiredItem + '  '
+        for index, requiredItem in enumerate(self.data["requiredItem"]):
+            materials_text += requiredItem + '  '
 
         for index, schedule in enumerate(self.data["schedule"]):
             #schedule_text += schedule["startDate"]
@@ -123,7 +121,15 @@ class App(QWidget):
             schedule_text += schedule["endTime"][2:4] + ' : '
             schedule_text += schedule["title"]
             schedule_text += '\n'
+        
+        video_message_title = ''
+	video_message = "♡ 영상 메세지 ♡"
+        for index, messageList in enumerate(self.data["messageList"]):
+            video_message_title += messageList["from"] + '   '
+            video_message_title += messageList["title"][0:10] + '\n'
 
+        #--------------------------------------------------------------------------------------------------------------#
+ 
         self.UserName.setText(say_hello)
         self.UserName.setFont(QtGui.QFont('SansSerif', 70))
         self.UserName.setStyleSheet('color : white')
@@ -152,10 +158,13 @@ class App(QWidget):
         self.Temperature.setAlignment(Qt.AlignRight)
 
         ################################# 메세지 개수 ##########################
-        self.Message_number.setText(message_number)
-        self.Message_number.setFont(QtGui.QFont('SansSerif', 15))
-        self.Message_number.setStyleSheet('color : red')
-        self.Message_number.setAlignment(Qt.AlignRight)
+	self.VideoMessage.setText(video_message)
+       	self.VideoMessage.setFont(QtGui.QFont('SansSerif', 30))
+       	self.VideoMessage.setStyleSheet('color : white')
+
+       	self.VideoMessage_title.setText(video_message_title)
+       	self.VideoMessage_title.setFont(QtGui.QFont('SansSerif', 20))
+       	self.VideoMessage_title.setStyleSheet('color : white')
 
     def closeUI(self, MainWindow):
         QApplication.quit()
@@ -163,7 +172,7 @@ class App(QWidget):
     def tts(self):
         text = self.data["user"] + '님, 안녕하세요'
         tts = gTTS(text=text, lang='ko')
-        tts.save('hello.mp3')
+        tts.save('../../tts/hello.mp3')
 
 if __name__ == '__main__':
 
