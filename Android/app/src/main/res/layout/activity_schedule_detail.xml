@@ -90,12 +90,34 @@
                 android:text="준비물" />
 
             <EditText
-                android:id="@+id/edit_prepare"
+                android:id="@+id/edit_reqitems"
                 android:layout_width="match_parent"
                 android:layout_height="74dp"
                 android:ems="10"
-                android:hint="얼마 이내로 입력해주세요."
+                android:hint="준비물을 입력해주세요."
                 android:inputType="textMultiLine" />
+
+            <TextView
+                android:id="@+id/sch_privacy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="보기 설정"/>
+
+            <RadioGroup
+                android:id="@+id/radio_privacy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <RadioButton
+                    android:id="@+id/radBtn_private"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="혼자보기"/>
+                <RadioButton
+                    android:id="@+id/radBtn_public"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="가족과 보기"/>
+            </RadioGroup>
 
             <Button
                 android:id="@+id/btn_submit"

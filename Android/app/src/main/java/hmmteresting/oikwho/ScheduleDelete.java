@@ -1,8 +1,10 @@
 package hmmteresting.oikwho;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,10 +33,11 @@ import cz.msebera.android.httpclient.impl.client.HttpClientBuilder;
 import cz.msebera.android.httpclient.message.BasicNameValuePair;
 import cz.msebera.android.httpclient.util.EntityUtils;
 
-public class ScheduleList extends AppCompatActivity {
+public class ScheduleDelete extends AppCompatActivity {
 
     int this_date = 0;
     String userName;
+    int selectedItem;
 
     final String[] _id = new String[20];
     final String[] title = new String[20];
@@ -47,12 +50,12 @@ public class ScheduleList extends AppCompatActivity {
     final String[] isBroadcast = new String[20];
 
     SendRequestToServer requestToServer;
-
+    SendDelToServer deleteSchedule;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_schedule_list);
+        setContentView(R.layout.activity_schedule_delete);
 
         Intent intent = getIntent();
         userName = intent.getStringExtra("userName");
@@ -63,11 +66,13 @@ public class ScheduleList extends AppCompatActivity {
         Integer day = getDate % 100;
 
         ActionBar ab = getSupportActionBar();
-        ab.setTitle(month+"월"+day+"일의 일정");
+        ab.setTitle(month+"월 "+day+"일의 일정");
+
+        //받아온 스케줄정보 표시하기
+        //http://necos.tistory.com/entry/Android-안드로이드-리스트-뷰를-내-맘대로-사용하자커스텀-리스트뷰
+        ArrayList<CustomListAdapter.ScheduleDataList> schedule_Array_Data = new ArrayList<CustomListAdapter.ScheduleDataList>();
 
         this_date = getDate;
-
-        //서버에서 스케줄 정보 받아오기
         requestToServer = new SendRequestToServer();
         requestToServer.execute();
         try {
@@ -75,13 +80,10 @@ public class ScheduleList extends AppCompatActivity {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
-        //받아온 스케줄정보 표시하기
-        //http://necos.tistory.com/entry/Android-안드로이드-리스트-뷰를-내-맘대로-사용하자커스텀-리스트뷰
-        ArrayList<CustomListAdapter.ScheduleDataList> schedule_Array_Data = new ArrayList<CustomListAdapter.ScheduleDataList>();
+        Log.d("다 받아오고나서 제목의 상태","이것은 첫번째 제목이다 = "+title[0]);
 
         if(title[0] == null) {
-            Toast.makeText(ScheduleList.this, month + "월" + day + "일의 스케줄이 없습니다.", Toast.LENGTH_LONG).show();
+            Toast.makeText(ScheduleDelete.this, month + "월" + day + "일의 스케줄이 없습니다.", Toast.LENGTH_LONG).show();
         } else {
             for(int i = 0; _id.length > i; i++) {
                 if(_id[i] != null) {
@@ -98,30 +100,36 @@ public class ScheduleList extends AppCompatActivity {
 
         scheduleList.setAdapter(schedule_Data_Adapter);
 
-       /* scheduleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(ScheduleList.this, "item clicked",Toast.LENGTH_SHORT).show();
-            }
-        });  */
-
         scheduleList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent go_update = new Intent(getApplicationContext(),
-                        ScheduleUpdate.class);
 
-                go_update.putExtra("_id", _id[position]);
-                go_update.putExtra("User",userName);
-                go_update.putExtra("title", title[position]);
-                go_update.putExtra("startDate", startDate[position]);
-                go_update.putExtra("startTime", startTime[position]);
-                go_update.putExtra("endDate", endDate[position]);
-                go_update.putExtra("endTime", endTime[position]);
-                go_update.putExtra("reqItems", reqItems[position]);
-                go_update.putExtra("isBroadcast", isBroadcast[position]);
+                selectedItem = position;
 
-                startActivity(go_update);
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ScheduleDelete.this);
+
+                alertDialogBuilder.setTitle("스케줄 삭제");
+                alertDialogBuilder
+                        .setMessage(title[position] + " 스케줄을 삭제하시겠습니까?")
+                        .setCancelable(true)
+                        .setPositiveButton("삭제",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        deleteSchedule = new SendDelToServer();
+                                        deleteSchedule.execute();
+                                        dialog.cancel();
+                                    }
+                                })
+                        .setNegativeButton("취소",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
+                AlertDialog alert = alertDialogBuilder.create();
+                alert.show();
             }
         });
 
@@ -166,7 +174,7 @@ public class ScheduleList extends AppCompatActivity {
                     str_response = EntityUtils.toString(responseEntity);
                 }
 
-                Log.i("뭐 받앗냐",str_response);
+Log.i("뭐 받앗냐",str_response);
                 JSONObject json_response = new JSONObject(str_response);
                 JSONArray json_parsed_response = json_response.getJSONArray("schedules");
                 int jsonArraySize = json_parsed_response.length();
@@ -200,4 +208,44 @@ public class ScheduleList extends AppCompatActivity {
         }
     }
 
+    class SendDelToServer extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            HttpClient client = HttpClientBuilder.create().build();
+            HttpPost post = new HttpPost("http://112.151.162.170:7000/deleteSchedule");
+            ArrayList<NameValuePair> nameValues =
+                    new ArrayList<NameValuePair>();
+            try{  ////////request schedules for selected day
+                nameValues.add(new BasicNameValuePair("_id", URLDecoder.decode(_id[selectedItem],"UTF-8")));
+Log.d("뭘 보내냐", title[selectedItem] + " 스케줄을 없애달라고함");
+                //setting values to HttpPost
+                post.setEntity(new UrlEncodedFormEntity(nameValues, "UTF-8"));
+            } catch (UnsupportedEncodingException e) {
+                Log.e("Insert Log", e.toString());
+            }
+
+            try{ ////////get schedules of selected day
+                HttpResponse response = client.execute(post);
+                //make log. if you got 200, it worked well.
+                Log.i("Insert Log", "response.getStatusCode:"+response.getStatusLine().getStatusCode());
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+    }
 }

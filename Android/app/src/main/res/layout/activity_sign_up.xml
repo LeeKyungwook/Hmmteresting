@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="7dp"
+    android:orientation="vertical"
+    tools:context=".SignUp">
+
+    <TextView
+        android:id="@+id/sign_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="이름" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+    <EditText
+        android:id="@+id/edit_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/btn_double_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="이름 중복 체크" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/sign_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="아이디" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/edit_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/btn_double_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="17dp"
+            android:text="ID 중복 체크" />
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/sign_pwd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="비밀번호" />
+
+    <EditText
+        android:id="@+id/edit_pwd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPassword" />
+
+    <TextView
+        android:id="@+id/sign_family"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="나는~" />
+
+    <RadioGroup
+        android:id="@+id/radio_family"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radio_father"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="아버지" />
+
+        <RadioButton
+            android:id="@+id/radio_mother"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="어머니" />
+
+        <RadioButton
+            android:id="@+id/radio_son"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="아들" />
+
+        <RadioButton
+            android:id="@+id/radio_daughter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="딸" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btn_goCamera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="사진 찍기" />
+
+
+    <Button
+        android:id="@+id/btn_signUp_send"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="SUBMIT" />
+</LinearLayout>
