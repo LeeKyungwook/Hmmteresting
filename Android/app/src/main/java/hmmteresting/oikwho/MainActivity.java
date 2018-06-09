@@ -1,6 +1,7 @@
 package hmmteresting.oikwho;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.content.Intent;
 import android.provider.CalendarContract;
 import android.support.annotation.NonNull;
@@ -17,11 +18,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        android.support.v7.app.ActionBar ab = getSupportActionBar();
+        ab.setTitle("어잌WHO");
 
+        Intent intent = getIntent();
         //connect to server. exchanged nothing
         final CalendarView calendar = (CalendarView)findViewById(R.id.calendar);
         final Integer[] selectedDate = {0};
-        final String sh = "suhyun";
+        final String userName; //사인-인(로그인)에서 서버로부터 반환받은 이름을 저장할것
+        userName = intent.getStringExtra("userName");
 
         calendar.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -43,7 +48,8 @@ public class MainActivity extends AppCompatActivity {
                         Intent go_scheduleDetail = new Intent(getApplicationContext(),
                                 ScheduleDetail.class
                         );
-                        go_scheduleDetail.putExtra("userName",sh);  //"suhyun" is dummy data
+                        go_scheduleDetail.putExtra("selectday", selectedDate[0]);
+                        go_scheduleDetail.putExtra("userName",userName);
                         startActivity(go_scheduleDetail);
                     }
                 });
@@ -51,24 +57,21 @@ public class MainActivity extends AppCompatActivity {
                 btn_delete_schedule.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //connect main activity-schedule list(of that day with checkbox)
-                        Intent go_scheduleList = new Intent(getApplicationContext(),
-                                ScheduleList.class);
-                        go_scheduleList.putExtra("selectday", selectedDate[0]);
-                        go_scheduleList.putExtra("userName", sh);
-                        startActivity(go_scheduleList);
-
-                        Toast.makeText(getApplicationContext(), "delete", Toast.LENGTH_SHORT).show();
-                    }
+                        Intent go_scheduleDelete = new Intent(getApplicationContext(),
+                                ScheduleDelete.class);
+                        go_scheduleDelete.putExtra("selectday", selectedDate[0]);
+                        go_scheduleDelete.putExtra("userName", userName);
+                        startActivity(go_scheduleDelete);
+                        }
                 });
 
                 btn_update_schedule.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //connect main activity-schedule_list(of that day)
                         Intent go_scheduleList = new Intent(getApplicationContext(),
                                 ScheduleList.class);
                         go_scheduleList.putExtra("selectday", selectedDate[0]);
+                        go_scheduleList.putExtra("userName", userName);
                         startActivity(go_scheduleList);
                     }
                 });
@@ -79,6 +82,5 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //서버랑 연결 끊음,..  여기서 끊어?아ㅏ닐걸~
     }
 }

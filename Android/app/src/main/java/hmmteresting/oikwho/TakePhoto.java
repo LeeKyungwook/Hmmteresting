@@ -1,6 +1,7 @@
 package hmmteresting.oikwho;
 
 import android.Manifest;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -57,6 +58,9 @@ public class TakePhoto extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON, WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_take_photo);
+
+        android.support.v7.app.ActionBar ab = getSupportActionBar();
+        ab.hide();
 
         Intent fromSignUp = getIntent();
         username = fromSignUp.getStringExtra("username");

@@ -13,6 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="이름" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
     <EditText
         android:id="@+id/edit_name"
@@ -21,18 +25,41 @@
         android:ems="10"
         android:inputType="textPersonName" />
 
+        <Button
+            android:id="@+id/btn_double_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="이름 중복 체크" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/sign_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="아이디" />
 
-    <EditText
-        android:id="@+id/edit_id"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPersonName" />
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/edit_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName" />
+
+        <Button
+            android:id="@+id/btn_double_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="17dp"
+            android:text="ID 중복 체크" />
+
+
+    </LinearLayout>
 
     <TextView
         android:id="@+id/sign_pwd"
@@ -51,14 +78,42 @@
         android:id="@+id/sign_family"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="가족 코드" />
+        android:text="나는~" />
 
-    <EditText
-        android:id="@+id/edit_family"
-        android:layout_width="wrap_content"
+    <RadioGroup
+        android:id="@+id/radio_family"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="number" />
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radio_father"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="아버지" />
+
+        <RadioButton
+            android:id="@+id/radio_mother"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="어머니" />
+
+        <RadioButton
+            android:id="@+id/radio_son"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="아들" />
+
+        <RadioButton
+            android:id="@+id/radio_daughter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:text="딸" />
+    </RadioGroup>
 
     <Button
         android:id="@+id/btn_goCamera"
@@ -68,7 +123,7 @@
 
 
     <Button
-        android:id="@+id/btn_signUp_sendpict"
+        android:id="@+id/btn_signUp_send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="SUBMIT" />

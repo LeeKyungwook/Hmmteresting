@@ -16,6 +16,9 @@ public class SignUpOrIn extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up_or_in);
 
+        android.support.v7.app.ActionBar ab = getSupportActionBar();
+        ab.setTitle("어잌WHO");
+
         Button signIn = findViewById(R.id.btn_signIN);
         Button signOn = findViewById(R.id.btn_signON);
 
@@ -25,7 +28,7 @@ public class SignUpOrIn extends AppCompatActivity {
                 //로그인 액티비티로
                 Intent go_signIN = new Intent(
                         getApplicationContext(),
-                        MainActivity.class
+                        SignIn.class
                 );
                 startActivity(go_signIN);
             }

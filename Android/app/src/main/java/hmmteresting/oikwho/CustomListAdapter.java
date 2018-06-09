@@ -26,14 +26,14 @@ public class CustomListAdapter extends ArrayAdapter<CustomListAdapter.ScheduleDa
         View view = convertView;
 
         if(view == null) {
-            view = LayoutInflater.from(mycontext).inflate(R.layout.activity_schedule_list,null);
+            view = LayoutInflater.from(mycontext).inflate(R.layout.list_item_layout,null);
             pView = new PointerView(view);
             view.setTag(pView);
         }
 
         pView = (PointerView)view.getTag();
 
-        ScheduleDataList receivedDataList = getItem(nPosition); //focus in this
+        ScheduleDataList receivedDataList = getItem(nPosition);
 
         if(receivedDataList != null) {
             pView.getMainTitleView().setText(receivedDataList.getMainTitle());
@@ -74,9 +74,9 @@ public class CustomListAdapter extends ArrayAdapter<CustomListAdapter.ScheduleDa
         private String MainTitle;
         private String SubTitle;
 
-        public ScheduleDataList(String title, String fromDate) {
+        public ScheduleDataList(String title, String subTitle) {
             this.setMainTitle(title);
-            this.setSubTitle(fromDate);
+            this.setSubTitle(subTitle);
         }
 
         public String getMainTitle() {
@@ -89,8 +89,8 @@ public class CustomListAdapter extends ArrayAdapter<CustomListAdapter.ScheduleDa
         public String getSubTitle() {
             return SubTitle;
         }
-        public void setSubTitle(String title) {
-            SubTitle = title;
+        public void setSubTitle(String subtitle) {
+            SubTitle = subtitle;
         }
     }
 }

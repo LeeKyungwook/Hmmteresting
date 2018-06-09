@@ -5,12 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".ScheduleList">
+    tools:context=".ScheduleDelete">
 
     <ListView
         android:id="@+id/lv_scheduleList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="8dp" />
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp">
 
+    </ListView>
 </LinearLayout>
