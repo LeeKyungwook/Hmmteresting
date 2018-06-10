@@ -29,18 +29,19 @@
         <activity
             android:name=".ScheduleDetail"
             android:label="@string/app_name" />
-        <activity android:name=".SignUpOrIn">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".SignUpOrIn"></activity>
         <activity android:name=".SignIn" />
         <activity android:name=".SignUp" />
         <activity android:name=".TakePhoto" />
         <activity android:name=".ScheduleDelete" />
-        <activity android:name=".ScheduleUpdate"></activity>
+        <activity android:name=".ScheduleUpdate" />
+        <activity android:name=".Splash">
+            <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+        </activity>
     </application>
 
 </manifest>

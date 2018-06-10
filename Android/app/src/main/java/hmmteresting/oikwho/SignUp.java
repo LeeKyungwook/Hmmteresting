@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -58,6 +59,10 @@ public class SignUp extends AppCompatActivity {
     boolean isDouble;
 
 
+    public void customCallback(String s) {
+
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,10 +90,16 @@ public class SignUp extends AppCompatActivity {
         final EditText this_edit_id = findViewById(R.id.edit_id);
         final EditText this_edit_pwd = findViewById(R.id.edit_pwd);
         final RadioGroup this_radio_family = findViewById(R.id.radio_family);
+        final RadioButton this_radio_father = findViewById(R.id.radio_father);
+        final RadioButton this_radio_mother = findViewById(R.id.radio_mother);
+        final RadioButton this_radio_son = findViewById(R.id.radio_son);
+        final RadioButton this_radio_daughter = findViewById(R.id.radio_daughter);
+
 
         Ion.getDefault(this).configure().setLogging("ion-sample", Log.DEBUG);
-        File sdCard = Environment.getExternalStorageDirectory();
+        final File sdCard = Environment.getExternalStorageDirectory();
         final String[] path = {sdCard.getAbsolutePath()+"/oikwho/"};
+        final boolean[] isSendSucc = {false};
 
         Button check_doubleName = findViewById(R.id.btn_double_name);
         check_doubleName.setOnClickListener(new View.OnClickListener() {
@@ -153,9 +164,18 @@ public class SignUp extends AppCompatActivity {
                 id[0] = this_edit_id.getText().toString();
                 pwd[0] = this_edit_pwd.getText().toString();
                 int radioID = this_radio_family.getCheckedRadioButtonId();
-                family[0] = String.valueOf(radioID);
 
-                path[0] = path[0] + name[0] +".jpg";
+                if(radioID == this_radio_father.getId()) {
+                    family[0] = "father";
+                } else if(radioID == this_radio_mother.getId()) {
+                    family[0] = "mother";
+                } else if(radioID == this_radio_daughter.getId()) {
+                    family[0] = "daughter";
+                } else if(radioID == this_radio_son.getId()) {
+                    family[0] = "son";
+                }
+
+                path[0] = sdCard.getAbsolutePath() + "/oikwho/"+ name[0] +".jpg";
 Log.d("사진 path",path[0]);
                 sendInfo = new SendToServer();
                 sendInfo.execute();
@@ -183,18 +203,24 @@ Log.d("사진 path",path[0]);
                         .setCallback(new FutureCallback<Response<String>>() {
                             @Override
                             public void onCompleted(Exception e, Response<String> result) {
-                                try {
-                                    JSONObject jobj = new JSONObject(result.getResult());
-                                    Toast.makeText(getApplicationContext(),
-                                            jobj.getString("response"), Toast.LENGTH_SHORT);
-                                } catch (JSONException e1) {
-                                    e1.printStackTrace();
+                                Log.d("사진전송1111",result.getResult().toString());
+
+                                if(result.getResult().toString().equals("join us *^^*")) {
+                                    isSendSucc[0] = true;
+                                    Log.d("사진전송",result.getResult().toString()+", " + isSendSucc[0]);
+                                } else {
+                                    isSendSucc[0] = false;
+                                    Log.d("사진전송 이..","문제가 있음 isSendsuccess="+isSendSucc[0]);
+                                }
+
+                                if(isSendSucc[0] == true) {
+                                    Toast.makeText(SignUp.this, "회원가입 성공! 로그인해주세요.", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                } else {
+                                    Toast.makeText(SignUp.this, "얼굴 인식에 실패했습니다. 사진을 다시 찍어주세요.", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
-
-                Toast.makeText(SignUp.this, "send success",Toast.LENGTH_LONG).show();
-                finish();
             }
         });
     }

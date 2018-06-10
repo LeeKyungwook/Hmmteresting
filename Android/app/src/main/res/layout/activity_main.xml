@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
-        android:background="#AAAAAA"
+        android:background="@color/colorPrimary"
         android:text="Insert"
         android:visibility="invisible"
         tools:ignore="HardcodedText" />
@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
-        android:background="#AAAAAA"
+        android:background="@color/colorPrimary"
         android:text="Update"
         android:visibility="invisible"
         tools:ignore="HardcodedText" />
@@ -41,7 +41,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:layout_marginTop="5dp"
-        android:background="#AAAAAA"
+        android:background="@color/colorPrimary"
         android:bufferType="normal"
         android:text="Delete"
         android:visibility="invisible"

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
@@ -59,6 +60,8 @@ public class ScheduleDetail extends AppCompatActivity {
         final EditText this_edit_endTime = (EditText) findViewById(R.id.edit_endTime);
         final EditText this_edit_reqitems = (EditText) findViewById(R.id.edit_reqitems);
         final RadioGroup this_rg_privacy = (RadioGroup) findViewById(R.id.radio_privacy);
+        final RadioButton this_rb_private = (RadioButton)findViewById(R.id.radBtn_private);
+        final RadioButton this_rb_public = (RadioButton) findViewById(R.id.radBtn_public);
         User[0] = intent.getStringExtra("userName");
         this_edit_startDate.setText(String.valueOf(thisdate));
 
@@ -73,7 +76,12 @@ public class ScheduleDetail extends AppCompatActivity {
             endDate[0] = this_edit_endDate.getText().toString();
             endTime[0] = this_edit_endTime.getText().toString();
             reqitems[0] = this_edit_reqitems.getText().toString();
-            isBroadcast[0] = Integer.toString(this_rg_privacy.getCheckedRadioButtonId());  //고장났음
+
+            if(this_rg_privacy.getCheckedRadioButtonId() == this_rb_public.getId()) {
+                isBroadcast[0] = "1";
+            } else if(this_rg_privacy.getCheckedRadioButtonId() == this_rb_private.getId()){
+                isBroadcast[0] = "0";
+            }
 
             sendSch = new SendSchToServer();
             sendSch.execute();

@@ -31,6 +31,7 @@ public class SignUpOrIn extends AppCompatActivity {
                         SignIn.class
                 );
                 startActivity(go_signIN);
+
             }
         });
 

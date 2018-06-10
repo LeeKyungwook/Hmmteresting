@@ -72,6 +72,7 @@ public class SignIn extends AppCompatActivity {
                     Toast.makeText(SignIn.this, "어서오세요, " + name[0] + "님!", Toast.LENGTH_SHORT).show();
                     go_main.putExtra("userName",name[0]);
                     startActivity(go_main);
+                    finish();
                 } else {
                     Toast.makeText(SignIn.this, "아이디 또는 비밀번호가 틀렸습니다.", Toast.LENGTH_SHORT).show();
                 }
