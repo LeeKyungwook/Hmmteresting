@@ -122,6 +122,14 @@ class App(QWidget):
             schedule_text += schedule["title"]
             schedule_text += '\n'
         
+        for index, shared_schedule in enumerate(self.data["shareSchedule"]):
+            schedule_text += shared_schedule["startTime"][0:2] + ':'
+            schedule_text += shared_schedule["startTime"][2:4] + ' ~ '
+            schedule_text += shared_schedule["endTime"][0:2] + ':'
+            schedule_text += shared_schedule["endTime"][2:4] + ' : '
+            schedule_text += shared_schedule["title"]
+            schedule_text += '\n'
+
         video_message_title = ''
 	video_message = "♡ 영상 메세지 ♡"
         for index, messageList in enumerate(self.data["messageList"]):

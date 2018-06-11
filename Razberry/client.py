@@ -126,10 +126,10 @@ if __name__ == '__main__':
         
         #change the color of monitor when server responsed
         os.system('python schedule.py &')
-        time.sleep(5)
+        time.sleep(4)
+        subprocess.call(["mplayer", "-volume", "150", "../../tts/hello.mp3"])
+        #time.sleep(2)
         os.system('pkill -9 -ef init.py')
-
-        subprocess.call(["mplayer", "../../tts/hello.mp3"])
 
         now = time.localtime()
         now_min = now.tm_min
@@ -154,7 +154,6 @@ if __name__ == '__main__':
                 rawCapture = PiRGBArray(camera, size=(612, 816))
 
                 time.sleep(0.1)
-                
                 break
 
             try: 
@@ -175,12 +174,29 @@ if __name__ == '__main__':
             
             if (client_Param == "1"):
                 #record and send video name
-                subprocess.call(["mplayer", "../../tts/start_record_video.mp3"])
+                subprocess.call(["mplayer", "-volume", "150", "../../tts/start_record_video.mp3"])
 
                 raz_module.start_record_vid()
-                time.sleep(5)
-                video_name = raz_module.stop_record_vid()
-                camera.close()
+                #time.sleep(5)
+                while True:
+                    try: 
+                        res = requests.post(raz_url + '/ILuvU')
+                        #get request and wait for returing value
+                    except requests.exceptions.ConnectionError:
+                        print("ConnectionError.............")
+                        time.sleep(5)
+                        continue
+                    
+                    input_data = json.loads(res.text)
+                    heart_signal = input_data["luvU"]
+                    if (heart_signal == 1):
+                        video_name = raz_module.stop_record_vid()
+                        camera.close()
+                        print('recording stop...................')
+                        break
+                    else:
+                        continue
+                
                 '''
                 now = time.localtime()
                 now_min = now.tm_min
@@ -194,13 +210,11 @@ if __name__ == '__main__':
                         video_name = raz_module.stop_record_vid()
                         break
                 '''
-
-                subprocess.call(["mplayer", "../../tts/stop_record_video.mp3"])        
+                subprocess.call(["mplayer", "-volume", "150", "../../tts/stop_record_video.mp3"])        
                 video_save_url = base_url + '/sendMessage'
                 data = {"title" : video_name}
-                #headers = {'Content-type' : 'application/json', 'Accept' : 'text/plain'}
                 res = requests.post(video_save_url, data = data)
-
+                continue
             #elif (client_Param == 2):
             #    #record and send audio name
             #    #turn on the video
@@ -213,27 +227,28 @@ if __name__ == '__main__':
                 messageTitle = input_data["messageTitle"]
 
                 os.system('python schedule.py &')
-                subprocess.call(["mplayer", "../../tts/showvideo.mp3"])
+                subprocess.call(["mplayer", "-volume", "150", "../../tts/showvideo.mp3"])
 
                 print('video starting..........')
 
-                os.system('omxplayer -o local ./rec/archive/' + messageTitle)
+                os.system('omxplayer -o local -b --vol 2000 ./rec/archive/' + messageTitle)
+                os.system('find -name "' + messageTitle + '" -delete')
                 continue
             elif (client_Param == "3"):
                 #break inner loop and go to outer loop
-                subprocess.call(["mplayer", "../../tts/goodbye.mp3"])
+                subprocess.call(["mplayer", "-volume", "150", "../../tts/goodbye.mp3"])
 
-                print("good bye.............." )
 
                 #Camera setting
                 camera = PiCamera()
                 raz_module.start_camera(camera)
-                print('test............................')
                 rawCapture = PiRGBArray(camera, size=(612, 816))
-                print("camera on!!!!!!!!!!!!!!")
                 break
+            elif (client_Param == "5"):
+                subprocess.call(["mplayer", "-volume", "150", "../../tts/nofound.mp3"])
+                continue
             else :
                 #innser loop
                 print("normal condition")
-                time.sleep(5)
+                time.sleep(3)
                 continue
