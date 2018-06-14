@@ -128,7 +128,6 @@ if __name__ == '__main__':
         os.system('python schedule.py &')
         time.sleep(4)
         subprocess.call(["mplayer", "-volume", "150", "../../tts/hello.mp3"])
-        #time.sleep(2)
         os.system('pkill -9 -ef init.py')
 
         now = time.localtime()
@@ -231,7 +230,7 @@ if __name__ == '__main__':
 
                 print('video starting..........')
 
-                os.system('omxplayer -o local -b --vol 2000 ./rec/archive/' + messageTitle)
+                os.system('omxplayer -o local -b --vol 1500 ./rec/archive/' + messageTitle)
                 os.system('find -name "' + messageTitle + '" -delete')
                 continue
             elif (client_Param == "3"):

@@ -188,6 +188,6 @@ if __name__ == '__main__':
     MainWindow = QtWidgets.QMainWindow()
     ui = App()
     ui.scheduleUI(MainWindow)
-    ui.tts()
+    #ui.tts()
     MainWindow.showFullScreen()
     app.exec_()
