@@ -118,7 +118,7 @@ if __name__ == '__main__':
         # print dist
 
     # #print '--------------------------'
-    if (current_dist > 0.55):
+    if (current_dist > 0.65):
         # print current_dist
         print current_filename
     else :

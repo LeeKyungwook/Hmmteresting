@@ -37,11 +37,13 @@ for filename in filenames:
     num_faces = len(dets)
     if num_faces == 0:
         print("Error2 : No Face Found")
+	os.remove(full_filename)
         #print("Sorry, there were no faces found in '{}'".format(face_file_path))
         exit()
 
     elif num_faces != 1 and num_faces != 0:
         print("Error3 : Too Many Face")
+	os.remove(full_filename)
         #print("Sorry, there were no faces found in '{}'".format(face_file_path))
         exit()
 

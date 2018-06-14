@@ -10,27 +10,26 @@ db.on('error', function(){
 
 
 var users = mongoose.Schema({
-  Uid:'number',
   name: 'string',
   id:'string',
   pw:'string',
-  family:'number'
+  family:'string'
 });
 
 var schedules = mongoose.Schema({
   title:'string',
-  user:'number',
-  startDate:'number',
-  startTime:'number',
-  endDate:'number',
-  endTime:'number',
+  User:'string',
+  startDate:'string',
+  startTime:'string',
+  endDate:'string',
+  endTime:'string',
   reqItems:'string',
-  isBroadcast:'number'
+  isBroadcast:'string'
 });
 
 var messages = mongoose.Schema({
-  from : 'number',
-  to : 'number',
+  from : 'string',
+  to : 'string',
   title : 'string'
 });
 
@@ -38,92 +37,90 @@ var USERS = mongoose.model('users', users);
 var SCHEDULES = mongoose.model('schedules', schedules);
 var MESSAGES = mongoose.model('messages',messages);
 
-var uid;
-var dd;
-var mm;
-var yyyy;
-var thisDate;// = yyyy*10000 + mm*100 + dd;
-var sch_objID;
-var string_ID;
-
-uid = 2;
-yyyy =2018; mm = 5; dd = 31;
-thisDate = yyyy*10000 + mm*100 + dd;
-sch_objID = "5afd61c4cd2a59ae077d05c5"
-string_ID = "suhyun000"  //dummy
-
+function todayScheduleQuery(req, callback) {
+  console.log("today req : "+JSON.stringify(req));
+  SCHEDULES.find({ $and:[{User : req.name}, { startDate:req.thisDate }, {endDate:req.thisDate}] }, { __v:0}).sort({startTime:1}).exec(function(error, schedules) {
+    console.log('--- Read today\'s Schedules of User' +' ---');
+    console.log(schedules);
+    if (typeof callback === "function"){
+      callback(schedules);
+    };
+  });
+};
 
 function scheduleQuery(req, callback) {
   //search 20180531's schedules
-  var request = req;
-  userName2UidQuery(request.userName, function(Uid){
-    SCHEDULES.find({ $and:[{ startDate:{$lte:request.thisDate} }, {endDate:{$gte:request.thisDate}}, {user:Uid}] }, { __v:0}, function(error, schedules) {
-      console.log('--- Read today\'s Schedules of User'+ uid +' ---');
-      if(error){
-        console.log(error);
-        callback('show schedule error');
-      }
-      else{
-        console.log(schedules);
-        if (typeof callback === "function"){
-          callback(schedules);
-        };
-      };
-    });
+  console.log("schdule req : "+JSON.stringify(req));
+  SCHEDULES.find({ $and:[{User : req.name}, { startDate:{$lte:req.thisDate} }, {endDate:{$gte:req.thisDate}},{isBroadcast : "0"}] }, { __v:0}).sort({startTime:1}).exec(function(error, schedules) {
+    // SCHEDULES.find({ $and:[{ startDate:{$lte:req.thisDate} }, {endDate:{$gte:req.thisDate}}] }, { __v:0}, function(error, schedules) {
+    console.log('--- Read Schedules of User'+' ---');
+    console.log(schedules);
+    if (typeof callback === "function"){
+      callback(schedules);
+    };
+  });
+};
+
+
+function shareScheduleQuery(req, callback) {
+  //search 20180531's schedules
+  console.log("share req : "+JSON.stringify(req));
+  SCHEDULES.find({ $and:[{ startDate:{$lte:req.thisDate} }, {endDate:{$gte:req.thisDate}}, {isBroadcast : "1"}] }, { __v:0}).sort({startDate:1}).exec(function(error, schedules) {
+    console.log('--- Read Share Schedules of User' +' ---');
+    console.log(schedules);
+    if (typeof callback === "function"){
+      callback(schedules);
+    };
   });
 };
 
 
 function requiredItemQuery(req, callback){
   //search today's requiredItems
+  SCHEDULES.find({ $and:[{User : req.name}, { startDate:{$lte:req.thisDate} }, {endDate:{$gte:req.thisDate}}] }, {_id:0, __v:0, title:0, User:0, startDate:0, endDate:0, startTime:0, endTime:0, isBroadcast:0},function(error, reqitems){
+    console.log('--- Read Required today\'s Item List of User ' + ' ---');
+    console.log(reqitems);
+    if (typeof callback === "function"){
+      callback(reqitems);
+    };
+  });
+};
+
+
+function isUserIdQuery(req, callback){ //변수
   var request = req;
-  userName2UidQuery(request.userName, function(Uid){
-    SCHEDULES.find({ $and:[{ startDate:{$lte:request.thisDate} }, {endDate:{$gte:request.thisDate}}, {user:Uid}] }, {_id:0, __v:0, title:0, user:0, startDate:0, endDate:0, endTime:0, isBroadcast:0},function(error, reqitems){
-      console.log('--- Read Required today\'s Item List of User ' + Uid + ' ---');
-      if(error){
-        console.log(error);
-        callback('show requiredItem error');
-      }
-      else{
-        console.log(reqitems);
-        if (typeof callback === "function"){
-          callback(reqitems);
-        };
-      };
-    });
+  console.log('111req111 :'+request);
+  USERS.find({ id: request }, { _id:0, __v:0 },function(error, users) {
+    console.log('--- 1User Info Test ---');
+    console.log(users);
+    if (typeof callback === "function"){
+      callback(users);
+    };
   });
 };
 
 
-function userId2UidQuery(req, callback){
-  //search user whose id is string_ID
-  USERS.find({ id:string_ID }, { _id:0, __v:0 },function(error,users) {
-    console.log('--- User Info Test ---');
-    if(error){
-      console.log(error);
-      callback('userID -> Uid error');
-    }else{
-      console.log(users);
-      if (typeof callback === "function"){
-        callback(users.Uid);
-      };
-    }
+function isUserNameQuery(req, callback){ //변수
+  var request = req;
+  console.log('222req222 :'+request);
+  USERS.find({ name: request }, { _id:0, __v:0 },function(error, users) {
+    console.log('--- 2User Info Test ---');
+    console.log(users);
+    if (typeof callback === "function"){
+      callback(users);
+    };
   });
 };
 
 
-function userName2UidQuery(req, callback){
-  //search user whose name is userName
-  USERS.find({ name:req.userName }, { _id:0, __v:0 },function(error,users) {
-    console.log('--- User Info Test ---');
-    if(error){
-      console.log(error);
-      callback('userName -> Uid error');
-    } else{
-      console.log(users);
-      if (typeof callback === "function"){
-        callback(users.Uid);
-      };
+function familyNumber2userNameQuery(req, callback){ //변수
+  console.log('333req333 :'+req);
+  USERS.find({ family : req }, { _id:0, __v:0 },function(error,users) {
+    console.log('--- 3User Info Test ---');
+    console.log(users);
+    if (typeof callback === "function"){
+      console.log(users[0].name);
+      callback(users[0].name);
     }
   });
 };
@@ -140,18 +137,12 @@ function insertScheduleQuery(req, callback){
 function updateScheduleQuery(req, callback){
   //update schedule by its ObjectId
   var request = req;
-  SCHEDULES.update(ObjectId(request._id),{$set:{title:requset.title, user: request.user, startDate: request.startDate, startTime: request.startTime, endDate: request.endDate, endTime:request.endTime , isBroadcast:request.isBroadcast}}, function(error, schedules) {
+  SCHEDULES.update({ _id : request._id},{$set:{title:request.title, User: request.User, startDate: request.startDate, startTime: request.startTime, endDate: request.endDate, endTime:request.endTime , reqItems : request.reqItems, isBroadcast:request.isBroadcast}}, function(error, schedules) {
     console.log('--- Update Info Test ---');
-    if(error) {
-      console.error();
-      callback('update Schedule error');
-    }
-    else{
-      console.log(schedules);
-      if (typeof callback === "function"){
-        callback('update Schedule success');
-      };
-    }
+    console.log(schedules);
+    if (typeof callback === "function"){
+      callback('update Schedule success');
+    };
   });
 };
 
@@ -159,42 +150,82 @@ function updateScheduleQuery(req, callback){
 function deleteScheduleQuery(req, callback){
   //delete schedule by its ObjectId
   var request = req;
-  SCHEDULES.deleteOne(ObjectId(request._id), function(err, users) {
+  SCHEDULES.deleteOne({_id : request._id}, function(err, users) {
     console.log('--- Delete Schedule Test ---');
-    if(error) {
-      console.error();
-      callback('delete Schedule error')
-    }
-    else{
-      console.log('successfully deleted... good bey schedule');
-      if (typeof callback === "function"){
-        callback('delete Schedule success');
-      };
-    }
+    if (typeof callback === "function"){
+      console.log('delete Schedule success');
+      callback('delete Schedule success');
+    };
   });
 };
 
 
 function insertUserQuery(req, callback){ //req : name Uid pw
   var request = req;
+  console.log(request);
+  console.log(JSON.stringify(request));
   db.collection('users').insert(request);
   console.log('insert user success');
   return callback('insert user success');
 };
 
+function checkUserQuery(req, callback){
+
+  console.log("ididid" + req.id);
+  console.log("pwpwpw" + req.pw);
+  USERS.find({ $and:[{id : req.id}, { pw:req.pw }] }, { _id:0, __v:0 },function(error,userName) {
+    console.log('--- checkcheck ---');
+    console.log(userName);
+    if (typeof callback === "function"){
+      callback(userName);
+    }
+  });
+}
+
 
 function sendMessageQuery(req, callback) { //req : from to title
   var request = req;
-  db.collection('messages').insert(request);
-  console.log('insert Schedule success');
-  return callback('insert Schedule success');
+
+  console.log("tototototo : "+request.to);
+  console.log("fromfrom : "+request.from);
+  console.log("titletitle : "+request.title);
+
+  if(request.to == '엄마' || request.to == '아빠'||request.to == '누나'||request.to == '동생' ||request.to == '와이프'||request.to == '남편'||request.to == '딸'||request.to == '아들'){
+    if(request.to == '엄마' || request.to == '와이프'){
+      request.to = 'mother' ;
+    }else if (request.to == '아빠' || request.to == '남편') {
+      request.to = 'father';
+    }else if (request.to == '누나'||request.to == '딸') {
+      request.to = 'daughter';
+    }else if (request.to == '동생'||request.to == '아들') {
+      request.to = 'son';
+    }
+
+    familyNumber2userNameQuery(request.to, function(toUserName){
+      console.log(toUserName);
+      request.to = toUserName;
+      console.log("????????????");
+      console.log(JSON.stringify(request));
+      db.collection('messages').insert(request);
+      console.log('insert messages success');
+      return callback('insert messages success');
+    });
+  }
+  else{
+
+  }
 };
 
 
 function deleteMessageQuery(req, callback){
   var request = req;
-  MESSAGES.deleteOne({$and :[{to : request.to},{title : request.title}]}, function(err) {
-
+  console.log(request);
+  MESSAGES.deleteOne({$and :[{from : request.from}, {title : request.title}]}, function(err,result) {
+    console.log('--- Delete Message Test ---');
+    console.log(result);
+    if (typeof callback === "function"){
+      callback('delete Message success');
+    };
   });
 };
 
@@ -202,51 +233,48 @@ function deleteMessageQuery(req, callback){
 function receiveMessageQuery(req, callback) { //req : from
   var request = req;
 
-  userName2UidQuery(requset,function(uid){
-    MESSAGES.find({ to : uid }, { _id:0, __v:0, to:0 },function(error,message) {
-      if(error){
-        console.log(error);
-        callback('receiveMessge error');
-      } else{
-        console.log(message);
-
-        /////////////////////////////////////delete
-        if (typeof callback === "function"){
-          callback(message);
-        };
-      }
-    });
-  })
+  MESSAGES.find({ to : request }, { _id:0, __v:0, to:0 },function(error,messageList) {
+    console.log(messageList);
+    callback(messageList);
+  });
 };
 
 
 //////////////////아직안씀
-function veiwMessageQuery(req, callback) {
-  // MESSAGES.find({to:Uid})
-  // .sort({uploadDate:-1})
+function veiwMessageQuery(req, callback) { //req = userName
+  MESSAGES.find({to:req})
+  .sort({title:1})
   // .limit(5)
-  // .exec(function(err, messages){
-  //   console.log(messges);
-  //   return messges;
-  // });
+  .exec(function(err, messages){
+    console.log(messges);
+    return callback(messges);
+  });
 };
 
 
 function howManyMassageQuery(req, callback) {
-
+  MESSAGES.find({to:req}).count().exec(function(err, messagesNum){
+    return callback(messagesNum);
+  });
 };
 
 module.exports = {
+  todayScheduleQuery: todayScheduleQuery,
   scheduleQuery: scheduleQuery,
+  shareScheduleQuery: shareScheduleQuery,
   requiredItemQuery: requiredItemQuery,
-  userId2UidQuery: userId2UidQuery,
-  userName2UidQuery: userName2UidQuery,
+  isUserIdQuery: isUserIdQuery,
+  isUserNameQuery: isUserNameQuery,
+  familyNumber2userNameQuery: familyNumber2userNameQuery,
   insertScheduleQuery: insertScheduleQuery,
   updateScheduleQuery: updateScheduleQuery,
   deleteScheduleQuery: deleteScheduleQuery,
+  checkUserQuery: checkUserQuery,
   insertUserQuery: insertUserQuery,
   sendMessageQuery: sendMessageQuery,
   receiveMessageQuery: receiveMessageQuery,
+  deleteMessageQuery: deleteMessageQuery,
   veiwMessageQuery: veiwMessageQuery,
   howManyMassageQuery: howManyMassageQuery
 };
+

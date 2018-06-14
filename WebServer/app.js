@@ -1,4 +1,4 @@
-var express = require('express')
+var express = require('express');
 var app = express();
 var port = 7000;
 var bodyParser = require('body-parser');
@@ -21,11 +21,6 @@ var dbConnectRouter = require('./dbConnect');
 var weatherRouter = require('./weather');
 var fileRouter = require('./file');
 
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
-app.engine('html', require('ejs').renderFile);
-app.use(express.static('public'));
-
 app.get('/', (req, res, next) => {
   res.send('hello world!');
 });
@@ -34,32 +29,6 @@ app.listen(port, () => {
   console.log(`Server is running at ${port}`);
 });
 
-var schedule1 = {
-  title: '점심약속',
-  user: '123',
-  startDate: '2018-06-04',
-  startTime:'12:00',
-  endDate: '2018-06-04',
-  endTime: '13:00',
-  reqItmes: '',
-  isBroadcast: '1'
-}
-
-var schedule2 = {
-  title: '캡스톤 수업',
-  user: '123',
-  startDate: '2018-06-04',
-  startTime:'16:30',
-  endDate: '2018-06-04',
-  endTime: '21:00',
-  reqItmes: '노트북',
-  isBroadcast: '1'
-}
-
-var schedule = [schedule1, schedule2];
-
-var requiredItem = ['노트북', '과자']
-
 var string = "{'key':'value'}";
 
 app.post('/',function(req, res){
@@ -67,31 +36,8 @@ app.post('/',function(req, res){
   res.send(req.body);
 });
 
-app.get('/init', function (req, res) {
-
-  if(userName == 'none'){
-    res.render('index2',{});
-  }else {
-    res.render('index', {
-      name: global.userName,
-      title: "Hmmteresting Demo",
-      startDate: schedule1.startDate,
-      endDate : schedule1.endDate,
-      title_name : schedule1.title,
-      where : schedule1.where
-    });
-  }
-});
-
-app.get('/imgs', function (req,res){
-  fs.readFile('./image/'+global.userNameJpg, function (error, data){
-    console.log("userNameJpg    "+global.userNameJpg);
-    res.end(data)
-  })
-})
-
 var request, response;
-app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기 +초기에 받은 <메세지 개수>도 보여줘야,,,
+app.post('/init', function(req,res) { 
   request = req;
   async.waterfall(
     [
@@ -101,7 +47,7 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
         });
       },
 
-      function(arg1, callback) {  //arg1 = filePath
+      function(arg1, callback) { 
         var options = {
           mode: 'text',
           pythonPath: '',
@@ -121,7 +67,6 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
       },
 
       function(arg1, callback) {
-        //arg1 = 'not found' or imagePath
         var options = {
           mode: 'text',
           pythonPath: '',
@@ -141,7 +86,8 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
               console.log(err);
               return res.send(err);
             }
-            console.log("<== align_img result : "+result);//result = jh2.jpg
+            console.log("<== align_img result : "+result);
+
             callback(null, result);
           });
         }
@@ -156,42 +102,50 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
           global.userNameJpg = global.userName + '.jpg'
 
           var date = (new Date()).toFormat('YYYYMMDD');
+          var json = Object();
+          json.name = global.userName;
+          json.thisDate = date;
 
-          // var json = {
-          //   userName : global.userName,
-          //   thisDate : date
-          // };
-
-          //*DB
-          messageNum = 1;
-          //*
-
-          weatherRouter.getWeather(function(weather){
-            // dbConnectRouter.scheduleQuery(json, function(schedule){
-              // dbConnectRouter.requiredItemQuery(json, function(requiredItem){
-                callback(null, weather, schedule, requiredItem, messageNum);
-              // });
-            // });
+          dbConnectRouter.howManyMassageQuery(global.userName, function(messageNum){
+            weatherRouter.getWeather(function(weather){
+              dbConnectRouter.todayScheduleQuery(json, function(todaySchedule){
+                dbConnectRouter.scheduleQuery(json, function(schedule){
+                  dbConnectRouter.shareScheduleQuery(json, function(shareSchedule){
+                    dbConnectRouter.requiredItemQuery(json, function(requiredItem){
+                       dbConnectRouter.receiveMessageQuery(global.userName, function(messageList){
+                        callback(null, weather, todaySchedule, schedule, shareSchedule, requiredItem, messageNum, messageList);
+                      });
+                    });
+                  });
+                });
+              });
+            });
           });
         }
       },
 
-      function(arg1, arg2, arg3, arg4,callback) { // arg1 = weather, arg2 = shedule, arg3 : requiredItem, arg4 = messageNum
-        // var json = {
-        //   name : global.userName,
-        //   weather: arg1,
-        //   schedule : arg2,
-        //   requiredItem : arg3,
-        //   messageNum : arg4
-        // };
-	console.log("weather : "+arg1.body);
-       // var json = arg1;
-       // json.user = global.userName;
-       // json.schedule = arg2;
-       // json.requiredItem = arg3;
-       // json.messageNum = arg4.toString();
+      function(arg1, arg2, arg3, arg4, arg5, arg6, arg7, callback) { //arg1 = weather, arg2 = todaySchedule, arg3 = schedule, arg4 = shareSchedule, arg5 = requiredItem, arg6 = messageNum
 
-        res.json(arg1);
+        var json = {
+          weather : arg1
+        };
+
+        var arr = [];
+
+        var i =0;
+        if(i<arg5.length){
+          arr.push(arg5[i].reqItems);
+          i++;
+        }
+        json.user = global.userName;
+        json.todaySchedule = arg2;
+        json.schedule = arg3;
+        json.shareSchedule = arg4;
+        json.requiredItem = arr;
+        json.messageNum = arg6.toString();
+        json.messageList = arg7;
+        console.log(JSON.stringify(json));
+        res.json(json);
         callback(null, 'done');
       }
     ],
@@ -203,90 +157,43 @@ app.post('/init', function(req,res) { //날씨, 스케쥴 초기에 보여주기
 });
 
 
-app.post('/jhTest', function(req,res) {
-  console.log(req);
-  res.send(schedule1);
-});
+global.userInfo = null;
 
-
-app.post('/join', function(req,res) { //회원가입
-  request = req;
-  async.waterfall(
-    [
-      function(callback) {
-        fileRouter.fileDownloadAndroid(req, function(filePath){
-          callback(null, filePath);
-        });
-      },
-
-      function(arg1, callback) {  //arg1 = filePath
-        var options = {
-          mode: 'text',
-          pythonPath: '',
-          pythonOptions: ['-u'],
-          scriptPath: '',
-          args: arg1
-        };
-        console.log("==> android face_recognize arg1 : "+ arg1);
-        PythonShell.run('../face_detection/src/android_face_resize_alignment.py',options, function(err, result){
-          if(err) {
-            console.log(err);
-            return res.send(err);
-          }
-          console.log("<== android face_recognize result : "+result);
-          callback(null, result);
-        });
-      },
-
-      function(arg1, callback) {
-        if(arg1 == 'Error2 : No Face Found'){
-          return res.send('cannot find face');
-        }else if(arg1 == 'Error3 : Too Many Faces'){
-          return res.send('Too Many Faces');
-        }else {
-          callback(null, 'done');
-        }
-      }
-    ],
-    function (err, result) {
-      console.log( result );
-      res.send('Hello!');
+app.post('/joinCheckID', function(req, res){
+  dbConnectRouter.isUserIdQuery(req.body.id, function(user2){
+    if(user2[0] != null){
+      console.log('false');
+      return res.send('false');
     }
-  );
-
-  return;
-});
-
-
-app.post('/joinInfo', function(req,res){ //사용자의 정보가 db에 있는지 없는지 확인하고 없으면 insert
-  var request = req;
-
-  dbConnectRouter.userName2UidQuery(request, function(Uid){
-    if(Uid != null){
-      console.log('이미 존재하는 이름입니다.');
-      return res.send('이미 존재하는 이름입니다.');
-    }else {
-      dbConnectRouter.userId2UidQuery(request, function(Uid){
-        if(Uid != null){
-          console.log('이미 존재하는 ID 입니다.');
-          return res.send('이미 존재하는 ID 입니다.');
-        }else {
-          dbConnectRouter.insertUserQuery(reauest, function(result){
-            if(result == 'insert user success'){
-              return res.send('join us *^^*');
-            }else {
-              return res.send(result);
-            }
-          });
-        }
-      });
+    else{
+      console.log('true');
+      return res.send('true');
     }
   });
 });
 
 
-app.post('/joinPicture', function(req,res) { //회원가입
-  request = req;
+app.post('/joinCheckName', function(req, res){
+  dbConnectRouter.isUserNameQuery(req.body.name, function(user1){
+    if(user1[0] != null){
+      console.log('false');
+      return res.send('false');
+    }else {
+      console.log('true');
+      return res.send('true');
+    }
+  });
+});
+
+
+app.post('/joinInfo', function(req,res){ 
+  var request = req.body;
+  global.userInfo = request;
+  return res.send('give me picture');
+});
+
+
+app.post('/joinPicture', function(req,res) { 
   async.waterfall(
     [
       function(callback) {
@@ -317,8 +224,8 @@ app.post('/joinPicture', function(req,res) { //회원가입
       function(arg1, callback) {
         if(arg1 == 'Error2 : No Face Found'){
           return res.send('cannot find face');
-        }else if(arg1 == 'Error3 : Too Many Faces'){
-          return res.send('Too Many Faces');
+        }else if(arg1 == 'Error3 : Too Many Face'){
+          return res.send('Too Many Face');
         }else {
           callback(null, 'done');
         }
@@ -326,19 +233,38 @@ app.post('/joinPicture', function(req,res) { //회원가입
     ],
     function (err, result) {
       console.log( result );
-      res.send('Nice Meet You *^^*');
+      dbConnectRouter.insertUserQuery(global.userInfo, function(result){
+        if(result == 'insert user success'){
+          global.userInfo = null;
+          return res.send('join us *^^*');
+        }else {
+          return res.send(result);
+        }
+      });
     }
   );
   return;
 });
 
 
+app.post('/login', function(req, res) { //req id, pw;
+  console.log(req.body)
+  dbConnectRouter.checkUserQuery(req.body, function(result){
+    if(result[0] == null) name = 'null';
+    else name = result[0].name;
+    res.send(name);
+  });
+});
+
+
 app.post('/showSchedule', function(req,res) {
-  // scheduleQuery()
   console.log(req.body);
-  dbConnectRouter.scheduleQuery(req.body, function(schedule){
-    console.log(schedule);
-    res.send(schedule);
+  dbConnectRouter.todayScheduleQuery(req.body, function(schedule){
+    var json = {
+      schedules : schedule
+    };
+    console.log("in /showSchedule  "+JSON.stringify(json));
+    return res.json(json);
   });
 });
 
@@ -346,118 +272,205 @@ app.post('/addSchedule', function(req,res) {
   console.log(req.body);
   dbConnectRouter.insertScheduleQuery(req.body, function(result){
     console.log(result);
-    res.send(result);
+    return res.send(result);
+  });
+});
+
+app.post('/updateSchedule', function(req,res) {
+  console.log(req.body);
+  dbConnectRouter.updateScheduleQuery(req.body, function(result){
+    console.log(result);
+    return res.send(result);
   });
 });
 
 app.post('/deleteSchedule',function(req, res){
   console.log(req.body);
-  dbConnectRouter.insertScheduleQuery(req.body, function(result){
+  dbConnectRouter.deleteScheduleQuery(req.body, function(result){
     console.log(result);
-    res.send(result);
+    return res.send(result);
   });
 });
 
 
-app.post('/veiwMessage', function(req,res) { //메세지 출력
-  /*
-  1. 디비에 메세지 이름 리스트 쿼리보내기
-  2. 결과받기 (sender / messageTitle)
-  3. json 형태로 라즈베리에 전송
-  */
-
-  res.json(messges);
-});
-
-
-app.post('/init/sendVideoMessage', function(req,res) { //메세지 출력
-  var title = 'abceefg.ts';
-  // var title = req.body.title;
-
-  var json = {
-    from : global.userName,
-    to : global.msg_recipient,
-    title : title
-  };
-
-  dbConnectRouter.sendMessageQuery(json, function(result){
-    global.msg_recipient = null;
-    return res.json(result);
-  });
-});
-
-
-app.post('/init/sendVoiceMessage', function(req,res) { //메세지 출력
-  var title = 'abceefg.ts';
-  // var title = req.body.title;
-
-  var json = {
-    from : global.userName,
-    to : global.msg_recipient,
-    title : title
-  };
-
-  dbConnectRouter.sendMessageQuery(json, function(result){
-    global.msg_recipient = null;
-    return res.json(result);
-  });
-});
-
-
+/*--------RASPBERRY--------------------------------------------------------------------------------------------*/
 global.client_Param = null
 global.msg_recipient = null
+global.recv_msg_num = null
+global.recv_msg = null
+global.luvU = null
+
+app.post('/init/sendMessage', function(req,res) {
+  var title = 'abcdefg.ts';
+  console.log("??? " +req.body.title);
+  title = ((req.body.title).toString()).split("/")[((req.body.title).toString()).split("/").length-1];
+  title = title.split(".")[0];
+  title = title+".ts";
+
+  var json = {
+    from : global.userName,
+    to : global.msg_recipient,
+    title : title
+  };
+  console.log(json);
+  dbConnectRouter.sendMessageQuery(json, function(result){
+    global.msg_recipient = null;
+    return res.send(result);
+  });
+});
+
+
 app.post('/stt',function(req, res){
   var input = req.body.command
-  if(input.indexOf('에게 보내 줘') != -1){
+  console.log(input);
+  if(input.indexOf('에게 메시지 보내 줘') != -1){
     var strArray = input.split('에게');
-    msg_recipient = strArray[0];
-    client_Param = '1';
-    console.log(msg_recipient);
-    res.send('1')
-  }else if (input.indexOf('읽기') != -1){
-    client_Param = '2';
-    res.send('2');
-  }else if ((input.indexOf('') != -1)){
+    global.msg_recipient = strArray[0];
+
+    if(global.msg_recipient == '엄마' || global.msg_recipient == '아빠'||global.msg_recipient == '누나'||global.msg_recipient == '동생' ||global.msg_recipient == '와이프'||global.msg_recipient == '남편'||global.msg_recipient == '딸'||global.msg_recipient == '아들'){
+      global.client_Param = '1';
+      console.log(global.msg_recipient);
+      return res.send('1');
+    }else {
+      console.log('그런 사용자가 없습니다.');
+      global.client_Param = '5';
+      return res.send('5');
+    }
+  }else if (input.indexOf('보여 줘') != -1){
+    var strArray = input.split(' 번째');
+    global.recv_msg_num = strArray[0];
+
+    if(global.recv_msg_num == '첫'){
+      global.recv_msg_num = 1;
+    }else if(global.recv_msg_num == '두'){
+      global.recv_msg_num = 2;
+    }else if(global.recv_msg_num == '세'){
+      global.recv_msg_num = 3;
+    }else if(global.recv_msg_num == '네'){
+      global.recv_msg_num = 4;
+    }else if(global.recv_msg_num == '다섯'){
+      global.recv_msg_num = 5;
+    }else {
+      console.log(".......................");
+      return res.send('4');
+    }
+
+    dbConnectRouter.receiveMessageQuery(global.userName, function(messageList){
+      console.log('messageList.length :'+messageList.length);
+      if(messageList.length > 0 && messageList.length >= global.recv_msg_num){
+        global.recv_msg = messageList[global.recv_msg_num-1];
+        dbConnectRouter.deleteMessageQuery(global.recv_msg, function(result){
+          global.recv_msg_num = null;
+          global.client_Param = '2';
+          return res.send('2');
+        });
+      }else{
+        console.log('해당 메시지가 존재하지 않습니다.');
+        global.client_Param = '4';
+        return res.send('4');
+      }
+    });
+  }else if ((input.indexOf('오겠습니다') != -1)){
+    global.client_Param = '3';
     res.send('3');
+  }else if ((input.indexOf('사랑해') != -1)){
+    global.luvU = 1;
+    global.client_Param = '4';
+    res.send('4');
+  } else {
+    global.client_Param = '4';
+    res.send('4');
   }
 });
 
 
+app.post('/raz_client/ILuvU', function(req, res) {
+  var response = new Object();
+
+  if(global.luvU == 1){
+    console.log('ILuvU');
+    response.luvU = global.luvU;
+    global.luvU = null;
+    console.log(JSON.stringify(response))
+    res.json(response);
+  }else{
+    response.luvU = 0;
+    global.luvU = null;
+    res.json(response)
+  }
+})
+
 app.post('/raz_client', function(req, res) {
+  console.log("*************************************************");
+  var response_client = new Object();
 
-  var responseArray = new Array();
-  var responseObject = new Object();
+  if (global.client_Param == '1') {         /////////////////////// 누구누구에게 보내 줘
+    response_client.client_Param = global.client_Param;
+    global.client_Param = null;
+    return res.json(response_client);
+  } else if (global.client_Param == '2'){   /////////////////////// 메세지 보여 줘
+    response_client.client_Param = global.client_Param;
 
-  responseObject.choiceParam = client_Param;
-  if (client_Param == "1") {         /////////////////////// Sending Message
-    responseArray.push(responseObject);
-    var jsonInfo = JSON.stringify(responseArray);
-    console.log(jsonInfo);
-    // msg_recipient = null;
-    client_Param = null;
-    return res.send('Recording Message');
+    var date = (new Date()).toFormat('YYYYMMDD');
+    var json1 = Object();
+    json1.name = global.userName;
+    json1.thisDate = date;
 
-  } else if (client_Param == "2"){   /////////////////////// Showing Message
-    var json = {
-      to : global.userName
-    }
-    dbConnectRouter.receiveMessageQuery(global.userName,function(message){
-      if(messageTitle == 'receiveMessage error'){
-        return res.send(message);
-      }else{
-        responseObject.videoName = message.title;
-        responseArray.push(responseObject);
-        var jsonInfo = JSON.stringify(responseArray);
-        console.log(jsonInfo);
-        msg_recipient = null;
-        client_Param = null;
-        return res.send(message);
-      }
+    dbConnectRouter.howManyMassageQuery(global.userName, function(messageNum){
+      weatherRouter.getWeather(function(weather){
+        dbConnectRouter.todayScheduleQuery(json1, function(todaySchedule){
+          dbConnectRouter.scheduleQuery(json1, function(schedule){
+            dbConnectRouter.shareScheduleQuery(json1, function(shareSchedule){
+              dbConnectRouter.requiredItemQuery(json1, function(requiredItem){
+                dbConnectRouter.receiveMessageQuery(global.userName, function(messageList){
+                  var json = {
+                    weather : weather
+                  };
+                  var arr = [];
+                  var i =1;
+                  if(i<requiredItem.length){
+                    arr.push(requiredItem[i].reqItems);
+                    i++;
+                  }
+                  json.user = global.userName;
+                  json.todaySchedule = todaySchedule;
+                  json.schedule = schedule;
+                  json.shareSchedule = shareSchedule;
+                  json.requiredItem = arr;
+                  json.messageNum = messageNum.toString();
+                  json.messageList = messageList;
+                  json.client_Param = global.client_Param;
+                  json.messageTitle = global.recv_msg.title;
+
+                  global.recv_msg = null;
+                  global.recv_msg_num = null;
+                  console.log(JSON.stringify(json));
+                  global.client_Param = null;
+                  res.json(json);
+                });
+              });
+            });
+          });
+        });
+      });
     });
-
+  } else if (global.client_Param == '3') { //////////////////////// 다녀오겠습니다
+    response_client.client_Param = global.client_Param;
+    global.client_Param = null;
+    global.msg_recipient = null
+    global.userName = null;
+    return res.json(response_client);
+  }else if (global.client_Param == '5') { //////////////////////// 다녀오겠습니다
+    response_client.client_Param = global.client_Param;
+    global.client_Param = null;
+    global.msg_recipient = null;
+    
+    return res.json(response_client);
   } else {                           //////////////////////// Nothing
-    client_Param = null;
+    response_client.client_Param = global.client_Param;
+    global.client_Param = null;
+    console.log("luvU :"+global.luvU);
     console.log("nothing..... ");
-    return res.send('Wait');
+    return res.json(response_client);
   }
 });

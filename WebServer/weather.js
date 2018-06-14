@@ -23,7 +23,7 @@ function getWeather(callback) {
 
   var forecast = new Forecast({
     service: 'forecast.io',
-    key: '3ed04ee2692b0344d29afd96a34b18f',
+    key: '3ed04ee2692b0344d29afd96a34b18fe',
     units: 'celcius',
     cache: true,
     ttl:{
@@ -32,14 +32,14 @@ function getWeather(callback) {
     }
   });
 
-  forecast.get([37.5,127], function(err, weather){
-    console.dir(weather.currently);
-    if(err) return console.dir(err);
-    weatherData = weather.currently
+   forecast.get([37.5,127], function(err, weather){
+     console.dir(weather.currently);
+     if(err) return console.dir(err);
+     weatherData = weather.currently
     if (typeof callback === "function"){
       return callback(weatherData);
     }else return weatherData;
-  });
+   });
 };
 
 module.exports = {
