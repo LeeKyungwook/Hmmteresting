@@ -5,12 +5,11 @@ The project "어잌who" provides a reminder service automatically using a face r
 This is system that automatically recognize face and give lots of information that associated with him.
 
 ## Getting Started
-
-### Prerequisites
-
+In Raspberry, do shell python script "client.py"
+In Server, do shell node.js script "app.js"
 
 ### Installing
-
+Just Install Caffe with CUDA and Cudnn. This project's CUDA Version is 8.
 
 
 ## Team Name
