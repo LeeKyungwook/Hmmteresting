@@ -1,6 +1,7 @@
 #!/bin/sh
 
-arecord -D plughw:1,0 -d 5 test.wav
+timestamp=$(date +%Y%m%d%H%M)
+arecord -D plughw:1,0 -d 5 $timestamp.wav
 
 latestfile=$(ls -1t *.wav | head -n1)
 echo "$latestfile"
