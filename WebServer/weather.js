@@ -32,14 +32,14 @@ function getWeather(callback) {
     }
   });
 
-  // forecast.get([37.5,127], function(err, weather){
-  //   console.dir(weather.currently);
-  //   if(err) return console.dir(err);
-  //   weatherData = weather.currently
+   forecast.get([37.5,127], function(err, weather){
+     console.dir(weather.currently);
+     if(err) return console.dir(err);
+     weatherData = weather.currently
     if (typeof callback === "function"){
       return callback(weatherData);
     }else return weatherData;
-  // });
+   });
 };
 
 module.exports = {
