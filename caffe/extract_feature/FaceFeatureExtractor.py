@@ -1,9 +1,9 @@
-import argparse
-import caffe
+import os
+os.environ['GLOG_minloglevel'] = '2' # suprress Caffe verbose prints
 import cv2
 import numpy as np
-import os
-
+import caffe
+import sys
 from os import walk
 
 class FaceFeatureExtractor():
@@ -67,9 +67,9 @@ class FaceFeatureExtractor():
        
 if __name__ == '__main__':
     
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-img1', required=True, help='img path')
-    args = parser.parse_args()
+    #parser = argparse.ArgumentParser()
+    #parser.add_argument('-img1', required=True, help='img path')
+    args = sys.argv[1]
 
     ###################################### Make npy ########################################
     # ftr_extor = FaceFeatureExtractor()
@@ -93,7 +93,7 @@ if __name__ == '__main__':
     ###################################### Cal Dis ############################################
     ftr_extor = FaceFeatureExtractor()
     
-    input_img = cv2.imread(args.img1)
+    input_img = cv2.imread(args)
     input_img_feat = ftr_extor.extract_feature(input_img)
     
     dirname = '/home/kyungwook/kyungwook/gallery'
@@ -117,13 +117,13 @@ if __name__ == '__main__':
 
         # print dist
 
-    # print '--------------------------'
-    if (current_dist > 0.5):
-       # print current_dist
+    # #print '--------------------------'
+    if (current_dist > 0.65):
+        # print current_dist
         print current_filename
     else :
-       # print current_dist
-        print "None Detected"
+        # print current_dist
+        print "None Detected "
     
     #print current_dist
     #print current_filename

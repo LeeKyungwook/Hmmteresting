@@ -11,8 +11,8 @@ with picamera.PiCamera() as camera:
     camera.stop_preview()
 '''
 
-url = 'http://112.151.162.170:7000/file'
-pwd = '/home/pi/test.wav'
+url = 'http://112.151.162.170:7000/init'
+pwd = '/home/pi/Hmmteresting/Razberry/crop_image.jpg'
 files = {'media' : open(pwd, 'rb') }
 
 res = requests.post(url, files = files)
